@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import ConfirmDialog from '@/components/ui/confirm-dialog';
 import { categoriesApi } from '@/services/api';
 import { toast } from '@/components/ui/toast';
 
@@ -26,6 +27,7 @@ export default function CategoriesPage() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(null);
 
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm({
     defaultValues: { name: '', type: 'expense', color: '#6366f1' },
@@ -70,15 +72,15 @@ export default function CategoriesPage() {
     } finally { setSaving(false); }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('Delete this category? This may affect existing transactions.')) return;
+  const handleDelete = async () => {
+    if (!confirmDelete) return;
     try {
-      await categoriesApi.delete(id);
-      setCategories((p) => p.filter((c) => c.id !== id));
+      await categoriesApi.delete(confirmDelete.id);
+      setCategories((p) => p.filter((c) => c.id !== confirmDelete.id));
       toast.success('Category deleted.');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to delete.');
-    }
+    } finally { setConfirmDelete(null); }
   };
 
   const defaults = categories.filter((c) => c.isDefault);
@@ -165,7 +167,7 @@ export default function CategoriesPage() {
                             <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(cat)}>
                               <Pencil className="w-3.5 h-3.5" />
                             </Button>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => handleDelete(cat.id)}>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => setConfirmDelete(cat)}>
                               <Trash2 className="w-3.5 h-3.5" />
                             </Button>
                           </div>
@@ -234,6 +236,15 @@ export default function CategoriesPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        open={!!confirmDelete}
+        onClose={() => setConfirmDelete(null)}
+        onConfirm={handleDelete}
+        title="Delete Category"
+        description={`"${confirmDelete?.name}" will be permanently deleted. Transactions using this category may be affected.`}
+        confirmLabel="Delete Category"
+      />
     </DashboardLayout>
   );
 }

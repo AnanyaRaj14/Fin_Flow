@@ -33,6 +33,7 @@ export const authApi = {
   verifyEmail: (token) => api.post('/auth/verify-email', { token }),
   forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
   resetPassword: (data) => api.post('/auth/reset-password', data),
+  resendVerification: (email) => api.post('/auth/resend-verification', { email }),
   updateProfile: (formData) => api.put('/auth/update-profile', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
   changePassword: (data) => api.put('/auth/change-password', data),
 };

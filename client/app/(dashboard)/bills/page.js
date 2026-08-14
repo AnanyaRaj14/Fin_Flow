@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import ConfirmDialog from '@/components/ui/confirm-dialog';
 import { billsApi } from '@/services/api';
 import { formatCurrency, getDaysUntilDue } from '@/lib/utils';
 import { toast } from '@/components/ui/toast';
@@ -24,6 +25,7 @@ export default function BillsPage() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(null);
 
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm();
   const selectedColor = watch('color', '#6366f1');
@@ -71,13 +73,14 @@ export default function BillsPage() {
     } catch { toast.error('Failed to update.'); }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('Delete this bill?')) return;
+  const handleDelete = async () => {
+    if (!confirmDelete) return;
     try {
-      await billsApi.delete(id);
-      setBills((p) => p.filter((b) => b.id !== id));
+      await billsApi.delete(confirmDelete.id);
+      setBills((p) => p.filter((b) => b.id !== confirmDelete.id));
       toast.success('Bill deleted.');
     } catch { toast.error('Failed to delete.'); }
+    finally { setConfirmDelete(null); }
   };
 
   const unpaid = bills.filter((b) => !b.isPaid);
@@ -113,7 +116,7 @@ export default function BillsPage() {
                 <h3 className="text-sm font-medium text-muted-foreground mb-2">Unpaid ({unpaid.length})</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {unpaid.map((bill, i) => (
-                    <BillCard key={bill.id} bill={bill} index={i} onToggle={handleToggle} onEdit={openEdit} onDelete={handleDelete} />
+                    <BillCard key={bill.id} bill={bill} index={i} onToggle={handleToggle} onEdit={openEdit} onDelete={(b) => setConfirmDelete(b)} />
                   ))}
                 </div>
               </div>
@@ -123,7 +126,7 @@ export default function BillsPage() {
                 <h3 className="text-sm font-medium text-muted-foreground mb-2">Paid ({paid.length})</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {paid.map((bill, i) => (
-                    <BillCard key={bill.id} bill={bill} index={i} onToggle={handleToggle} onEdit={openEdit} onDelete={handleDelete} />
+                    <BillCard key={bill.id} bill={bill} index={i} onToggle={handleToggle} onEdit={openEdit} onDelete={(b) => setConfirmDelete(b)} />
                   ))}
                 </div>
               </div>
@@ -172,6 +175,15 @@ export default function BillsPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        open={!!confirmDelete}
+        onClose={() => setConfirmDelete(null)}
+        onConfirm={handleDelete}
+        title="Delete Bill"
+        description={`"${confirmDelete?.name}" will be permanently deleted.`}
+        confirmLabel="Delete Bill"
+      />
     </DashboardLayout>
   );
 }
@@ -207,7 +219,7 @@ function BillCard({ bill, index, onToggle, onEdit, onDelete }) {
                 <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onEdit(bill)}>
                   <Pencil className="w-3.5 h-3.5" />
                 </Button>
-                <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => onDelete(bill.id)}>
+                <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => onDelete(bill)}>
                   <Trash2 className="w-3.5 h-3.5" />
                 </Button>
               </div>

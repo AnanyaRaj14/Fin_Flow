@@ -5,13 +5,14 @@ const { uploadAvatar } = require('../middleware/upload');
 const {
   register, login, logout, getMe,
   verifyEmail, forgotPassword, resetPassword,
-  updateProfile, changePassword,
+  updateProfile, changePassword, resendVerification,
 } = require('../controllers/authController');
 
 router.post('/register', register);
 router.post('/login', login);
 router.post('/logout', logout);
 router.post('/verify-email', verifyEmail);
+router.post('/resend-verification', resendVerification);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
 

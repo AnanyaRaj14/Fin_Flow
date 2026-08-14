@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import ConfirmDialog from '@/components/ui/confirm-dialog';
 import { budgetsApi, categoriesApi } from '@/services/api';
 import { formatCurrency } from '@/lib/utils';
 import { toast } from '@/components/ui/toast';
@@ -28,6 +29,7 @@ export default function BudgetsPage() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(null);
 
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm();
   const selectedCategory = watch('categoryId');
@@ -82,13 +84,14 @@ export default function BudgetsPage() {
     } finally { setSaving(false); }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('Delete this budget?')) return;
+  const handleDelete = async () => {
+    if (!confirmDelete) return;
     try {
-      await budgetsApi.delete(id);
-      setBudgets((p) => p.filter((b) => b.id !== id));
+      await budgetsApi.delete(confirmDelete.id);
+      setBudgets((p) => p.filter((b) => b.id !== confirmDelete.id));
       toast.success('Budget deleted.');
     } catch { toast.error('Failed to delete.'); }
+    finally { setConfirmDelete(null); }
   };
 
   const totalBudgeted = budgets.reduce((s, b) => s + b.amount, 0);
@@ -177,7 +180,7 @@ export default function BudgetsPage() {
                           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(budget)}>
                             <Pencil className="w-3.5 h-3.5" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDelete(budget.id)}>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => setConfirmDelete(budget)}>
                             <Trash2 className="w-3.5 h-3.5" />
                           </Button>
                         </div>
@@ -235,6 +238,15 @@ export default function BudgetsPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        open={!!confirmDelete}
+        onClose={() => setConfirmDelete(null)}
+        onConfirm={handleDelete}
+        title="Delete Budget"
+        description={`The budget for "${confirmDelete?.category?.name}" will be permanently deleted.`}
+        confirmLabel="Delete Budget"
+      />
     </DashboardLayout>
   );
 }

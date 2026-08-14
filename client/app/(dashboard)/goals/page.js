@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import ConfirmDialog from '@/components/ui/confirm-dialog';
 import { goalsApi } from '@/services/api';
 import { formatCurrency, formatDate, formatDateInput } from '@/lib/utils';
 import { toast } from '@/components/ui/toast';
@@ -23,6 +24,7 @@ export default function GoalsPage() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(null);
 
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm();
   const selectedColor = watch('color', '#6366f1');
@@ -66,13 +68,14 @@ export default function GoalsPage() {
     } finally { setSaving(false); }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('Delete this goal?')) return;
+  const handleDelete = async () => {
+    if (!confirmDelete) return;
     try {
-      await goalsApi.delete(id);
-      setGoals((p) => p.filter((g) => g.id !== id));
+      await goalsApi.delete(confirmDelete.id);
+      setGoals((p) => p.filter((g) => g.id !== confirmDelete.id));
       toast.success('Goal deleted.');
     } catch { toast.error('Failed to delete.'); }
+    finally { setConfirmDelete(null); }
   };
 
   return (
@@ -118,7 +121,7 @@ export default function GoalsPage() {
                           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(goal)}>
                             <Pencil className="w-3.5 h-3.5" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDelete(goal.id)}>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => setConfirmDelete(goal)}>
                             <Trash2 className="w-3.5 h-3.5" />
                           </Button>
                         </div>
@@ -191,6 +194,15 @@ export default function GoalsPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        open={!!confirmDelete}
+        onClose={() => setConfirmDelete(null)}
+        onConfirm={handleDelete}
+        title="Delete Goal"
+        description={`"${confirmDelete?.name}" will be permanently deleted.`}
+        confirmLabel="Delete Goal"
+      />
     </DashboardLayout>
   );
 }

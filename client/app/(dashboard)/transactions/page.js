@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import ConfirmDialog from '@/components/ui/confirm-dialog';
 import { transactionsApi, categoriesApi, accountsApi } from '@/services/api';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { cn } from '@/lib/utils';
@@ -37,6 +38,7 @@ export default function TransactionsPage() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(null);
 
   const fetchTransactions = useCallback(async () => {
     setLoading(true);
@@ -90,13 +92,14 @@ export default function TransactionsPage() {
     } finally { setSaving(false); }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('Delete this transaction?')) return;
+  const handleDelete = async () => {
+    if (!confirmDelete) return;
     try {
-      await transactionsApi.delete(id);
-      setTransactions((p) => p.filter((t) => t.id !== id));
+      await transactionsApi.delete(confirmDelete.id);
+      setTransactions((p) => p.filter((t) => t.id !== confirmDelete.id));
       toast.success('Transaction deleted.');
     } catch { toast.error('Failed to delete.'); }
+    finally { setConfirmDelete(null); }
   };
 
   const clearFilters = () => {
@@ -220,7 +223,7 @@ export default function TransactionsPage() {
                           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(tx)}>
                             <Pencil className="w-3.5 h-3.5" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDelete(tx.id)}>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => setConfirmDelete(tx)}>
                             <Trash2 className="w-3.5 h-3.5" />
                           </Button>
                         </div>
@@ -251,6 +254,15 @@ export default function TransactionsPage() {
           <TransactionForm onSubmit={handleSave} defaultValues={editing} saving={saving} />
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        open={!!confirmDelete}
+        onClose={() => setConfirmDelete(null)}
+        onConfirm={handleDelete}
+        title="Delete Transaction"
+        description={`"${confirmDelete?.title}" will be permanently deleted and the account balance will be reversed.`}
+        confirmLabel="Delete Transaction"
+      />
     </DashboardLayout>
   );
 }

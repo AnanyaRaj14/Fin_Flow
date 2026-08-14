@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import ConfirmDialog from '@/components/ui/confirm-dialog';
 import { accountsApi } from '@/services/api';
 import { formatCurrency } from '@/lib/utils';
 import { toast } from '@/components/ui/toast';
@@ -30,6 +31,7 @@ export default function AccountsPage() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(null); // holds account to delete
 
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm({
     defaultValues: { name: '', type: 'bank', balance: '', color: '#6366f1' },
@@ -78,13 +80,14 @@ export default function AccountsPage() {
     } finally { setSaving(false); }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('Delete this account? All its transactions will also be deleted.')) return;
+  const handleDelete = async () => {
+    if (!confirmDelete) return;
     try {
-      await accountsApi.delete(id);
-      setAccounts((prev) => prev.filter((a) => a.id !== id));
+      await accountsApi.delete(confirmDelete.id);
+      setAccounts((prev) => prev.filter((a) => a.id !== confirmDelete.id));
       toast.success('Account deleted.');
     } catch { toast.error('Failed to delete.'); }
+    finally { setConfirmDelete(null); }
   };
 
   const totalBalance = accounts.reduce((s, a) => s + a.balance, 0);
@@ -95,7 +98,9 @@ export default function AccountsPage() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold">Accounts</h2>
-            <p className="text-muted-foreground text-sm">Total balance: <span className="font-semibold text-foreground">{formatCurrency(totalBalance)}</span></p>
+            <p className="text-muted-foreground text-sm">
+              Total balance: <span className="font-semibold text-foreground">{formatCurrency(totalBalance)}</span>
+            </p>
           </div>
           <Button onClick={openCreate}><Plus className="w-4 h-4" /> Add Account</Button>
         </div>
@@ -126,7 +131,11 @@ export default function AccountsPage() {
                           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(account)}>
                             <Pencil className="w-3.5 h-3.5" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => handleDelete(account.id)}>
+                          <Button
+                            variant="ghost" size="icon"
+                            className="h-7 w-7 text-destructive hover:text-destructive"
+                            onClick={() => setConfirmDelete(account)}
+                          >
                             <Trash2 className="w-3.5 h-3.5" />
                           </Button>
                         </div>
@@ -143,7 +152,7 @@ export default function AccountsPage() {
         )}
       </div>
 
-      {/* Dialog */}
+      {/* Add / Edit Dialog */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
@@ -155,7 +164,6 @@ export default function AccountsPage() {
               <Input placeholder="e.g. Main Checking" {...register('name', { required: 'Name is required' })} />
               {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
             </div>
-
             <div className="space-y-1.5">
               <Label>Type</Label>
               <Select value={selectedType} onValueChange={(v) => setValue('type', v)}>
@@ -165,29 +173,23 @@ export default function AccountsPage() {
                 </SelectContent>
               </Select>
             </div>
-
             {!editing && (
               <div className="space-y-1.5">
                 <Label>Opening Balance</Label>
                 <Input type="number" step="0.01" placeholder="0.00" {...register('balance')} />
               </div>
             )}
-
             <div className="space-y-1.5">
               <Label>Color</Label>
               <div className="flex gap-2 flex-wrap">
                 {COLORS.map((c) => (
-                  <button
-                    key={c}
-                    type="button"
-                    onClick={() => setValue('color', c)}
+                  <button key={c} type="button" onClick={() => setValue('color', c)}
                     className={`w-7 h-7 rounded-full border-2 transition-all ${selectedColor === c ? 'border-foreground scale-110' : 'border-transparent'}`}
                     style={{ background: c }}
                   />
                 ))}
               </div>
             </div>
-
             <div className="flex gap-2 pt-2">
               <Button type="button" variant="outline" className="flex-1" onClick={() => setOpen(false)}>Cancel</Button>
               <Button type="submit" className="flex-1" disabled={saving}>
@@ -198,6 +200,16 @@ export default function AccountsPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Confirm Delete Dialog */}
+      <ConfirmDialog
+        open={!!confirmDelete}
+        onClose={() => setConfirmDelete(null)}
+        onConfirm={handleDelete}
+        title="Delete Account"
+        description={`"${confirmDelete?.name}" and all its transactions will be permanently deleted. This cannot be undone.`}
+        confirmLabel="Delete Account"
+      />
     </DashboardLayout>
   );
 }
