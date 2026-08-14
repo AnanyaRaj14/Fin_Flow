@@ -33,3 +33,7 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# Repomix output
+repomix-output.xml
+repomix-output*.xml
