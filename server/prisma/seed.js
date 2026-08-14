@@ -144,7 +144,7 @@ async function main() {
   });
 
   // Settings
-  await prisma.settings.create({ data: { userId: user.id, theme: 'light', currency: 'USD' } });
+  await prisma.settings.create({ data: { userId: user.id, theme: 'light', currency: 'INR' } });
 
   console.log('✅ Seed complete!');
   console.log('   Email:    demo@finflow.app');

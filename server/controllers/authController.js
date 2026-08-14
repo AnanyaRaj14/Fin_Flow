@@ -44,7 +44,7 @@ const register = async (req, res) => {
   });
 
   // Create default settings
-  await prisma.settings.create({ data: { userId: user.id } });
+  await prisma.settings.create({ data: { userId: user.id, currency: 'INR' } });
 
   // Send verification email
   const url = `${process.env.CLIENT_URL}/verify-email?token=${verifyToken}`;

@@ -134,7 +134,7 @@ model Bill {
 model Settings {
   id       String  @id @default(cuid())
   theme    String  @default("light")
-  currency String  @default("USD")
+  currency String  @default("INR")
   userId   String  @unique
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
