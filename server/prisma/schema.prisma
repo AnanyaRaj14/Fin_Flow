@@ -1,0 +1,141 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String    @id @default(cuid())
+  name              String
+  email             String    @unique
+  password          String
+  avatar            String?
+  isVerified        Boolean   @default(false)
+  verifyToken       String?
+  verifyTokenExpiry DateTime?
+  resetToken        String?
+  resetTokenExpiry  DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  accounts     Account[]
+  transactions Transaction[]
+  categories   Category[]
+  budgets      Budget[]
+  goals        Goal[]
+  bills        Bill[]
+  settings     Settings?
+}
+
+model Account {
+  id        String   @id @default(cuid())
+  name      String
+  type      String   // bank, cash, wallet, credit
+  balance   Float    @default(0)
+  color     String   @default("#6366f1")
+  icon      String   @default("wallet")
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  icon      String   @default("tag")
+  color     String   @default("#6366f1")
+  type      String   @default("both") // income, expense, both
+  isDefault Boolean  @default(false)
+  userId    String
+  createdAt DateTime @default(now())
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  budgets      Budget[]
+}
+
+model Transaction {
+  id            String   @id @default(cuid())
+  title         String
+  amount        Float
+  type          String   // income, expense
+  date          DateTime
+  notes         String?
+  receiptUrl    String?
+  paymentMethod String   @default("card") // card, cash, transfer, upi
+  userId        String
+  accountId     String
+  categoryId    String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account  Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id])
+}
+
+model Budget {
+  id         String   @id @default(cuid())
+  month      Int      // 1-12
+  year       Int
+  amount     Float
+  spent      Float    @default(0)
+  userId     String
+  categoryId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id])
+
+  @@unique([userId, categoryId, month, year])
+}
+
+model Goal {
+  id          String    @id @default(cuid())
+  name        String
+  targetAmount Float
+  savedAmount  Float    @default(0)
+  deadline    DateTime?
+  icon        String    @default("target")
+  color       String    @default("#6366f1")
+  isCompleted Boolean   @default(false)
+  userId      String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Bill {
+  id          String   @id @default(cuid())
+  name        String
+  amount      Float
+  dueDate     Int      // day of month (1-31)
+  isPaid      Boolean  @default(false)
+  isRecurring Boolean  @default(true)
+  category    String   @default("Bills")
+  icon        String   @default("receipt")
+  color       String   @default("#6366f1")
+  userId      String
+  paidAt      DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Settings {
+  id       String  @id @default(cuid())
+  theme    String  @default("light")
+  currency String  @default("USD")
+  userId   String  @unique
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
