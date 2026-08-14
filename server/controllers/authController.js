@@ -179,4 +179,31 @@ const changePassword = async (req, res) => {
   res.json({ message: 'Password changed successfully.' });
 };
 
-module.exports = { register, login, logout, getMe, verifyEmail, forgotPassword, resetPassword, updateProfile, changePassword };
+module.exports = { register, login, logout, getMe, verifyEmail, forgotPassword, resetPassword, updateProfile, changePassword, resendVerification };
+
+// POST /api/auth/resend-verification
+async function resendVerification(req, res) {
+  const { email } = req.body;
+  const user = await prisma.user.findUnique({ where: { email } });
+
+  if (!user) return res.json({ message: 'If that email exists, a verification link has been sent.' });
+  if (user.isVerified) return res.status(400).json({ message: 'This email is already verified.' });
+
+  const verifyToken = generateToken();
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      verifyToken,
+      verifyTokenExpiry: new Date(Date.now() + 24 * 60 * 60 * 1000),
+    },
+  });
+
+  const url = `${process.env.CLIENT_URL}/verify-email?token=${verifyToken}`;
+  await sendEmail({
+    to: email,
+    subject: 'Verify your FinFlow account',
+    html: verifyEmailTemplate(user.name, url),
+  });
+
+  res.json({ message: 'Verification email resent. Please check your inbox.' });
+}

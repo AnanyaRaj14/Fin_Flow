@@ -4,9 +4,10 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
-import { Eye, EyeOff, TrendingUp, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, TrendingUp, Loader2, MailCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
+import { authApi } from '@/services/api';
 import { toast } from '@/components/ui/toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,24 +19,28 @@ export default function LoginPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [unverifiedEmail, setUnverifiedEmail] = useState('');
+  const [resending, setResending] = useState(false);
 
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const { register, handleSubmit, getValues, formState: { errors } } = useForm();
 
-  // If already authenticated, go straight to dashboard
   useEffect(() => {
-    if (!loading && user) {
-      router.replace('/dashboard');
-    }
+    if (!loading && user) router.replace('/dashboard');
   }, [user, loading, router]);
 
   const onSubmit = async (data) => {
     setSubmitting(true);
+    setUnverifiedEmail('');
     try {
       await login(data);
       router.push('/dashboard');
     } catch (err) {
       if (!err.response) {
         toast.error('Cannot reach the server. Make sure it is running on port 5000.');
+      } else if (err.response?.status === 403) {
+        // Email not verified — show resend option
+        setUnverifiedEmail(data.email);
+        toast.error('Please verify your email before logging in.');
       } else {
         toast.error(err.response?.data?.message || 'Login failed. Please try again.');
       }
@@ -44,7 +49,19 @@ export default function LoginPage() {
     }
   };
 
-  // Show spinner while checking session
+  const handleResend = async () => {
+    setResending(true);
+    try {
+      await authApi.resendVerification(unverifiedEmail);
+      toast.success('Verification email sent! Check your inbox.');
+      setUnverifiedEmail('');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to resend. Try again.');
+    } finally {
+      setResending(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[300px]">
@@ -53,7 +70,6 @@ export default function LoginPage() {
     );
   }
 
-  // Don't render form if already redirecting
   if (user) return null;
 
   return (
@@ -70,7 +86,31 @@ export default function LoginPage() {
           <CardTitle className="text-xl">Welcome back</CardTitle>
           <CardDescription>Sign in to your account to continue</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
+
+          {/* Unverified email banner */}
+          {unverifiedEmail && (
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
+              <MailCheck className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+              <div className="flex-1 text-sm">
+                <p className="font-medium text-amber-800 dark:text-amber-300">Email not verified</p>
+                <p className="text-amber-700 dark:text-amber-400 text-xs mt-0.5">
+                  Check your inbox or click below to resend the link.
+                </p>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="mt-2 h-7 text-xs border-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/50"
+                  onClick={handleResend}
+                  disabled={resending}
+                >
+                  {resending && <Loader2 className="w-3 h-3 animate-spin" />}
+                  Resend verification email
+                </Button>
+              </div>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-1.5">
               <Label>Email</Label>
@@ -112,7 +152,7 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <p className="text-center text-sm text-muted-foreground mt-4">
+          <p className="text-center text-sm text-muted-foreground">
             Don&apos;t have an account?{' '}
             <Link href="/register" className="text-primary font-medium hover:underline">
               Sign up
