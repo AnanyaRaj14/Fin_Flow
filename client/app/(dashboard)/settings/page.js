@@ -24,12 +24,19 @@ export default function SettingsPage() {
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
+  const [currency, setCurrency] = useState('INR');
+  const [savingSettings, setSavingSettings] = useState(false);
 
   const profileForm = useForm({ defaultValues: { name: user?.name || '' } });
   const passwordForm = useForm();
 
   useEffect(() => {
     if (user) profileForm.reset({ name: user.name });
+    // Load saved settings
+    settingsApi.get().then(({ data }) => {
+      if (data.settings?.currency) setCurrency(data.settings.currency);
+      if (data.settings?.theme) setTheme(data.settings.theme);
+    }).catch(() => {});
   }, [user]);
 
   const handleAvatarChange = (e) => {
@@ -112,19 +119,48 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        {/* Theme */}
+        {/* Appearance */}
         <Card>
           <CardHeader><CardTitle className="text-base">Appearance</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-1.5">
               <Label>Theme</Label>
-              <Select value={theme} onValueChange={setTheme}>
+              <Select value={theme} onValueChange={(val) => {
+                setTheme(val);
+                settingsApi.update({ theme: val, currency }).catch(() => {});
+              }}>
                 <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="light">Light</SelectItem>
                   <SelectItem value="dark">Dark</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label>Currency</Label>
+              <Select value={currency} onValueChange={async (val) => {
+                setCurrency(val);
+                setSavingSettings(true);
+                try {
+                  await settingsApi.update({ theme, currency: val });
+                  toast.success('Currency updated. Refresh to see changes.');
+                } catch { toast.error('Failed to save currency.'); }
+                finally { setSavingSettings(false); }
+              }}>
+                <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="INR">🇮🇳 INR — Indian Rupee</SelectItem>
+                  <SelectItem value="USD">🇺🇸 USD — US Dollar</SelectItem>
+                  <SelectItem value="EUR">🇪🇺 EUR — Euro</SelectItem>
+                  <SelectItem value="GBP">🇬🇧 GBP — British Pound</SelectItem>
+                  <SelectItem value="JPY">🇯🇵 JPY — Japanese Yen</SelectItem>
+                  <SelectItem value="AUD">🇦🇺 AUD — Australian Dollar</SelectItem>
+                  <SelectItem value="CAD">🇨🇦 CAD — Canadian Dollar</SelectItem>
+                  <SelectItem value="SGD">🇸🇬 SGD — Singapore Dollar</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">Affects all currency displays across the app.</p>
             </div>
           </CardContent>
         </Card>
