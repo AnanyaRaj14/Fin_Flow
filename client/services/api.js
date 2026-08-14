@@ -5,11 +5,19 @@ const api = axios.create({
   withCredentials: true,
 });
 
-// Intercept 401 responses and redirect to login
+// Intercept 401 responses — but only redirect if we're NOT already on an auth page
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401 && typeof window !== 'undefined') {
+    if (
+      err.response?.status === 401 &&
+      typeof window !== 'undefined' &&
+      !window.location.pathname.startsWith('/login') &&
+      !window.location.pathname.startsWith('/register') &&
+      !window.location.pathname.startsWith('/forgot-password') &&
+      !window.location.pathname.startsWith('/reset-password') &&
+      !window.location.pathname.startsWith('/verify-email')
+    ) {
       window.location.href = '/login';
     }
     return Promise.reject(err);

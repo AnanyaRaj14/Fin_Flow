@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { Eye, EyeOff, TrendingUp, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { authApi } from '@/services/api';
+import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/components/ui/toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,23 +16,45 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { user, loading } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
 
+  // Redirect if already logged in
+  useEffect(() => {
+    if (!loading && user) {
+      router.replace('/dashboard');
+    }
+  }, [user, loading, router]);
+
   const onSubmit = async (data) => {
-    setLoading(true);
+    setSubmitting(true);
     try {
       await authApi.register(data);
       toast.success('Account created! Check your email to verify your account.');
       router.push('/login');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Registration failed.');
+      if (!err.response) {
+        toast.error('Cannot reach the server. Make sure it is running on port 5000.');
+      } else {
+        toast.error(err.response?.data?.message || 'Registration failed.');
+      }
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[300px]">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (user) return null;
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
@@ -53,7 +76,10 @@ export default function RegisterPage() {
               <Label>Full Name</Label>
               <Input
                 placeholder="John Doe"
-                {...register('name', { required: 'Name is required', minLength: { value: 2, message: 'Name too short' } })}
+                {...register('name', {
+                  required: 'Name is required',
+                  minLength: { value: 2, message: 'Name too short' },
+                })}
               />
               {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
             </div>
@@ -100,11 +126,13 @@ export default function RegisterPage() {
                   validate: (val) => val === watch('password') || 'Passwords do not match',
                 })}
               />
-              {errors.confirmPassword && <p className="text-xs text-destructive">{errors.confirmPassword.message}</p>}
+              {errors.confirmPassword && (
+                <p className="text-xs text-destructive">{errors.confirmPassword.message}</p>
+              )}
             </div>
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+            <Button type="submit" className="w-full" disabled={submitting}>
+              {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
               Create account
             </Button>
           </form>

@@ -8,13 +8,22 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  // null = unknown, false = definitely not logged in, true = server unreachable
+  const [serverError, setServerError] = useState(false);
 
   const fetchUser = useCallback(async () => {
     try {
       const { data } = await authApi.getMe();
       setUser(data.user);
-    } catch {
+      setServerError(false);
+    } catch (err) {
       setUser(null);
+      // Network error (server down) vs real 401 (not logged in)
+      if (!err.response) {
+        setServerError(true);
+      } else {
+        setServerError(false);
+      }
     } finally {
       setLoading(false);
     }
@@ -27,6 +36,7 @@ export function AuthProvider({ children }) {
   const login = async (credentials) => {
     const { data } = await authApi.login(credentials);
     setUser(data.user);
+    setServerError(false);
     return data.user;
   };
 
@@ -38,7 +48,7 @@ export function AuthProvider({ children }) {
   const updateUser = (updatedUser) => setUser(updatedUser);
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, updateUser, refetch: fetchUser }}>
+    <AuthContext.Provider value={{ user, loading, serverError, login, logout, updateUser, refetch: fetchUser }}>
       {children}
     </AuthContext.Provider>
   );
