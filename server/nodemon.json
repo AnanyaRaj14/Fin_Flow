@@ -1,0 +1,9 @@
+{
+  "watch": [".", "controllers", "routes", "middleware", "utils", "config"],
+  "ext": "js,json",
+  "ignore": ["node_modules", "prisma/migrations"],
+  "exec": "node index.js",
+  "env": {
+    "NODE_ENV": "development"
+  }
+}
