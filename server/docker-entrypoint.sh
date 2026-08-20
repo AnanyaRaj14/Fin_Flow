@@ -1,8 +1,8 @@
 #!/bin/sh
 set -e
 
-echo "⏳ Running Prisma migrations..."
+echo 'Running Prisma migrations...'
 npx prisma migrate deploy
 
-echo "✅ Migrations done. Starting server..."
+echo 'Migrations done. Starting server...'
 exec node index.js
