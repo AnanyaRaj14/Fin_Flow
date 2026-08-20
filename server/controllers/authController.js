@@ -150,7 +150,7 @@ const resetPassword = async (req, res) => {
 // PUT /api/auth/update-profile
 const updateProfile = async (req, res) => {
   const { name } = req.body;
-  const avatar = req.file?.path || undefined;
+  const avatar = req.file?.location || undefined; // multer-s3 uses 'location' instead of 'path'
 
   const data = {};
   if (name) data.name = name;

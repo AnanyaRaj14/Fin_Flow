@@ -43,7 +43,7 @@ const getTransaction = async (req, res) => {
 // POST /api/transactions
 const createTransaction = async (req, res) => {
   const { title, amount, type, date, categoryId, accountId, paymentMethod, notes } = req.body;
-  const receiptUrl = req.file?.path || null;
+  const receiptUrl = req.file?.location || null; // multer-s3 uses 'location' instead of 'path'
 
   const parsedAmount = parseFloat(amount);
 
@@ -91,7 +91,7 @@ const createTransaction = async (req, res) => {
 // PUT /api/transactions/:id
 const updateTransaction = async (req, res) => {
   const { title, amount, type, date, categoryId, accountId, paymentMethod, notes } = req.body;
-  const receiptUrl = req.file?.path || undefined;
+  const receiptUrl = req.file?.location || undefined; // multer-s3 uses 'location' instead of 'path'
 
   const existing = await prisma.transaction.findFirst({
     where: { id: req.params.id, userId: req.user.id },
