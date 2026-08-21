@@ -1,0 +1,92 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  # ─────────────────────────────────────────────
+  # Lint Check
+  # ─────────────────────────────────────────────
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        workspace: [server, client]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: ${{ matrix.workspace }}/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./${{ matrix.workspace }}
+        run: npm ci
+
+      - name: Run ESLint
+        working-directory: ./${{ matrix.workspace }}
+        run: npm run lint --if-present
+
+  # ─────────────────────────────────────────────
+  # Dependency Audit
+  # ─────────────────────────────────────────────
+  audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        workspace: [server, client]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run npm audit
+        working-directory: ./${{ matrix.workspace }}
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+      - name: Run npm audit fix
+        working-directory: ./${{ matrix.workspace }}
+        run: npm audit fix --dry-run
+
+  # ─────────────────────────────────────────────
+  # Check for outdated dependencies
+  # ─────────────────────────────────────────────
+  outdated:
+    name: Check Outdated Packages
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Check server dependencies
+        working-directory: ./server
+        run: npm outdated || true
+
+      - name: Check client dependencies
+        working-directory: ./client
+        run: npm outdated || true
