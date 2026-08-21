@@ -1,7 +1,7 @@
 # ─────────────────────────────────────────────
 # FinFlow — Express API Server
 # ─────────────────────────────────────────────
-FROM node:22-alpine
+FROM node:26-alpine
 WORKDIR /app
 
 # Install OpenSSL (required by Prisma on Alpine) and wget (for health checks)
