@@ -1,0 +1,105 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  # ─────────────────────────────────────────────
+  # Create GitHub Release
+  # ─────────────────────────────────────────────
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate changelog
+        id: changelog
+        uses: mikepenz/release-changelog-builder-action@v4
+        with:
+          configuration: |
+            {
+              "categories": [
+                {
+                  "title": "## 🚀 Features",
+                  "labels": ["feature", "enhancement"]
+                },
+                {
+                  "title": "## 🐛 Bug Fixes",
+                  "labels": ["bug", "fix"]
+                },
+                {
+                  "title": "## 🔧 Maintenance",
+                  "labels": ["chore", "dependencies"]
+                },
+                {
+                  "title": "## 📚 Documentation",
+                  "labels": ["documentation"]
+                }
+              ]
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          body: ${{ steps.changelog.outputs.changelog }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ─────────────────────────────────────────────
+  # Build and Attach Release Artifacts
+  # ─────────────────────────────────────────────
+  build-artifacts:
+    name: Build Release Artifacts
+    runs-on: ubuntu-latest
+    needs: create-release
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Build server
+        working-directory: ./server
+        run: |
+          npm ci
+          npm run build --if-present
+
+      - name: Build client
+        working-directory: ./client
+        env:
+          NEXT_PUBLIC_API_URL: https://api.finflow.com/api
+        run: |
+          npm ci
+          npm run build
+
+      - name: Create artifacts
+        run: |
+          tar -czf finflow-server-${{ github.ref_name }}.tar.gz -C server .
+          tar -czf finflow-client-${{ github.ref_name }}.tar.gz -C client .
+
+      - name: Upload artifacts to release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            finflow-server-${{ github.ref_name }}.tar.gz
+            finflow-client-${{ github.ref_name }}.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
