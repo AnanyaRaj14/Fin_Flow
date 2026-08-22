@@ -9,7 +9,7 @@ environment  = "prod"
 aws_region   = "ap-south-1"
 
 # S3 Configuration
-s3_bucket_name = "finflow-uploads-ananya-2026"
+s3_bucket_name = "finflow-uploads-ananya-tf"
 
 # S3 Features
 enable_versioning = true
@@ -30,7 +30,7 @@ allowed_origins = [
 ]
 
 # IAM Configuration
-iam_user_name   = "finflow-app-user"
+iam_user_name   = "finflow-app-user-tf"
 create_iam_user = false # Set to false since user already exists
 
 # GitHub OIDC (Future enhancement - replace long-lived credentials)

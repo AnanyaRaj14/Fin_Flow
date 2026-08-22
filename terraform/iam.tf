@@ -146,9 +146,10 @@ resource "aws_iam_role_policy_attachment" "github_actions_s3" {
 
 # ──────────────────────────────────────────────────────────
 # Data source for existing IAM user (when not creating new)
+# COMMENTED OUT - Using admin credentials instead
 # ──────────────────────────────────────────────────────────
 
-data "aws_iam_user" "existing" {
-  count     = var.create_iam_user ? 0 : 1
-  user_name = var.iam_user_name
-}
+# data "aws_iam_user" "existing" {
+#   count     = var.create_iam_user ? 0 : 1
+#   user_name = var.iam_user_name
+# }

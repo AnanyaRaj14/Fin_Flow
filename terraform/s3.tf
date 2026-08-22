@@ -8,11 +8,11 @@ resource "aws_s3_bucket" "uploads" {
 
   # Prevent accidental deletion
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
   }
 
   tags = {
-    Name        = var.s3_bucket_name
+    Name = "production"
     Description = "FinFlow file uploads (avatars and receipts)"
   }
 }
