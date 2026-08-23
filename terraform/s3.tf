@@ -12,8 +12,10 @@ resource "aws_s3_bucket" "uploads" {
   }
 
   tags = {
-    Name = "production"
-    Description = "FinFlow file uploads (avatars and receipts)"
+    Name        = "FinFlow-Uploads"
+    Environment = var.environment
+    Description = "File uploads for avatars and receipts"
+    ManagedBy   = "Terraform"
   }
 }
 

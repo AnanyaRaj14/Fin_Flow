@@ -17,13 +17,18 @@ const errorHandler = require('./middleware/errorHandler');
 const app = express();
 
 // Middleware
-// Allow any localhost port in development so the frontend can run on 3000, 3001, etc.
+// Allow CloudFront, custom domain, and localhost in development
 const allowedOrigins = [
-  process.env.CLIENT_URL,
+  process.env.CLIENT_URL, // Will be your CloudFront URL
   'http://localhost:3000',
   'http://localhost:3001',
   'http://localhost:3002',
 ];
+
+// Add production domain when you have it
+if (process.env.PRODUCTION_URL) {
+  allowedOrigins.push(process.env.PRODUCTION_URL);
+}
 
 app.use(cors({
   origin: (origin, callback) => {
