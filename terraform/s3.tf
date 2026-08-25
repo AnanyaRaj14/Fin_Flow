@@ -1,40 +1,76 @@
 # ──────────────────────────────────────────────────────────
-# S3 Bucket - EXISTING RESOURCE
-# This bucket already exists and will be imported into Terraform state
+# 1. Frontend S3 Bucket (Static Website Files)
 # ──────────────────────────────────────────────────────────
 
-resource "aws_s3_bucket" "uploads" {
-  bucket = var.s3_bucket_name
-
-  # Prevent accidental deletion
-  lifecycle {
-    prevent_destroy = false
-  }
+# S3 bucket for storing Next.js static build files
+resource "aws_s3_bucket" "frontend" {
+  bucket = var.frontend_bucket_name
 
   tags = {
-    Name        = "FinFlow-Uploads"
+    Name        = "${var.project_name}-frontend"
     Environment = var.environment
-    Description = "File uploads for avatars and receipts"
-    ManagedBy   = "Terraform"
   }
 }
 
+# Block all public access to the frontend bucket (CloudFront accesses it via OAC)
+resource "aws_s3_bucket_public_access_block" "frontend" {
+  bucket = aws_s3_bucket.frontend.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+# Bucket policy allowing CloudFront to read frontend files
+resource "aws_s3_bucket_policy" "frontend_policy" {
+  bucket = aws_s3_bucket.frontend.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowCloudFrontServicePrincipalReadOnly"
+        Effect = "Allow"
+        Principal = {
+          Service = "cloudfront.amazonaws.com"
+        }
+        Action   = "s3:GetObject"
+        Resource = "${aws_s3_bucket.frontend.arn}/*"
+        Condition = {
+          StringEquals = {
+            "AWS:SourceArn" = aws_cloudfront_distribution.cdn.arn
+          }
+        }
+      }
+    ]
+  })
+}
+
 # ──────────────────────────────────────────────────────────
-# S3 Bucket Versioning
+# 2. Uploads S3 Bucket (Receipts & Avatars)
 # ──────────────────────────────────────────────────────────
 
+# S3 bucket for storing user receipts and avatars
+resource "aws_s3_bucket" "uploads" {
+  bucket = var.uploads_bucket_name
+
+  tags = {
+    Name        = "${var.project_name}-uploads"
+    Environment = var.environment
+  }
+}
+
+# Enable versioning on uploads bucket to prevent accidental file loss
 resource "aws_s3_bucket_versioning" "uploads" {
   bucket = aws_s3_bucket.uploads.id
 
   versioning_configuration {
-    status = var.enable_versioning ? "Enabled" : "Suspended"
+    status = "Enabled"
   }
 }
 
-# ──────────────────────────────────────────────────────────
-# S3 Bucket Encryption
-# ──────────────────────────────────────────────────────────
-
+# Enable AES256 server-side encryption for stored media files
 resource "aws_s3_bucket_server_side_encryption_configuration" "uploads" {
   bucket = aws_s3_bucket.uploads.id
 
@@ -42,14 +78,10 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "uploads" {
     apply_server_side_encryption_by_default {
       sse_algorithm = "AES256"
     }
-    bucket_key_enabled = true
   }
 }
 
-# ──────────────────────────────────────────────────────────
-# S3 Bucket Public Access Block
-# ──────────────────────────────────────────────────────────
-
+# Block public access to keep user receipts and avatars private
 resource "aws_s3_bucket_public_access_block" "uploads" {
   bucket = aws_s3_bucket.uploads.id
 
@@ -59,84 +91,15 @@ resource "aws_s3_bucket_public_access_block" "uploads" {
   restrict_public_buckets = true
 }
 
-# ──────────────────────────────────────────────────────────
-# S3 Bucket CORS Configuration
-# ──────────────────────────────────────────────────────────
-
+# CORS configuration to allow image display in browser
 resource "aws_s3_bucket_cors_configuration" "uploads" {
   bucket = aws_s3_bucket.uploads.id
 
   cors_rule {
     allowed_headers = ["*"]
     allowed_methods = ["GET", "PUT", "POST", "DELETE", "HEAD"]
-    allowed_origins = var.allowed_origins
+    allowed_origins = ["*"]
     expose_headers  = ["ETag"]
     max_age_seconds = 3000
   }
 }
-
-# ──────────────────────────────────────────────────────────
-# S3 Bucket Lifecycle Configuration (Optional)
-# ──────────────────────────────────────────────────────────
-
-resource "aws_s3_bucket_lifecycle_configuration" "uploads" {
-  count  = var.lifecycle_rules_enabled ? 1 : 0
-  bucket = aws_s3_bucket.uploads.id
-
-  # Rule for old receipts (optional cleanup after retention period)
-  rule {
-    id     = "expire-old-receipts"
-    status = var.lifecycle_expiration_days > 0 ? "Enabled" : "Disabled"
-
-    filter {
-      prefix = "finflow/receipts/"
-    }
-
-    # Transition to Glacier after 90 days (cheaper storage)
-    dynamic "transition" {
-      for_each = var.lifecycle_transition_days > 0 ? [1] : []
-      content {
-        days          = var.lifecycle_transition_days
-        storage_class = "GLACIER"
-      }
-    }
-
-    # Delete after expiration days (if set)
-    dynamic "expiration" {
-      for_each = var.lifecycle_expiration_days > 0 ? [1] : []
-      content {
-        days = var.lifecycle_expiration_days
-      }
-    }
-  }
-
-  # Rule for old avatars (users should update, keep for reference)
-  rule {
-    id     = "transition-old-avatars"
-    status = var.lifecycle_transition_days > 0 ? "Enabled" : "Disabled"
-
-    filter {
-      prefix = "finflow/avatars/"
-    }
-
-    dynamic "transition" {
-      for_each = var.lifecycle_transition_days > 0 ? [1] : []
-      content {
-        days          = var.lifecycle_transition_days
-        storage_class = "GLACIER"
-      }
-    }
-  }
-}
-
-# ──────────────────────────────────────────────────────────
-# S3 Bucket Logging (Optional - for audit trail)
-# ──────────────────────────────────────────────────────────
-
-# Uncomment if you want to enable access logging
-# resource "aws_s3_bucket_logging" "uploads" {
-#   bucket = aws_s3_bucket.uploads.id
-#
-#   target_bucket = aws_s3_bucket.logs.id
-#   target_prefix = "s3-access-logs/"
-# }

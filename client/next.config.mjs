@@ -1,18 +1,25 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone', // Produces a minimal ~150MB image instead of ~1GB
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${process.env.BACKEND_API_URL || 'http://13.232.157.163:5000/api'}/:path*`,
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       { 
         protocol: 'https', 
         hostname: '*.amazonaws.com', // AWS S3 buckets
       },
-      {
-        protocol: 'https',
+      { 
+        protocol: 'https', 
         hostname: 's3.amazonaws.com', // AWS S3 default domain
       },
-      {
-        protocol: 'https',
+      { 
+        protocol: 'https', 
         hostname: 's3.*.amazonaws.com', // Regional S3 buckets
       },
     ],

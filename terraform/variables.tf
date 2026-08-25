@@ -1,113 +1,50 @@
 # ──────────────────────────────────────────────────────────
-# General Variables
+# Variables Definition
 # ──────────────────────────────────────────────────────────
 
-variable "project_name" {
-  description = "Project name used for resource naming and tagging"
-  type        = string
-  default     = "finflow"
-}
-
-variable "environment" {
-  description = "Environment (dev, staging, prod)"
-  type        = string
-  default     = "prod"
-
-  validation {
-    condition     = contains(["dev", "staging", "prod"], var.environment)
-    error_message = "Environment must be dev, staging, or prod."
-  }
-}
-
+# AWS Region where resources are deployed
 variable "aws_region" {
   description = "AWS region for resources"
   type        = string
   default     = "ap-south-1"
 }
 
-# ──────────────────────────────────────────────────────────
-# S3 Variables
-# ──────────────────────────────────────────────────────────
-
-variable "s3_bucket_name" {
-  description = "Name of the existing S3 bucket for file uploads"
+# Project name used in tags and prefixes
+variable "project_name" {
+  description = "Project name"
   type        = string
-  # This will be imported from existing bucket
+  default     = "finflow"
 }
 
-variable "enable_versioning" {
-  description = "Enable versioning for S3 bucket"
-  type        = bool
-  default     = true
-}
-
-variable "enable_encryption" {
-  description = "Enable server-side encryption for S3 bucket"
-  type        = bool
-  default     = true
-}
-
-variable "lifecycle_rules_enabled" {
-  description = "Enable lifecycle rules for old file cleanup"
-  type        = bool
-  default     = false
-}
-
-variable "lifecycle_transition_days" {
-  description = "Days before transitioning objects to cheaper storage"
-  type        = number
-  default     = 90
-}
-
-variable "lifecycle_expiration_days" {
-  description = "Days before expiring old objects (0 = disabled)"
-  type        = number
-  default     = 0
-}
-
-variable "allowed_origins" {
-  description = "Allowed origins for CORS configuration"
-  type        = list(string)
-  default = [
-    "http://localhost:3001",
-    "http://localhost:3000"
-  ]
-}
-
-# ──────────────────────────────────────────────────────────
-# IAM Variables
-# ──────────────────────────────────────────────────────────
-
-variable "iam_user_name" {
-  description = "Name of the IAM user for application access"
+# Deployment environment (dev, staging, prod)
+variable "environment" {
+  description = "Environment name"
   type        = string
-  default     = "finflow-app-user"
+  default     = "prod"
 }
 
-variable "create_iam_user" {
-  description = "Whether to create a new IAM user (false = import existing)"
-  type        = bool
-  default     = false
-}
-
-# ──────────────────────────────────────────────────────────
-# GitHub OIDC Variables (for future use)
-# ──────────────────────────────────────────────────────────
-
-variable "enable_github_oidc" {
-  description = "Enable GitHub OIDC provider for CI/CD"
-  type        = bool
-  default     = false
-}
-
-variable "github_org" {
-  description = "GitHub organization or username"
+# S3 bucket for hosting frontend Next.js static build files
+variable "frontend_bucket_name" {
+  description = "Name of S3 bucket for frontend static files"
   type        = string
-  default     = ""
 }
 
-variable "github_repo" {
-  description = "GitHub repository name"
+# S3 bucket for storing user receipts and avatars
+variable "uploads_bucket_name" {
+  description = "Name of S3 bucket for media uploads"
+  type        = string
+}
+
+# EC2 instance type for running backend server
+variable "instance_type" {
+  description = "EC2 instance type for backend"
+  type        = string
+  default     = "t3.micro"
+}
+
+# Optional EC2 key pair name for SSH access
+variable "key_name" {
+  description = "AWS Key Pair name for SSH access (optional)"
   type        = string
   default     = ""
 }

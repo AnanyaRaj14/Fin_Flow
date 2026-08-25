@@ -1,0 +1,25 @@
+# ──────────────────────────────────────────────────────────
+# FinFlow Terraform Configuration Example
+# Copy this file to terraform.tfvars and fill in your values
+# ──────────────────────────────────────────────────────────
+
+# AWS Region where resources will be created
+aws_region           = "ap-south-1"
+
+# Project name
+project_name         = "finflow"
+
+# Environment name (dev, staging, prod)
+environment          = "prod"
+
+# S3 bucket name for hosting Next.js frontend build files
+frontend_bucket_name = "finflow-frontend-yourname-prod"
+
+# S3 bucket name for media file uploads (receipts and avatars)
+uploads_bucket_name  = "finflow-uploads-yourname-prod"
+
+# EC2 instance type for backend server
+instance_type        = "t3.micro"
+
+# Optional: AWS Key Pair name for SSH access (leave empty if not using key)
+key_name             = ""

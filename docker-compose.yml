@@ -9,7 +9,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-Bholenath}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_DB: ${POSTGRES_DB:-finflow}
     ports:
       - '5432:5432'
@@ -35,7 +35,7 @@ services:
       postgres:
         condition: service_healthy   # waits for DB to be ready
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-Bholenath}@postgres:5432/${POSTGRES_DB:-finflow}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-finflow}
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRE: ${JWT_EXPIRE:-7d}
       PORT: 5000

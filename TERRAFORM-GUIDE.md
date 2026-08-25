@@ -8,15 +8,14 @@ Your FinFlow project now has Infrastructure as Code using Terraform.
 
 ## 📦 What Was Created
 
-### Terraform Files (8 files):
+### Terraform Files:
 ```
 terraform/
 ├── versions.tf              # Terraform & provider versions
 ├── provider.tf              # AWS provider config
-├── variables.tf             # Input variables (65+ variables)
+├── variables.tf             # Input variables
 ├── terraform.tfvars.example # Example configuration
 ├── s3.tf                    # S3 bucket & configurations
-├── iam.tf                   # IAM policies & users
 ├── outputs.tf               # Output values
 └── README.md                # Complete usage guide
 ```
@@ -47,11 +46,6 @@ terraform/
 - **CORS**: Configured for localhost and production
 - **Public Access Block**: All public access blocked
 - **Lifecycle Rules**: Optional (disabled by default)
-
-### ✅ IAM Configuration
-- **Policy**: Least-privilege S3 access policy
-- **User**: Existing IAM user can be imported
-- **GitHub OIDC**: Ready for secure CI/CD (optional)
 
 ---
 
@@ -179,15 +173,12 @@ terraform plan
 
 **What to look for:**
 - ✅ Should show mostly **no changes** or **minor updates** (tags)
-- ✅ Green `+` for new IAM policy
 - ❌ Should NOT show red `-` (deletions)
 
 **Example expected output:**
 ```
-Plan: 1 to add, 5 to change, 0 to destroy.
+Plan: 0 to add, 5 to change, 0 to destroy.
 ```
-
-The "1 to add" is the new IAM policy. The "5 to change" are adding tags to existing resources.
 
 ---
 
@@ -201,7 +192,7 @@ Review the plan, then type `yes` when prompted.
 
 **Expected output:**
 ```
-Apply complete! Resources: 1 added, 5 changed, 0 destroyed.
+Apply complete! Resources: 0 added, 5 changed, 0 destroyed.
 ```
 
 ---
@@ -213,10 +204,9 @@ Apply complete! Resources: 1 added, 5 changed, 0 destroyed.
 terraform output
 
 # Expected outputs:
-# s3_bucket_name = "finflow-uploads-ananya-2026"
+# s3_bucket_id = "finflow-uploads"
+# s3_bucket_arn = "arn:aws:s3:::finflow-uploads"
 # s3_bucket_region = "ap-south-1"
-# iam_policy_arn = "arn:aws:iam::..."
-# ...
 ```
 
 ---
@@ -226,8 +216,7 @@ terraform output
 Your infrastructure is now managed by Terraform!
 
 ### What Changed:
-- ✅ S3 bucket now has consistent tags
-- ✅ IAM policy created with least-privilege access
+- ✅ S3 bucket now has consistent tags and configurations
 - ✅ Infrastructure documented as code
 - ✅ Changes tracked in version control
 
@@ -406,9 +395,6 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 | S3 Versioning | ✅ Existing | ✅ Yes |
 | S3 CORS | ✅ Existing | ✅ Yes |
 | S3 Public Block | ✅ Existing | ✅ Yes |
-| IAM Policy | ✅ New | ✅ Yes |
-| IAM User | ✅ Existing | ⚠️ Optional |
-| GitHub OIDC | ⏳ Optional | ✅ Available |
 
 ---
 
@@ -509,9 +495,8 @@ FinFlow/
 │   ├── versions.tf          # Provider versions
 │   ├── provider.tf          # AWS provider config
 │   ├── variables.tf         # Variable definitions
-│   ├── terraform.tfvars     # Your values (gitignored)
+│   ├── terraform.tfvars.example # Example config
 │   ├── s3.tf               # S3 resources
-│   ├── iam.tf              # IAM resources
 │   ├── outputs.tf          # Output values
 │   └── README.md           # Detailed guide
 │
