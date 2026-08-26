@@ -1,8 +1,24 @@
 import axios from 'axios';
 
+const getBaseUrl = () => {
+  if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL;
+  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+    return 'http://localhost:5001/api';
+  }
+  return '/api';
+};
+
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || '/api',
+  baseURL: getBaseUrl(),
   withCredentials: true,
+});
+
+// Dynamic baseURL interceptor to ensure local dev routes to localhost:5001/api
+api.interceptors.request.use((config) => {
+  if (!config.baseURL || config.baseURL === '/api') {
+    config.baseURL = getBaseUrl();
+  }
+  return config;
 });
 
 // Intercept 401 responses — but only redirect if we're NOT already on an auth page

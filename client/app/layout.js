@@ -4,8 +4,16 @@ import { ThemeProvider } from '@/hooks/useTheme';
 import { ToastContainer } from '@/components/ui/toast';
 
 export const metadata = {
-  title: 'FinFlow — Personal Finance Dashboard',
-  description: 'Manage your money with clarity. Track income, expenses, budgets, and savings goals.',
+  title: 'FinFlow — Personal Wealth & Cash Flow',
+  description: 'Manage your finances with clarity. Track income, expenses, budgets, and savings goals.',
+  icons: {
+    icon: [
+      { url: '/icon.png', type: 'image/png' },
+      { url: '/favicon.ico' },
+    ],
+    shortcut: '/icon.png',
+    apple: '/icon.png',
+  },
 };
 
 // Inline script to prevent flash of wrong theme on first load

@@ -4,25 +4,41 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard, ArrowLeftRight, Wallet, PiggyBank, Target,
-  Receipt, BarChart3, Settings, LogOut, X, TrendingUp, Tag,
+  Receipt, BarChart3, Settings, LogOut, X, Tag
 } from 'lucide-react';
 import { cn, getInitials } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { Logo } from '@/components/ui/logo';
 import { toast } from '@/components/ui/toast';
 import { useRouter } from 'next/navigation';
 
-const navItems = [
-  { label: 'Dashboard',    href: '/dashboard',     icon: LayoutDashboard },
-  { label: 'Accounts',     href: '/accounts',      icon: Wallet },
-  { label: 'Transactions', href: '/transactions',  icon: ArrowLeftRight },
-  { label: 'Budgets',      href: '/budgets',       icon: PiggyBank },
-  { label: 'Goals',        href: '/goals',         icon: Target },
-  { label: 'Bills',        href: '/bills',         icon: Receipt },
-  { label: 'Categories',   href: '/categories',    icon: Tag },
-  { label: 'Reports',      href: '/reports',       icon: BarChart3 },
-  { label: 'Settings',     href: '/settings',      icon: Settings },
+const navSections = [
+  {
+    title: 'OVERVIEW',
+    items: [
+      { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+      { label: 'Accounts', href: '/accounts', icon: Wallet },
+      { label: 'Transactions', href: '/transactions', icon: ArrowLeftRight },
+    ],
+  },
+  {
+    title: 'PLANNING',
+    items: [
+      { label: 'Budgets', href: '/budgets', icon: PiggyBank },
+      { label: 'Goals', href: '/goals', icon: Target },
+      { label: 'Bills', href: '/bills', icon: Receipt },
+    ],
+  },
+  {
+    title: 'INSIGHTS',
+    items: [
+      { label: 'Categories', href: '/categories', icon: Tag },
+      { label: 'Reports', href: '/reports', icon: BarChart3 },
+      { label: 'Settings', href: '/settings', icon: Settings },
+    ],
+  },
 ];
 
 export default function Sidebar({ open, onClose }) {
@@ -37,56 +53,81 @@ export default function Sidebar({ open, onClose }) {
   };
 
   const sidebarContent = (
-    <aside className="h-full w-64 bg-card border-r flex flex-col">
-      {/* Header */}
-      <div className="flex items-center justify-between p-5 border-b">
-        <Link href="/dashboard" className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-            <TrendingUp className="w-4 h-4 text-white" />
-          </div>
-          <span className="font-bold text-lg">FinFlow</span>
-        </Link>
-        <button onClick={onClose} className="lg:hidden p-1 rounded-md hover:bg-accent">
-          <X className="w-4 h-4" />
-        </button>
+    <aside className="h-full w-60 bg-card/95 border-r border-border/60 dark:border-white/[0.06] dark:bg-[#151515] flex flex-col justify-between select-none">
+      {/* Header & Navigation */}
+      <div className="flex-1 overflow-y-auto">
+        {/* Brand Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border/40 dark:border-white/[0.04]">
+          <Link href="/dashboard">
+            <Logo size="sm" />
+          </Link>
+          <button
+            onClick={onClose}
+            className="lg:hidden p-1 rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Navigation Sections */}
+        <nav className="p-3 space-y-4">
+          {navSections.map((section) => (
+            <div key={section.title} className="space-y-0.5">
+              <p className="px-2.5 text-[10px] font-bold tracking-wider text-muted-foreground/60">
+                {section.title}
+              </p>
+              <div className="space-y-0.5 pt-0.5">
+                {section.items.map(({ label, href, icon: Icon }) => {
+                  const active = pathname === href || (href !== '/dashboard' && pathname.startsWith(href));
+                  return (
+                    <Link
+                      key={href}
+                      href={href}
+                      onClick={onClose}
+                      className={cn(
+                        'flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl text-xs font-medium transition-all duration-150 relative group',
+                        active
+                          ? 'bg-accent text-foreground font-semibold dark:bg-white/[0.08] dark:text-white shadow-xs'
+                          : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground dark:hover:bg-white/[0.03]'
+                      )}
+                    >
+                      <Icon
+                        className={cn(
+                          'w-3.5 h-3.5 shrink-0 transition-colors',
+                          active ? 'text-foreground dark:text-white' : 'text-muted-foreground group-hover:text-foreground'
+                        )}
+                      />
+                      <span className="flex-1 truncate">{label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </nav>
       </div>
 
-      {/* Nav */}
-      <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
-        {navItems.map(({ label, href, icon: Icon }) => {
-          const active = pathname === href || (href !== '/dashboard' && pathname.startsWith(href));
-          return (
-            <Link
-              key={href}
-              href={href}
-              onClick={onClose}
-              className={cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
-                active
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-accent hover:text-foreground'
-              )}
-            >
-              <Icon className="w-4 h-4 shrink-0" />
-              {label}
-            </Link>
-          );
-        })}
-      </nav>
-
-      {/* User */}
-      <div className="p-3 border-t">
-        <div className="flex items-center gap-3 px-2 py-2 rounded-lg">
-          <Avatar className="w-8 h-8">
+      {/* User Footer Card */}
+      <div className="p-3 border-t border-border/40 dark:border-white/[0.04]">
+        <div className="flex items-center gap-2.5 p-1.5 rounded-xl bg-accent/30 dark:bg-white/[0.02] border border-border/40 dark:border-white/[0.04]">
+          <Avatar className="w-7 h-7 border border-border/60 dark:border-white/10">
             <AvatarImage src={user?.avatar} />
-            <AvatarFallback className="text-xs">{getInitials(user?.name)}</AvatarFallback>
+            <AvatarFallback className="text-[10px] font-bold bg-muted text-foreground">
+              {getInitials(user?.name)}
+            </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">{user?.name}</p>
-            <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+            <p className="text-xs font-semibold truncate text-foreground">{user?.name || 'FinFlow User'}</p>
+            <p className="text-[10px] text-muted-foreground truncate">{user?.email}</p>
           </div>
-          <Button variant="ghost" size="icon" onClick={handleLogout} title="Logout">
-            <LogOut className="w-4 h-4" />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleLogout}
+            title="Logout"
+            className="w-6 h-6 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+          >
+            <LogOut className="w-3 h-3" />
           </Button>
         </div>
       </div>
@@ -95,14 +136,14 @@ export default function Sidebar({ open, onClose }) {
 
   return (
     <>
-      {/* Desktop: static */}
-      <div className="hidden lg:block h-full">{sidebarContent}</div>
+      {/* Desktop sidebar */}
+      <div className="hidden lg:block h-full shrink-0">{sidebarContent}</div>
 
-      {/* Mobile: overlay drawer */}
+      {/* Mobile drawer */}
       {open && (
         <>
-          <div className="fixed inset-0 z-40 bg-black/50 lg:hidden" onClick={onClose} />
-          <div className="fixed left-0 top-0 z-50 h-full lg:hidden">
+          <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-xs lg:hidden" onClick={onClose} />
+          <div className="fixed left-0 top-0 z-50 h-full lg:hidden animate-in slide-in-from-left duration-150">
             {sidebarContent}
           </div>
         </>

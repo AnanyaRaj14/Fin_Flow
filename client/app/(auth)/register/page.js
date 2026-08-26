@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
-import { Eye, EyeOff, TrendingUp, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2, User, Mail, Lock, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { authApi } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Logo } from '@/components/ui/logo';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -20,27 +21,20 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const { register, handleSubmit, watch, formState: { errors } } = useForm();
+  const { register, handleSubmit, formState: { errors } } = useForm();
 
-  // Redirect if already logged in
   useEffect(() => {
-    if (!loading && user) {
-      router.replace('/dashboard');
-    }
+    if (!loading && user) router.replace('/dashboard');
   }, [user, loading, router]);
 
   const onSubmit = async (data) => {
     setSubmitting(true);
     try {
       await authApi.register(data);
-      toast.success('Account created! Check your email to verify your account.');
+      toast.success('Account created! Please check your email to verify.');
       router.push('/login');
     } catch (err) {
-      if (!err.response) {
-        toast.error('Cannot reach the server. Make sure it is running on port 5000.');
-      } else {
-        toast.error(err.response?.data?.message || 'Registration failed.');
-      }
+      toast.error(err.response?.data?.message || 'Registration failed. Try again.');
     } finally {
       setSubmitting(false);
     }
@@ -57,89 +51,97 @@ export default function RegisterPage() {
   if (user) return null;
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-      <div className="flex items-center justify-center gap-2 mb-8">
-        <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg">
-          <TrendingUp className="w-5 h-5 text-white" />
-        </div>
-        <span className="text-2xl font-bold">FinFlow</span>
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: 'easeOut' }}
+    >
+      {/* Brand Header */}
+      <div className="flex flex-col items-center justify-center mb-8 text-center">
+        <Link href="/dashboard" className="mb-3 inline-block">
+          <Logo size="lg" />
+        </Link>
+        <p className="text-xs text-muted-foreground font-medium">Join thousands tracking wealth effortlessly</p>
       </div>
 
-      <Card className="shadow-xl border-0">
-        <CardHeader className="text-center pb-4">
-          <CardTitle className="text-xl">Create an account</CardTitle>
-          <CardDescription>Start managing your finances today</CardDescription>
+      <Card className="shadow-2xl border border-border/80 dark:border-white/[0.08] dark:bg-card/90 backdrop-blur-xl">
+        <CardHeader className="text-center pb-4 pt-6">
+          <CardTitle className="text-xl font-bold tracking-tight">Create your account</CardTitle>
+          <CardDescription className="text-xs text-muted-foreground mt-1">
+            Start managing your wealth, cash flow, and budgets
+          </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4 px-6 pb-6">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-1.5">
-              <Label>Full Name</Label>
-              <Input
-                placeholder="John Doe"
-                {...register('name', {
-                  required: 'Name is required',
-                  minLength: { value: 2, message: 'Name too short' },
-                })}
-              />
-              {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+              <Label className="text-xs font-semibold text-foreground">Full Name</Label>
+              <div className="relative">
+                <Input
+                  placeholder="Alex Mercer"
+                  className="h-10 rounded-xl pl-9 text-xs dark:bg-white/[0.03] dark:border-white/10"
+                  {...register('name', {
+                    required: 'Name is required',
+                    minLength: { value: 2, message: 'Name must be at least 2 characters' },
+                  })}
+                />
+                <User className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+              </div>
+              {errors.name && <p className="text-xs text-destructive font-medium">{errors.name.message}</p>}
             </div>
 
             <div className="space-y-1.5">
-              <Label>Email</Label>
-              <Input
-                type="email"
-                placeholder="you@example.com"
-                {...register('email', { required: 'Email is required' })}
-              />
-              {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
+              <Label className="text-xs font-semibold text-foreground">Email Address</Label>
+              <div className="relative">
+                <Input
+                  type="email"
+                  placeholder="name@company.com"
+                  className="h-10 rounded-xl pl-9 text-xs dark:bg-white/[0.03] dark:border-white/10"
+                  {...register('email', { required: 'Email is required' })}
+                />
+                <Mail className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+              </div>
+              {errors.email && <p className="text-xs text-destructive font-medium">{errors.email.message}</p>}
             </div>
 
             <div className="space-y-1.5">
-              <Label>Password</Label>
+              <Label className="text-xs font-semibold text-foreground">Password</Label>
               <div className="relative">
                 <Input
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Min. 8 characters"
+                  placeholder="Min 8 characters"
+                  className="h-10 rounded-xl pl-9 pr-9 text-xs dark:bg-white/[0.03] dark:border-white/10"
                   {...register('password', {
                     required: 'Password is required',
                     minLength: { value: 8, message: 'Password must be at least 8 characters' },
                   })}
                 />
+                <Lock className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-              {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
+              {errors.password && <p className="text-xs text-destructive font-medium">{errors.password.message}</p>}
             </div>
 
-            <div className="space-y-1.5">
-              <Label>Confirm Password</Label>
-              <Input
-                type="password"
-                placeholder="Repeat password"
-                {...register('confirmPassword', {
-                  required: 'Please confirm your password',
-                  validate: (val) => val === watch('password') || 'Passwords do not match',
-                })}
-              />
-              {errors.confirmPassword && (
-                <p className="text-xs text-destructive">{errors.confirmPassword.message}</p>
+            <Button type="submit" className="w-full h-10 rounded-xl font-semibold gap-2 shadow-md hover:shadow-indigo-500/25" disabled={submitting}>
+              {submitting ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <>
+                  <span>Create Free Account</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
               )}
-            </div>
-
-            <Button type="submit" className="w-full" disabled={submitting}>
-              {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-              Create account
             </Button>
           </form>
 
-          <p className="text-center text-sm text-muted-foreground mt-4">
+          <p className="text-center text-xs text-muted-foreground pt-2">
             Already have an account?{' '}
-            <Link href="/login" className="text-primary font-medium hover:underline">
+            <Link href="/login" className="text-primary font-semibold hover:underline">
               Sign in
             </Link>
           </p>
