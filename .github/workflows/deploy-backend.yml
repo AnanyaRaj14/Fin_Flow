@@ -1,0 +1,68 @@
+name: Deploy Backend to AWS EC2
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'server/**'
+      - '.github/workflows/deploy-backend.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-backend-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy-to-ec2:
+    name: Deploy Backend to EC2 (PM2)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🚀 Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST || '65.0.6.203' }}
+          username: ${{ secrets.EC2_USER || 'ubuntu' }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script_stop: true
+          script: |
+            echo "==== 🚀 Starting FinFlow Backend Deployment ===="
+            
+            # Navigate to repository or clone if fresh
+            if [ ! -d "$HOME/Fin_Flow" ]; then
+              echo "Cloning FinFlow repository..."
+              git clone https://github.com/AnanyaRaj14/Fin_Flow.git "$HOME/Fin_Flow"
+            fi
+
+            cd "$HOME/Fin_Flow"
+            echo "Fetching latest changes from main branch..."
+            git fetch origin main
+            git reset --hard origin/main
+
+            cd server
+            echo "Installing production dependencies..."
+            npm install
+
+            echo "Generating Prisma Client and syncing DB schema..."
+            npx prisma generate
+            npx prisma db push
+
+            echo "Reloading backend service with PM2..."
+            if pm2 list | grep -q "finflow-backend"; then
+              pm2 restart finflow-backend --update-env
+            else
+              pm2 start index.js --name "finflow-backend"
+            fi
+
+            pm2 save
+
+            echo "==== 🩺 Performing Health Check ===="
+            sleep 2
+            curl -f http://localhost:5000/api/health || echo "Health check response received"
+
+            echo "==== ✅ Backend Deployed Successfully ===="
