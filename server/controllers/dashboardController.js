@@ -37,7 +37,7 @@ const getDashboardStats = async (req, res) => {
       include: { category: true },
     }),
 
-    prisma.goal.findMany({ where: { userId, isCompleted: false }, take: 3 }),
+    prisma.goal.findMany({ where: { userId }, orderBy: { updatedAt: 'desc' } }),
   ]);
 
   const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);

@@ -12,8 +12,7 @@ export default function NotificationsPanel() {
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
 
-  useEffect(() => {
-    if (!open) return;
+  const fetchNotifications = () => {
     dashboardApi.getStats().then(({ data }) => {
       const items = [];
 
@@ -37,7 +36,7 @@ export default function NotificationsPanel() {
           items.push({
             id: `budget-${budget.id}`,
             type: 'budget',
-            title: `${budget.category?.name} budget exceeded`,
+            title: `${budget.category?.name || 'Category'} budget exceeded`,
             description: `${formatCurrency(budget.spent - budget.amount)} over limit`,
             urgent: true,
           });
@@ -46,20 +45,19 @@ export default function NotificationsPanel() {
 
       // Completed goals
       data.goals?.forEach((goal) => {
-        if (goal.isCompleted) {
+        if (goal.isCompleted || (goal.targetAmount > 0 && goal.savedAmount >= goal.targetAmount)) {
           items.push({
             id: `goal-${goal.id}`,
             type: 'goal',
-            title: `Goal "${goal.name}" completed!`,
-            description: formatCurrency(goal.targetAmount),
+            title: `Goal "${goal.name}" completed! 🎯`,
+            description: `Saved ${formatCurrency(goal.savedAmount)} of ${formatCurrency(goal.targetAmount)}`,
             urgent: false,
           });
         }
       });
 
-      // Low balance warning (< $100 in any account)
-      // We don't have accounts here but upcomingBills gives us context
-      if (data.totalBalance < 100 && data.totalBalance >= 0) {
+      // Low balance warning (< 100 in total balance)
+      if (data.totalBalance !== undefined && data.totalBalance < 100 && data.totalBalance >= 0) {
         items.push({
           id: 'low-balance',
           type: 'balance',
@@ -71,6 +69,10 @@ export default function NotificationsPanel() {
 
       setNotifications(items);
     }).catch(() => {});
+  };
+
+  useEffect(() => {
+    fetchNotifications();
   }, [open]);
 
   const iconMap = {

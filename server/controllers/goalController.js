@@ -13,14 +13,19 @@ const getGoals = async (req, res) => {
 const createGoal = async (req, res) => {
   const { name, targetAmount, savedAmount, deadline, icon, color } = req.body;
 
+  const parsedTarget = parseFloat(targetAmount);
+  const parsedSaved = parseFloat(savedAmount) || 0;
+  const isCompleted = parsedSaved >= parsedTarget;
+
   const goal = await prisma.goal.create({
     data: {
       name,
-      targetAmount: parseFloat(targetAmount),
-      savedAmount: parseFloat(savedAmount) || 0,
+      targetAmount: parsedTarget,
+      savedAmount: parsedSaved,
       deadline: deadline ? new Date(deadline) : null,
       icon,
       color,
+      isCompleted,
       userId: req.user.id,
     },
   });
