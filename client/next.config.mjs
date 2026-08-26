@@ -1,16 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  async rewrites() {
-    const isDev = process.env.NODE_ENV !== 'production';
-    const backendUrl = process.env.BACKEND_API_URL || (isDev ? 'http://localhost:5001/api' : 'http://13.232.157.163:5000/api');
-    return [
-      {
-        source: '/api/:path*',
-        destination: `${backendUrl}/:path*`,
-      },
-    ];
-  },
+  output: 'export',
   images: {
+    unoptimized: true,
     remotePatterns: [
       { 
         protocol: 'https', 
