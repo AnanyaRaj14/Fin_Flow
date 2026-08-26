@@ -1,4 +1,5 @@
 const prisma = require('../config/db');
+const sendBillReminders = require('../utils/billReminder');
 
 // GET /api/bills
 const getBills = async (req, res) => {
@@ -26,6 +27,9 @@ const createBill = async (req, res) => {
     },
   });
 
+  // Asynchronously trigger reminder check immediately
+  sendBillReminders().catch((err) => console.error('Bill reminder check error:', err.message));
+
   res.status(201).json({ bill });
 };
 
@@ -52,6 +56,9 @@ const updateBill = async (req, res) => {
       paidAt: isPaid && !bill.isPaid ? new Date() : bill.paidAt,
     },
   });
+
+  // Asynchronously trigger reminder check
+  sendBillReminders().catch((err) => console.error('Bill reminder check error:', err.message));
 
   res.json({ bill: updated });
 };
