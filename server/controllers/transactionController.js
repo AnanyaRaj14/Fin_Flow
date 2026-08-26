@@ -1,4 +1,5 @@
 const prisma = require('../config/db');
+const { getPresignedUrl } = require('../utils/s3Presigner');
 
 // GET /api/transactions
 const getTransactions = async (req, res) => {
@@ -27,7 +28,16 @@ const getTransactions = async (req, res) => {
     prisma.transaction.count({ where }),
   ]);
 
-  res.json({ transactions, total, page: parseInt(page), pages: Math.ceil(total / parseInt(limit)) });
+  const signedTransactions = await Promise.all(
+    transactions.map(async (t) => {
+      if (t.receiptUrl) {
+        return { ...t, receiptUrl: await getPresignedUrl(t.receiptUrl) };
+      }
+      return t;
+    })
+  );
+
+  res.json({ transactions: signedTransactions, total, page: parseInt(page), pages: Math.ceil(total / parseInt(limit)) });
 };
 
 // GET /api/transactions/:id
@@ -37,6 +47,9 @@ const getTransaction = async (req, res) => {
     include: { category: true, account: true },
   });
   if (!transaction) return res.status(404).json({ message: 'Transaction not found.' });
+  if (transaction.receiptUrl) {
+    transaction.receiptUrl = await getPresignedUrl(transaction.receiptUrl);
+  }
   res.json({ transaction });
 };
 
@@ -83,6 +96,10 @@ const createTransaction = async (req, res) => {
       },
       data: { spent: { increment: parsedAmount } },
     });
+  }
+
+  if (transaction.receiptUrl) {
+    transaction.receiptUrl = await getPresignedUrl(transaction.receiptUrl);
   }
 
   res.status(201).json({ transaction });
@@ -150,6 +167,10 @@ const updateTransaction = async (req, res) => {
       },
       data: { spent: { increment: parsedAmount } },
     });
+  }
+
+  if (transaction.receiptUrl) {
+    transaction.receiptUrl = await getPresignedUrl(transaction.receiptUrl);
   }
 
   res.json({ transaction });

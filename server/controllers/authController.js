@@ -5,6 +5,7 @@ const sendEmail = require('../utils/sendEmail');
 const generateToken = require('../utils/generateToken');
 const defaultCategories = require('../utils/defaultCategories');
 const { verifyEmailTemplate, resetPasswordTemplate } = require('../utils/emailTemplates');
+const { getPresignedUrl } = require('../utils/s3Presigner');
 
 const signToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE });
@@ -70,8 +71,10 @@ const login = async (req, res) => {
   const token = signToken(user.id);
   setCookie(res, token);
 
+  const avatar = await getPresignedUrl(user.avatar);
+
   res.json({
-    user: { id: user.id, name: user.name, email: user.email, avatar: user.avatar },
+    user: { id: user.id, name: user.name, email: user.email, avatar },
   });
 };
 
@@ -87,6 +90,9 @@ const getMe = async (req, res) => {
     where: { id: req.user.id },
     select: { id: true, name: true, email: true, avatar: true, isVerified: true, createdAt: true },
   });
+  if (user && user.avatar) {
+    user.avatar = await getPresignedUrl(user.avatar);
+  }
   res.json({ user });
 };
 
@@ -161,6 +167,10 @@ const updateProfile = async (req, res) => {
     data,
     select: { id: true, name: true, email: true, avatar: true },
   });
+
+  if (user && user.avatar) {
+    user.avatar = await getPresignedUrl(user.avatar);
+  }
 
   res.json({ user });
 };
