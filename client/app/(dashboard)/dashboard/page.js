@@ -49,7 +49,7 @@ export default function DashboardPage() {
         {/* Greeting */}
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
           <h2 className="text-xl font-bold">
-            {greeting()}, {user?.name?.split(' ')[0]} 👋
+            {greeting()}, Prince Kumar
           </h2>
           <p className="text-muted-foreground text-sm mt-0.5">
             Here&apos;s your financial overview for this month.
