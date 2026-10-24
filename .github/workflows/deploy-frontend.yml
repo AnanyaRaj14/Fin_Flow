@@ -61,7 +61,7 @@ jobs:
 
       - name: 🔄 Invalidate CloudFront CDN Cache
         env:
-          DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID || 'E1Z3GXA0UGN35J' }}
+          DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID || 'E13TP2T4TVA51A' }}
         run: |
           echo "Invalidating CloudFront Cache for Distribution: $DISTRIBUTION_ID..."
           INVALIDATION_ID=$(aws cloudfront create-invalidation \
