@@ -39,8 +39,18 @@ export default function IncomeExpenseChart({ data = [] }) {
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={230}>
-        <BarChart data={data} barGap={4} barCategoryGap="28%" margin={{ top: 8, right: 0, left: -20, bottom: 0 }}>
+      <ResponsiveContainer width="100%" height={240}>
+        <BarChart data={data} barGap={4} barCategoryGap="24%" margin={{ top: 8, right: 0, left: -20, bottom: 0 }}>
+          <defs>
+            <linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#10b981" />
+              <stop offset="100%" stopColor="#059669" />
+            </linearGradient>
+            <linearGradient id="expenseGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#f43f5e" stopOpacity={0.9} />
+              <stop offset="100%" stopColor="#be123c" stopOpacity={0.7} />
+            </linearGradient>
+          </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-border/20 dark:text-white/[0.03]" vertical={false} />
           <XAxis
             dataKey="month"
@@ -56,9 +66,9 @@ export default function IncomeExpenseChart({ data = [] }) {
             tickLine={false}
             tickFormatter={(v) => `₹${v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}`}
           />
-          <Tooltip content={<CustomTooltip />} cursor={{ fill: 'currentColor', opacity: 0.03 }} />
-          <Bar dataKey="income" name="Income" fill="#34d399" radius={[3, 3, 0, 0]} maxBarSize={10} />
-          <Bar dataKey="expense" name="Expenses" fill="rgba(244, 63, 94, 0.55)" radius={[3, 3, 0, 0]} maxBarSize={10} />
+          <Tooltip content={<CustomTooltip />} cursor={{ fill: 'currentColor', opacity: 0.04 }} />
+          <Bar dataKey="income" name="Income" fill="url(#incomeGradient)" radius={[4, 4, 0, 0]} maxBarSize={14} />
+          <Bar dataKey="expense" name="Expenses" fill="url(#expenseGradient)" radius={[4, 4, 0, 0]} maxBarSize={14} />
         </BarChart>
       </ResponsiveContainer>
     </div>

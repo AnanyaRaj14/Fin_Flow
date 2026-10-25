@@ -8,7 +8,7 @@ export function SpotlightCard({
   children,
   className,
   radius = 350,
-  spotlightColor = 'rgba(255, 255, 255, 0.08)',
+  spotlightColor = 'rgba(99, 102, 241, 0.1)',
   ...props
 }) {
   const mouseX = useMotionValue(-1000);
@@ -30,9 +30,13 @@ export function SpotlightCard({
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       className={cn(
-        'group relative rounded-2xl border border-border/70 bg-card/60 p-6 backdrop-blur-xl transition-all duration-300',
-        'dark:border-white/[0.08] dark:bg-[#121215]/80 dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]',
-        'hover:border-border dark:hover:border-white/[0.16] overflow-hidden',
+        'group relative rounded-2xl p-6 backdrop-blur-xl transition-all duration-300 overflow-hidden',
+        // Light mode: frosted glass with soft ambient shadow and crisp border
+        'bg-white/90 border border-zinc-200/90 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.06),0_12px_24px_-4px_rgba(0,0,0,0.03)]',
+        'hover:border-zinc-300 hover:shadow-[0_4px_16px_-4px_rgba(0,0,0,0.08),0_16px_32px_-4px_rgba(0,0,0,0.05)]',
+        // Dark mode: obsidian glass elevation with top rim light
+        'dark:border-white/[0.08] dark:bg-[#121215]/85 dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]',
+        'dark:hover:border-white/[0.18]',
         className
       )}
       {...props}

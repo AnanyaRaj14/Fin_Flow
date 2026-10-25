@@ -31,26 +31,26 @@
 
 /* Linear / Apple Sleek Light Mode */
 :root {
-  --background: 0 0% 98.5%;          /* #FAFAFA */
-  --foreground: 0 0% 12%;            /* #1E1E1E */
-  --card: 0 0% 100%;                 /* #FFFFFF */
-  --card-foreground: 0 0% 12%;
+  --background: 220 14% 96.5%;        /* Sleek soft luxury backdrop #F4F5F8 */
+  --foreground: 240 10% 10%;          /* Deep crisp contrast #18181B */
+  --card: 0 0% 100%;                  /* Pure white card elevation #FFFFFF */
+  --card-foreground: 240 10% 10%;
   --popover: 0 0% 100%;
-  --popover-foreground: 0 0% 12%;
-  --primary: 0 0% 9%;                /* #171717 */
+  --popover-foreground: 240 10% 10%;
+  --primary: 240 10% 10%;             /* Crisp deep primary */
   --primary-foreground: 0 0% 98%;
-  --secondary: 0 0% 94%;
-  --secondary-foreground: 0 0% 15%;
-  --muted: 0 0% 94%;
-  --muted-foreground: 0 0% 46%;
-  --accent: 0 0% 94%;
-  --accent-foreground: 0 0% 15%;
+  --secondary: 220 10% 93%;
+  --secondary-foreground: 240 10% 12%;
+  --muted: 220 10% 93%;
+  --muted-foreground: 240 4% 46%;
+  --accent: 220 10% 93%;
+  --accent-foreground: 240 10% 12%;
   --destructive: 350 72% 52%;
   --destructive-foreground: 0 0% 100%;
-  --border: 0 0% 89%;                /* 1px subtle divider */
-  --input: 0 0% 89%;
-  --ring: 0 0% 15%;
-  --radius: 0.875rem;                /* 14px refined radius */
+  --border: 220 12% 88%;              /* 1px subtle divider */
+  --input: 220 12% 88%;
+  --ring: 240 10% 15%;
+  --radius: 0.875rem;                 /* 14px refined radius */
 }
 
 /* Linear / Apple Sleek Dark Obsidian Mode */

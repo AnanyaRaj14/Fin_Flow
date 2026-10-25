@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Loader2, ServerCrash } from 'lucide-react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
+import { Spotlight } from '@/components/ui/spotlight';
 
 export default function ProtectedLayout({ children }) {
   const { user, loading, serverError } = useAuth();
@@ -72,6 +73,15 @@ export default function ProtectedLayout({ children }) {
 
       {/* Dynamic Right Content Area */}
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden relative">
+        {/* Aceternity Atmospheric Spotlight */}
+        <Spotlight
+          className="-top-40 right-0 md:right-32 md:-top-20"
+          fill="rgba(99, 102, 241, 0.12)"
+        />
+
+        {/* Aceternity Subtle Ambient Canvas Pattern */}
+        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(#0000000a_1px,transparent_1px)] dark:bg-[radial-gradient(#ffffff08_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+
         <Header onMenuClick={() => setSidebarOpen(true)} title={getPageTitle()} />
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 relative">
           <div className="max-w-6xl mx-auto space-y-8 relative z-10">
