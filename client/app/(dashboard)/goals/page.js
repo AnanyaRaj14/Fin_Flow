@@ -120,17 +120,14 @@ export default function GoalsPage() {
                   <SpotlightCard
                     radius={300}
                     spotlightColor="rgba(255, 255, 255, 0.05)"
-                    className={cn(
-                      'group p-5 border-border/60 dark:border-white/[0.07] dark:bg-[#121215]/80 hover:border-border dark:hover:border-white/[0.14] transition-all duration-300 relative rounded-2xl shadow-xs hover:shadow-lg',
-                      goal.isCompleted && 'border-emerald-500/40 dark:border-emerald-500/30'
-                    )}
+                    className="group p-5 border-border/60 dark:border-white/[0.07] dark:bg-[#121215]/80 hover:border-border dark:hover:border-white/[0.14] transition-all duration-300 relative rounded-2xl shadow-xs hover:shadow-lg"
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: goal.color || '#6366f1' }} />
                           <p className="font-semibold text-sm text-foreground tracking-tight truncate">{goal.name}</p>
-                          {goal.isCompleted && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />}
+                          {goal.isCompleted && <CheckCircle2 className="w-3.5 h-3.5 text-muted-foreground shrink-0" />}
                         </div>
                         {goal.deadline && (
                           <p className="text-[11px] text-muted-foreground mt-0.5">Target: {formatDate(goal.deadline)}</p>
@@ -156,7 +153,7 @@ export default function GoalsPage() {
                       <Progress
                         value={pct}
                         className="h-1.5 rounded-full dark:bg-white/[0.06]"
-                        indicatorClassName={goal.isCompleted ? 'bg-emerald-500' : 'bg-foreground dark:bg-white'}
+                        indicatorClassName="bg-foreground dark:bg-white"
                       />
                       <p className="text-[11px] font-mono tabular-nums text-muted-foreground text-right">{Math.round(pct)}% saved</p>
                     </div>

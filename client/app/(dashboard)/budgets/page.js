@@ -207,7 +207,7 @@ export default function BudgetsPage() {
                     <Progress
                       value={pct}
                       className="h-1.5 rounded-full dark:bg-white/[0.06]"
-                      indicatorClassName={over ? 'bg-rose-500' : pct > 80 ? 'bg-amber-500' : 'bg-emerald-500'}
+                      indicatorClassName={over ? 'bg-rose-500' : 'bg-foreground dark:bg-white'}
                     />
                     <div className="flex justify-between text-[11px] font-mono tabular-nums mt-2">
                       <span className="text-muted-foreground">{Math.round(pct)}% used</span>
