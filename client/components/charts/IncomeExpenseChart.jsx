@@ -5,10 +5,10 @@ import {
   AreaChart, Area, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
-import { formatCurrency, cn } from '@/lib/utils';
+import { formatCurrency, getCurrencySymbol, cn } from '@/lib/utils';
 import { Activity, BarChart2 } from 'lucide-react';
 
-const CustomTooltip = ({ active, payload, label }) => {
+const CustomTooltip = ({ active, payload, label, currency }) => {
   if (!active || !payload?.length) return null;
   const inc = payload.find((p) => p.dataKey === 'income')?.value || 0;
   const exp = payload.find((p) => p.dataKey === 'expense')?.value || 0;
@@ -21,24 +21,24 @@ const CustomTooltip = ({ active, payload, label }) => {
         <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-wider">Cash Flow</span>
       </div>
       <div className="space-y-1.5 font-mono text-[11px]">
-        <div className="flex items-center justify-between gap-3 text-emerald-600 dark:text-emerald-400">
+        <div className="flex items-center justify-between gap-3 text-indigo-400">
           <span className="flex items-center gap-1.5 font-sans text-muted-foreground text-[11px]">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
             Inflow
           </span>
-          <span className="font-semibold tabular-nums">+{formatCurrency(inc)}</span>
+          <span className="font-semibold tabular-nums">+{formatCurrency(inc, currency)}</span>
         </div>
-        <div className="flex items-center justify-between gap-3 text-rose-500">
+        <div className="flex items-center justify-between gap-3 text-muted-foreground">
           <span className="flex items-center gap-1.5 font-sans text-muted-foreground text-[11px]">
-            <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+            <span className="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-500" />
             Outflow
           </span>
-          <span className="font-semibold tabular-nums">-{formatCurrency(exp)}</span>
+          <span className="font-semibold tabular-nums">-{formatCurrency(exp, currency)}</span>
         </div>
         <div className="pt-1.5 border-t border-border/40 dark:border-white/10 flex items-center justify-between gap-3 text-foreground font-semibold">
           <span className="font-sans text-[11px] text-muted-foreground">Net</span>
-          <span className={cn('tabular-nums', net >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-500')}>
-            {net >= 0 ? '+' : ''}{formatCurrency(net)}
+          <span className="tabular-nums text-foreground">
+            {net >= 0 ? '+' : ''}{formatCurrency(net, currency)}
           </span>
         </div>
       </div>
@@ -46,8 +46,9 @@ const CustomTooltip = ({ active, payload, label }) => {
   );
 };
 
-export default function IncomeExpenseChart({ data = [] }) {
+export default function IncomeExpenseChart({ data = [], currency }) {
   const [chartMode, setChartMode] = useState('area'); // 'area' | 'bar'
+  const symbol = getCurrencySymbol(currency);
 
   // Filter out trailing zero months so future empty months don't create empty dead space on the right
   const chartData = useMemo(() => {
@@ -85,17 +86,17 @@ export default function IncomeExpenseChart({ data = [] }) {
         {/* Metric Badges */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5 text-xs">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+            <span className="w-2 h-2 rounded-full bg-indigo-500 shrink-0" />
             <span className="text-muted-foreground text-[11px]">Inflow:</span>
-            <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-400 tabular-nums text-xs">
-              {formatCurrency(totals.income)}
+            <span className="font-mono font-semibold text-indigo-400 tabular-nums text-xs">
+              {formatCurrency(totals.income, currency)}
             </span>
           </div>
           <div className="flex items-center gap-1.5 text-xs">
-            <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
+            <span className="w-2 h-2 rounded-full bg-slate-400 dark:bg-slate-500 shrink-0" />
             <span className="text-muted-foreground text-[11px]">Outflow:</span>
-            <span className="font-mono font-semibold text-rose-500 tabular-nums text-xs">
-              {formatCurrency(totals.expense)}
+            <span className="font-mono font-semibold text-muted-foreground tabular-nums text-xs">
+              {formatCurrency(totals.expense, currency)}
             </span>
           </div>
         </div>
@@ -139,12 +140,12 @@ export default function IncomeExpenseChart({ data = [] }) {
             <AreaChart data={chartData} margin={{ top: 12, right: 12, left: -16, bottom: 0 }}>
               <defs>
                 <linearGradient id="incomeAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#10b981" stopOpacity={0.22} />
-                  <stop offset="95%" stopColor="#10b981" stopOpacity={0.0} />
+                  <stop offset="0%" stopColor="#6366f1" stopOpacity={0.22} />
+                  <stop offset="95%" stopColor="#6366f1" stopOpacity={0.0} />
                 </linearGradient>
                 <linearGradient id="expenseAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#f43f5e" stopOpacity={0.16} />
-                  <stop offset="95%" stopColor="#f43f5e" stopOpacity={0.0} />
+                  <stop offset="0%" stopColor="#94a3b8" stopOpacity={0.16} />
+                  <stop offset="95%" stopColor="#94a3b8" stopOpacity={0.0} />
                 </linearGradient>
               </defs>
               <CartesianGrid
@@ -166,29 +167,29 @@ export default function IncomeExpenseChart({ data = [] }) {
                 className="text-muted-foreground/70 font-mono"
                 axisLine={false}
                 tickLine={false}
-                tickFormatter={(v) => `₹${v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}`}
+                tickFormatter={(v) => `${symbol}${v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}`}
                 dx={-4}
               />
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip content={<CustomTooltip currency={currency} />} />
               <Area
                 type="monotone"
                 dataKey="income"
                 name="Income"
-                stroke="#10b981"
+                stroke="#6366f1"
                 strokeWidth={2.5}
                 fill="url(#incomeAreaGrad)"
                 dot={false}
-                activeDot={{ r: 5, strokeWidth: 2, stroke: '#fff', fill: '#10b981' }}
+                activeDot={{ r: 5, strokeWidth: 2, stroke: '#fff', fill: '#6366f1' }}
               />
               <Area
                 type="monotone"
                 dataKey="expense"
                 name="Expenses"
-                stroke="#f43f5e"
+                stroke="#94a3b8"
                 strokeWidth={2}
                 fill="url(#expenseAreaGrad)"
                 dot={false}
-                activeDot={{ r: 4, strokeWidth: 2, stroke: '#fff', fill: '#f43f5e' }}
+                activeDot={{ r: 4, strokeWidth: 2, stroke: '#fff', fill: '#94a3b8' }}
               />
             </AreaChart>
           ) : (
@@ -200,12 +201,12 @@ export default function IncomeExpenseChart({ data = [] }) {
             >
               <defs>
                 <linearGradient id="barIncomeGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#10b981" />
-                  <stop offset="100%" stopColor="#059669" />
+                  <stop offset="0%" stopColor="#818cf8" />
+                  <stop offset="100%" stopColor="#4f46e5" />
                 </linearGradient>
                 <linearGradient id="barExpenseGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#f43f5e" />
-                  <stop offset="100%" stopColor="#be123c" />
+                  <stop offset="0%" stopColor="#cbd5e1" />
+                  <stop offset="100%" stopColor="#64748b" />
                 </linearGradient>
               </defs>
               <CartesianGrid
@@ -227,10 +228,10 @@ export default function IncomeExpenseChart({ data = [] }) {
                 className="text-muted-foreground/70 font-mono"
                 axisLine={false}
                 tickLine={false}
-                tickFormatter={(v) => `₹${v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}`}
+                tickFormatter={(v) => `${symbol}${v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}`}
                 dx={-4}
               />
-              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'currentColor', opacity: 0.04 }} />
+              <Tooltip content={<CustomTooltip currency={currency} />} cursor={{ fill: 'currentColor', opacity: 0.04 }} />
               <Bar
                 dataKey="income"
                 name="Income"

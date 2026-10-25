@@ -14,9 +14,8 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/hooks/useTheme';
 import { authApi, settingsApi } from '@/services/api';
-import { getInitials } from '@/lib/utils';
+import { getInitials, setActiveCurrency, cn } from '@/lib/utils';
 import { toast } from '@/components/ui/toast';
-import { cn } from '@/lib/utils';
 
 export default function SettingsPage() {
   const { user, updateUser } = useAuth();
@@ -25,7 +24,7 @@ export default function SettingsPage() {
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
-  const [currency, setCurrency] = useState('INR');
+  const [currency, setCurrency] = useState('USD');
 
   const profileForm = useForm({ defaultValues: { name: user?.name || '' } });
   const passwordForm = useForm();
@@ -33,7 +32,10 @@ export default function SettingsPage() {
   useEffect(() => {
     if (user) profileForm.reset({ name: user.name });
     settingsApi.get().then(({ data }) => {
-      if (data.settings?.currency) setCurrency(data.settings.currency);
+      if (data.settings?.currency) {
+        setCurrency(data.settings.currency);
+        setActiveCurrency(data.settings.currency);
+      }
     }).catch(() => {});
   }, [user]);
 
@@ -85,6 +87,7 @@ export default function SettingsPage() {
 
   const handleCurrencyChange = async (val) => {
     setCurrency(val);
+    setActiveCurrency(val);
     try {
       await settingsApi.update({ theme, currency: val });
       toast.success(`Currency changed to ${val}.`);

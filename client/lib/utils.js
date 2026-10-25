@@ -5,13 +5,61 @@ export function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
 
-export function formatCurrency(amount, currency = 'INR') {
-  return new Intl.NumberFormat('en-IN', {
+export const CURRENCY_LOCALES = {
+  USD: 'en-US',
+  INR: 'en-IN',
+  EUR: 'de-DE',
+  GBP: 'en-GB',
+  CAD: 'en-CA',
+  AUD: 'en-AU',
+  JPY: 'ja-JP',
+  SGD: 'en-SG',
+};
+
+export const CURRENCY_SYMBOLS = {
+  USD: '$',
+  INR: '₹',
+  EUR: '€',
+  GBP: '£',
+  CAD: 'CA$',
+  AUD: 'A$',
+  JPY: '¥',
+  SGD: 'S$',
+};
+
+export function getActiveCurrency() {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('finflow_currency') || 'USD';
+  }
+  return 'USD';
+}
+
+export function setActiveCurrency(curr) {
+  if (typeof window !== 'undefined' && curr) {
+    localStorage.setItem('finflow_currency', curr);
+    window.dispatchEvent(new CustomEvent('finflow-currency-change', { detail: curr }));
+  }
+}
+
+export function getCurrencySymbol(curr) {
+  const code = curr || getActiveCurrency();
+  return CURRENCY_SYMBOLS[code] || '$';
+}
+
+export function getCurrencyLocale(curr) {
+  const code = curr || getActiveCurrency();
+  return CURRENCY_LOCALES[code] || 'en-US';
+}
+
+export function formatCurrency(amount, currency) {
+  const curr = currency || getActiveCurrency();
+  const locale = getCurrencyLocale(curr);
+  return new Intl.NumberFormat(locale, {
     style: 'currency',
-    currency,
+    currency: curr,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(amount);
+  }).format(amount ?? 0);
 }
 
 export function formatDate(date) {

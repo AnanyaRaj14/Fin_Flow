@@ -112,8 +112,8 @@ export default function TransactionsPage() {
 
   return (
     <DashboardLayout title="Transactions">
-      <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between pb-1">
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between pb-3 border-b border-border/40 dark:border-white/[0.04]">
           <div>
             <h2 className="text-xl font-bold tracking-tight text-foreground">Transactions</h2>
             <p className="text-xs text-muted-foreground mt-0.5">{total} recorded ledger entries</p>
@@ -128,7 +128,7 @@ export default function TransactionsPage() {
         </div>
 
         {/* Filters */}
-        <SpotlightCard radius={350} className="p-4 border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80 space-y-3">
+        <SpotlightCard className="p-4 border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80 space-y-3.5">
           <div className="flex gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
@@ -195,15 +195,10 @@ export default function TransactionsPage() {
                     exit={{ opacity: 0 }}
                     className="flex items-center gap-4 px-4 py-3 hover:bg-accent/30 dark:hover:bg-white/[0.02] transition-colors group"
                   >
-                    <div className={cn(
-                      'w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border',
-                      tx.type === 'income'
-                        ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
-                        : 'bg-rose-500/10 text-rose-500 border-rose-500/20'
-                    )}>
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border bg-muted/40 dark:bg-white/[0.04] border-border/40 dark:border-white/[0.06] text-muted-foreground group-hover:text-foreground transition-all">
                       {tx.type === 'income'
-                        ? <ArrowDownLeft className="w-4 h-4" />
-                        : <ArrowUpRight className="w-4 h-4" />
+                        ? <ArrowDownLeft className="w-4 h-4 text-indigo-400" />
+                        : <ArrowUpRight className="w-4 h-4 text-muted-foreground" />
                       }
                     </div>
 
@@ -223,7 +218,7 @@ export default function TransactionsPage() {
                       </span>
                       <span className={cn(
                         'text-xs font-mono font-medium tabular-nums w-24 text-right shrink-0',
-                        tx.type === 'income' ? 'text-emerald-500' : 'text-foreground'
+                        tx.type === 'income' ? 'text-indigo-400' : 'text-foreground'
                       )}>
                         {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount)}
                       </span>

@@ -21,10 +21,12 @@ import { dashboardApi } from '@/services/api';
 import { formatCurrency, formatDate, getDaysUntilDue } from '@/lib/utils';
 import { toast } from '@/components/ui/toast';
 import { useAuth } from '@/hooks/useAuth';
+import { useCurrency } from '@/hooks/useCurrency';
 import { cn } from '@/lib/utils';
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const { currency, symbol, locale } = useCurrency();
   const [stats, setStats] = useState(null);
   const [charts, setCharts] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -97,7 +99,8 @@ export default function DashboardPage() {
                   <div>
                     <NumberTicker
                       value={stats?.totalBalance ?? 0}
-                      prefix="₹"
+                      prefix={symbol}
+                      locale={locale}
                       className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground font-mono tabular-nums"
                     />
                   </div>
@@ -130,7 +133,7 @@ export default function DashboardPage() {
               {/* Bento 2: Monthly Cycle Performance */}
               <SpotlightCard
                 radius={350}
-                spotlightColor="rgba(16, 185, 129, 0.12)"
+                spotlightColor="rgba(99, 102, 241, 0.12)"
                 className="lg:col-span-4 p-4 sm:p-5 flex flex-col justify-between"
               >
                 <div>
@@ -138,7 +141,7 @@ export default function DashboardPage() {
                     <h3 className="text-xs font-semibold tracking-wider text-muted-foreground uppercase font-mono">
                       Monthly Cycle
                     </h3>
-                    <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                    <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
                       {savingsRate}% retention
                     </span>
                   </div>
@@ -146,28 +149,28 @@ export default function DashboardPage() {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-xs">
                       <span className="flex items-center gap-1.5 text-muted-foreground">
-                        <ArrowDownLeft className="w-3.5 h-3.5 text-emerald-500" />
+                        <ArrowDownLeft className="w-3.5 h-3.5 text-indigo-400" />
                         Monthly Inflow
                       </span>
-                      <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-400 tabular-nums">
-                        +{formatCurrency(income)}
+                      <span className="font-mono font-semibold text-indigo-400 tabular-nums">
+                        +{formatCurrency(income, currency)}
                       </span>
                     </div>
 
                     <div className="flex items-center justify-between text-xs">
                       <span className="flex items-center gap-1.5 text-muted-foreground">
-                        <ArrowUpRight className="w-3.5 h-3.5 text-rose-500" />
+                        <ArrowUpRight className="w-3.5 h-3.5 text-muted-foreground" />
                         Monthly Outflow
                       </span>
-                      <span className="font-mono font-semibold text-rose-500 tabular-nums">
-                        -{formatCurrency(expenses)}
+                      <span className="font-mono font-semibold text-muted-foreground tabular-nums">
+                        -{formatCurrency(expenses, currency)}
                       </span>
                     </div>
 
                     <div className="pt-1.5 border-t border-border/40 dark:border-white/[0.04] flex items-center justify-between text-xs">
                       <span className="font-medium text-foreground">Net Retained</span>
                       <span className="font-mono font-bold text-foreground tabular-nums text-xs">
-                        {formatCurrency(savings)}
+                        {formatCurrency(savings, currency)}
                       </span>
                     </div>
                   </div>
@@ -177,7 +180,7 @@ export default function DashboardPage() {
                 <div className="pt-2.5">
                   <div className="w-full bg-muted/60 dark:bg-white/[0.06] h-1.5 rounded-full overflow-hidden">
                     <div
-                      className="bg-emerald-500 h-full rounded-full transition-all duration-700"
+                      className="bg-gradient-to-r from-indigo-500 to-indigo-400 h-full rounded-full transition-all duration-700"
                       style={{ width: `${Math.min(savingsRate, 100)}%` }}
                     />
                   </div>
@@ -239,13 +242,13 @@ export default function DashboardPage() {
 
                 <div>
                   {activeChartTab === 'cashflow' && (
-                    <AceternityCashFlowChart data={charts?.monthlyData ?? []} />
+                    <AceternityCashFlowChart data={charts?.monthlyData ?? []} currency={currency} />
                   )}
                   {activeChartTab === 'categories' && (
-                    <ExpensesByCategoryChart data={charts?.expensesByCategory ?? []} />
+                    <ExpensesByCategoryChart data={charts?.expensesByCategory ?? []} currency={currency} />
                   )}
                   {activeChartTab === 'savings' && (
-                    <SavingsTrendChart data={charts?.savingsTrend ?? []} />
+                    <SavingsTrendChart data={charts?.savingsTrend ?? []} currency={currency} />
                   )}
                 </div>
               </SpotlightCard>
@@ -280,15 +283,12 @@ export default function DashboardPage() {
                             key={tx.id}
                             className="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-accent/40 dark:hover:bg-white/[0.03] transition-colors group"
                           >
-                            <div
-                              className={cn(
-                                'w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border transition-transform group-hover:scale-105',
-                                isIncome
-                                  ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
-                                  : 'bg-rose-500/10 text-rose-500 border-rose-500/20'
+                            <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border bg-muted/40 dark:bg-white/[0.04] border-border/40 dark:border-white/[0.06] text-muted-foreground group-hover:text-foreground transition-all">
+                              {isIncome ? (
+                                <ArrowDownLeft className="w-3.5 h-3.5 text-indigo-400" />
+                              ) : (
+                                <ArrowUpRight className="w-3.5 h-3.5 text-muted-foreground" />
                               )}
-                            >
-                              {isIncome ? <ArrowDownLeft className="w-3.5 h-3.5" /> : <ArrowUpRight className="w-3.5 h-3.5" />}
                             </div>
 
                             <div className="flex-1 min-w-0">
@@ -303,10 +303,10 @@ export default function DashboardPage() {
                             <span
                               className={cn(
                                 'text-xs font-mono font-bold tabular-nums shrink-0',
-                                isIncome ? 'text-emerald-600 dark:text-emerald-400' : 'text-foreground'
+                                isIncome ? 'text-indigo-400' : 'text-foreground'
                               )}
                             >
-                              {isIncome ? '+' : '-'}{formatCurrency(tx.amount)}
+                              {isIncome ? '+' : '-'}{formatCurrency(tx.amount, currency)}
                             </span>
                           </div>
                         );
@@ -361,12 +361,12 @@ export default function DashboardPage() {
                           <div className="flex items-center justify-between text-xs">
                             <span className="font-semibold text-foreground truncate">{goal.name}</span>
                             <span className="font-mono tabular-nums text-muted-foreground text-[11px]">
-                              {formatCurrency(goal.savedAmount)} / {formatCurrency(goal.targetAmount)} ({pct}%)
+                              {formatCurrency(goal.savedAmount, currency)} / {formatCurrency(goal.targetAmount, currency)} ({pct}%)
                             </span>
                           </div>
                           <div className="w-full h-1.5 rounded-full bg-muted/60 dark:bg-white/[0.06] overflow-hidden">
                             <div
-                              className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500"
+                              className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-sky-400 transition-all duration-500"
                               style={{ width: `${pct}%` }}
                             />
                           </div>
@@ -380,7 +380,7 @@ export default function DashboardPage() {
               {/* Bento 6: Upcoming Commitments */}
               <SpotlightCard
                 radius={350}
-                spotlightColor="rgba(244, 63, 94, 0.12)"
+                spotlightColor="rgba(99, 102, 241, 0.1)"
                 className="lg:col-span-6 p-5 sm:p-6"
               >
                 <div className="pb-3 border-b border-border/40 dark:border-white/[0.05] flex items-center justify-between mb-4">
@@ -396,7 +396,7 @@ export default function DashboardPage() {
                 <div className="space-y-1">
                   {(stats?.upcomingBills || []).length === 0 ? (
                     <div className="text-center py-6 text-xs text-muted-foreground flex items-center justify-center gap-1.5">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                      <CheckCircle2 className="w-3.5 h-3.5 text-indigo-400" />
                       <span>No pending bills scheduled for this cycle</span>
                     </div>
                   ) : (
@@ -419,7 +419,7 @@ export default function DashboardPage() {
                             </div>
                           </div>
                           <span className="text-xs font-mono font-bold tabular-nums text-foreground shrink-0">
-                            {formatCurrency(bill.amount)}
+                            {formatCurrency(bill.amount, currency)}
                           </span>
                         </div>
                       );

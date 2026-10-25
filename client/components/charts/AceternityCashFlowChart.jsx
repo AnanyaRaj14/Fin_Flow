@@ -5,14 +5,15 @@ import {
   AreaChart, Area, BarChart, Bar,
   XAxis, YAxis, Tooltip, ResponsiveContainer
 } from 'recharts';
-import { formatCurrency, cn } from '@/lib/utils';
+import { formatCurrency, getCurrencySymbol, cn } from '@/lib/utils';
 import { Activity, BarChart2, TrendingUp, ArrowDownLeft, ArrowUpRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function AceternityCashFlowChart({ data = [] }) {
+export default function AceternityCashFlowChart({ data = [], currency }) {
   const [chartMode, setChartMode] = useState('wave'); // 'wave' | 'columns'
   const [timeRange, setTimeRange] = useState('all');   // 'all' | '6m' | '3m'
   const [hoveredData, setHoveredData] = useState(null);
+  const symbol = getCurrencySymbol(currency);
 
   // Filter out trailing zero months (e.g., future months with 0 data)
   const activeMonthsData = useMemo(() => {
@@ -66,37 +67,32 @@ export default function AceternityCashFlowChart({ data = [] }) {
             <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground font-mono">
               {hoveredData ? `${hoveredData.month} (Hovered)` : `${currentHud.month} (Latest)`}
             </span>
-            <span className={cn(
-              'text-[10px] font-mono px-2 py-0.5 rounded-full font-medium border',
-              currentNet >= 0
-                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
-                : 'bg-rose-500/10 text-rose-500 border-rose-500/20'
-            )}>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full font-medium border bg-indigo-500/10 text-indigo-400 border-indigo-500/20">
               {currentRate}% saved
             </span>
           </div>
 
           <div className="flex items-baseline gap-4 pt-1">
             <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+              <span className="w-2 h-2 rounded-full bg-indigo-500 shrink-0" />
               <span className="text-xs text-muted-foreground font-medium">In:</span>
-              <span className="text-sm sm:text-base font-bold font-mono text-emerald-600 dark:text-emerald-400 tabular-nums">
-                +{formatCurrency(currentHud.income)}
+              <span className="text-sm sm:text-base font-bold font-mono text-indigo-400 tabular-nums">
+                +{formatCurrency(currentHud.income, currency)}
               </span>
             </div>
 
             <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
+              <span className="w-2 h-2 rounded-full bg-slate-400 dark:bg-slate-500 shrink-0" />
               <span className="text-xs text-muted-foreground font-medium">Out:</span>
-              <span className="text-sm sm:text-base font-bold font-mono text-rose-500 tabular-nums">
-                -{formatCurrency(currentHud.expense)}
+              <span className="text-sm sm:text-base font-bold font-mono text-muted-foreground tabular-nums">
+                -{formatCurrency(currentHud.expense, currency)}
               </span>
             </div>
 
             <div className="hidden sm:flex items-center gap-1.5 pl-2 border-l border-border/40 dark:border-white/10">
               <span className="text-xs text-muted-foreground font-medium">Net:</span>
               <span className="text-sm sm:text-base font-bold font-mono text-foreground tabular-nums">
-                {currentNet >= 0 ? '+' : ''}{formatCurrency(currentNet)}
+                {currentNet >= 0 ? '+' : ''}{formatCurrency(currentNet, currency)}
               </span>
             </div>
           </div>
@@ -171,14 +167,14 @@ export default function AceternityCashFlowChart({ data = [] }) {
             >
               <defs>
                 <linearGradient id="aceternityIncomeGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#10b981" stopOpacity={0.28} />
-                  <stop offset="60%" stopColor="#10b981" stopOpacity={0.08} />
-                  <stop offset="100%" stopColor="#10b981" stopOpacity={0.0} />
+                  <stop offset="0%" stopColor="#6366f1" stopOpacity={0.25} />
+                  <stop offset="60%" stopColor="#6366f1" stopOpacity={0.06} />
+                  <stop offset="100%" stopColor="#6366f1" stopOpacity={0.0} />
                 </linearGradient>
                 <linearGradient id="aceternityExpenseGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#f43f5e" stopOpacity={0.20} />
-                  <stop offset="60%" stopColor="#f43f5e" stopOpacity={0.05} />
-                  <stop offset="100%" stopColor="#f43f5e" stopOpacity={0.0} />
+                  <stop offset="0%" stopColor="#94a3b8" stopOpacity={0.20} />
+                  <stop offset="60%" stopColor="#94a3b8" stopOpacity={0.05} />
+                  <stop offset="100%" stopColor="#94a3b8" stopOpacity={0.0} />
                 </linearGradient>
               </defs>
 
@@ -195,7 +191,7 @@ export default function AceternityCashFlowChart({ data = [] }) {
                 className="text-muted-foreground/60 font-mono"
                 axisLine={false}
                 tickLine={false}
-                tickFormatter={(v) => `₹${v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}`}
+                tickFormatter={(v) => `${symbol}${v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}`}
                 dx={-4}
               />
 
@@ -213,7 +209,7 @@ export default function AceternityCashFlowChart({ data = [] }) {
                 type="monotone"
                 dataKey="income"
                 name="Income"
-                stroke="#10b981"
+                stroke="#6366f1"
                 strokeWidth={2.5}
                 fill="url(#aceternityIncomeGrad)"
                 dot={false}
@@ -221,7 +217,7 @@ export default function AceternityCashFlowChart({ data = [] }) {
                   r: 6,
                   strokeWidth: 3,
                   stroke: '#ffffff',
-                  fill: '#10b981',
+                  fill: '#6366f1',
                   className: 'drop-shadow-md',
                 }}
               />
@@ -230,7 +226,7 @@ export default function AceternityCashFlowChart({ data = [] }) {
                 type="monotone"
                 dataKey="expense"
                 name="Expenses"
-                stroke="#f43f5e"
+                stroke="#94a3b8"
                 strokeWidth={2}
                 fill="url(#aceternityExpenseGrad)"
                 dot={false}
@@ -238,7 +234,7 @@ export default function AceternityCashFlowChart({ data = [] }) {
                   r: 5,
                   strokeWidth: 2.5,
                   stroke: '#ffffff',
-                  fill: '#f43f5e',
+                  fill: '#94a3b8',
                   className: 'drop-shadow-md',
                 }}
               />
@@ -254,12 +250,12 @@ export default function AceternityCashFlowChart({ data = [] }) {
             >
               <defs>
                 <linearGradient id="aceternityBarIncGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#10b981" />
-                  <stop offset="100%" stopColor="#059669" />
+                  <stop offset="0%" stopColor="#818cf8" />
+                  <stop offset="100%" stopColor="#4f46e5" />
                 </linearGradient>
                 <linearGradient id="aceternityBarExpGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#f43f5e" />
-                  <stop offset="100%" stopColor="#be123c" />
+                  <stop offset="0%" stopColor="#cbd5e1" />
+                  <stop offset="100%" stopColor="#64748b" />
                 </linearGradient>
               </defs>
 
@@ -276,7 +272,7 @@ export default function AceternityCashFlowChart({ data = [] }) {
                 className="text-muted-foreground/60 font-mono"
                 axisLine={false}
                 tickLine={false}
-                tickFormatter={(v) => `₹${v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}`}
+                tickFormatter={(v) => `${symbol}${v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}`}
                 dx={-4}
               />
 

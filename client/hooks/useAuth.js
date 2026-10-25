@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { authApi } from '@/services/api';
+import { setActiveCurrency } from '@/lib/utils';
 
 const AuthContext = createContext(null);
 
@@ -15,6 +16,9 @@ export function AuthProvider({ children }) {
     try {
       const { data } = await authApi.getMe();
       setUser(data?.user || null);
+      if (data?.user?.settings?.currency) {
+        setActiveCurrency(data.user.settings.currency);
+      }
       setServerError(false);
     } catch (err) {
       setUser(null);
@@ -36,6 +40,9 @@ export function AuthProvider({ children }) {
   const login = async (credentials) => {
     const { data } = await authApi.login(credentials);
     setUser(data.user);
+    if (data?.user?.settings?.currency) {
+      setActiveCurrency(data.user.settings.currency);
+    }
     setServerError(false);
     return data.user;
   };

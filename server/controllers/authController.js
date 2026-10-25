@@ -79,7 +79,14 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await prisma.user.findUnique({
+    where: { email },
+    include: {
+      settings: {
+        select: { theme: true, currency: true },
+      },
+    },
+  });
   if (!user) return res.status(401).json({ message: 'Invalid email or password.' });
 
   const isMatch = await bcrypt.compare(password, user.password);
@@ -95,7 +102,13 @@ const login = async (req, res) => {
   const avatar = await getPresignedUrl(user.avatar);
 
   res.json({
-    user: { id: user.id, name: user.name, email: user.email, avatar },
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      avatar,
+      settings: user.settings,
+    },
   });
 };
 
@@ -116,7 +129,17 @@ const getMe = async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await prisma.user.findUnique({
       where: { id: decoded.id },
-      select: { id: true, name: true, email: true, avatar: true, isVerified: true, createdAt: true },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        avatar: true,
+        isVerified: true,
+        createdAt: true,
+        settings: {
+          select: { theme: true, currency: true },
+        },
+      },
     });
 
     if (!user) {

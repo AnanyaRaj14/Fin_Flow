@@ -11,6 +11,7 @@ export function NumberTicker({
   decimalPlaces = 2,
   prefix = '',
   suffix = '',
+  locale = 'en-US',
 }) {
   const ref = useRef(null);
   const motionValue = useMotionValue(direction === 'down' ? value : 0);
@@ -31,7 +32,7 @@ export function NumberTicker({
   useEffect(() => {
     return springValue.on('change', (latest) => {
       if (ref.current) {
-        const formatted = Intl.NumberFormat('en-IN', {
+        const formatted = Intl.NumberFormat(locale, {
           minimumFractionDigits: decimalPlaces,
           maximumFractionDigits: decimalPlaces,
         }).format(Number(latest.toFixed(decimalPlaces)));
@@ -39,9 +40,9 @@ export function NumberTicker({
         ref.current.textContent = `${prefix}${formatted}${suffix}`;
       }
     });
-  }, [springValue, decimalPlaces, prefix, suffix]);
+  }, [springValue, decimalPlaces, prefix, suffix, locale]);
 
-  const initialFormatted = Intl.NumberFormat('en-IN', {
+  const initialFormatted = Intl.NumberFormat(locale, {
     minimumFractionDigits: decimalPlaces,
     maximumFractionDigits: decimalPlaces,
   }).format(Number(value || 0));

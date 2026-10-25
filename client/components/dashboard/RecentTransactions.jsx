@@ -50,18 +50,11 @@ export default function RecentTransactions({ transactions = [] }) {
                 className="group flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-accent/50 dark:hover:bg-white/[0.03] transition-colors"
               >
                 {/* Arrow Icon */}
-                <div
-                  className={cn(
-                    'w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border transition-transform duration-200 group-hover:scale-105',
-                    isIncome
-                      ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
-                      : 'bg-rose-500/10 text-rose-500 border-rose-500/20'
-                  )}
-                >
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border bg-muted/40 dark:bg-white/[0.04] border-border/40 dark:border-white/[0.06] text-muted-foreground group-hover:text-foreground transition-all">
                   {isIncome ? (
-                    <ArrowDownLeft className="w-4 h-4" />
+                    <ArrowDownLeft className="w-4 h-4 text-indigo-400" />
                   ) : (
-                    <ArrowUpRight className="w-4 h-4" />
+                    <ArrowUpRight className="w-4 h-4 text-muted-foreground" />
                   )}
                 </div>
 
@@ -94,7 +87,7 @@ export default function RecentTransactions({ transactions = [] }) {
                     className={cn(
                       'text-xs font-bold font-mono tabular-nums tracking-tight',
                       isIncome
-                        ? 'text-emerald-600 dark:text-emerald-400'
+                        ? 'text-indigo-400'
                         : 'text-foreground'
                     )}
                   >

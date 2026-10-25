@@ -167,17 +167,6 @@ export default function BillsPage() {
                 <Input type="number" min="1" max="31" placeholder="15" {...register('dueDate', { required: 'Required', min: 1, max: 31 })} />
               </div>
             </div>
-            <div className="space-y-1.5">
-              <Label>Color</Label>
-              <div className="flex gap-2">
-                {COLORS.map((c) => (
-                  <button key={c} type="button" onClick={() => setValue('color', c)}
-                    className={`w-7 h-7 rounded-full border-2 transition-all ${selectedColor === c ? 'border-foreground scale-110' : 'border-transparent'}`}
-                    style={{ background: c }}
-                  />
-                ))}
-              </div>
-            </div>
             <div className="flex gap-2">
               <Button type="button" variant="outline" className="flex-1 rounded-xl" onClick={() => setOpen(false)}>Cancel</Button>
               <ShimmerButton type="submit" className="flex-1 h-9 rounded-xl font-medium" disabled={saving}>
@@ -223,7 +212,6 @@ function BillCard({ bill, index, onToggle, onEdit, onDelete }) {
               : <Circle className="w-4 h-4 text-muted-foreground hover:text-foreground transition-colors" />
             }
           </button>
-          <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: bill.color || '#6366f1' }} />
           <div className="flex-1 min-w-0">
             <p className={cn('font-semibold text-xs text-foreground truncate', bill.isPaid && 'line-through text-muted-foreground')}>{bill.name}</p>
             <p className="text-[11px] text-muted-foreground">

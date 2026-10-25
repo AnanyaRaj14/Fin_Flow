@@ -175,21 +175,16 @@ export default function BudgetsPage() {
               return (
                 <motion.div key={budget.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
                   <SpotlightCard
-                    radius={300}
-                    spotlightColor={over ? 'rgba(244, 63, 94, 0.2)' : `${budget.category?.color || '#6366f1'}22`}
                     className={cn(
                       'p-5 border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80',
                       over && 'border-rose-500/40 dark:border-rose-500/30'
                     )}
                   >
                     <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-7 h-7 rounded-lg flex items-center justify-center border" style={{ background: (budget.category?.color || '#6366f1') + '15', borderColor: (budget.category?.color || '#6366f1') + '30' }}>
-                          <div className="w-2.5 h-2.5 rounded-full" style={{ background: budget.category?.color }} />
-                        </div>
+                      <div className="flex items-center gap-2">
                         <div>
                           <p className="font-semibold text-xs text-foreground truncate">{budget.category?.name}</p>
-                          <p className="text-[11px] font-mono tabular-nums text-muted-foreground">
+                          <p className="text-[11px] font-mono tabular-nums text-muted-foreground mt-0.5">
                             {formatCurrency(budget.spent)} / {formatCurrency(budget.amount)}
                           </p>
                         </div>

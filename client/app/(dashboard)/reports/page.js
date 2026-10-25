@@ -152,13 +152,13 @@ export default function ReportsPage() {
           <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
             {/* Summary */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <SpotlightCard radius={280} spotlightColor="rgba(16, 185, 129, 0.15)" className="p-4 text-center border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80">
+              <SpotlightCard radius={280} spotlightColor="rgba(99, 102, 241, 0.14)" className="p-4 text-center border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80">
                 <p className="text-[11px] font-medium tracking-wider uppercase text-muted-foreground">Inflow</p>
-                <p className="text-xl font-bold font-mono tabular-nums mt-1 text-emerald-500">{formatCurrency(reportData.summary.income)}</p>
+                <p className="text-xl font-bold font-mono tabular-nums mt-1 text-indigo-400">{formatCurrency(reportData.summary.income)}</p>
               </SpotlightCard>
-              <SpotlightCard radius={280} spotlightColor="rgba(244, 63, 94, 0.15)" className="p-4 text-center border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80">
+              <SpotlightCard radius={280} spotlightColor="rgba(99, 102, 241, 0.08)" className="p-4 text-center border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80">
                 <p className="text-[11px] font-medium tracking-wider uppercase text-muted-foreground">Outflow</p>
-                <p className="text-xl font-bold font-mono tabular-nums mt-1 text-rose-500">{formatCurrency(reportData.summary.expenses)}</p>
+                <p className="text-xl font-bold font-mono tabular-nums mt-1 text-muted-foreground">{formatCurrency(reportData.summary.expenses)}</p>
               </SpotlightCard>
               <SpotlightCard radius={280} spotlightColor="rgba(99, 102, 241, 0.18)" className="p-4 text-center border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80">
                 <p className="text-[11px] font-medium tracking-wider uppercase text-muted-foreground">Net Retained</p>
@@ -199,12 +199,12 @@ export default function ReportsPage() {
                         <td className="px-4 py-2.5 font-mono text-muted-foreground">{formatDate(tx.date)}</td>
                         <td className="px-4 py-2.5 font-medium text-foreground">{tx.title}</td>
                         <td className="px-4 py-2.5">
-                          <span className={cn('capitalize text-[10px] font-mono font-medium', tx.type === 'income' ? 'text-emerald-500' : 'text-rose-500')}>
+                          <span className={cn('capitalize text-[10px] font-mono font-medium', tx.type === 'income' ? 'text-indigo-400' : 'text-muted-foreground')}>
                             {tx.type}
                           </span>
                         </td>
                         <td className="px-4 py-2.5 text-muted-foreground">{tx.category?.name || 'General'}</td>
-                        <td className={cn('px-4 py-2.5 font-mono font-semibold tabular-nums', tx.type === 'income' ? 'text-emerald-500' : 'text-foreground')}>
+                        <td className={cn('px-4 py-2.5 font-mono font-semibold tabular-nums', tx.type === 'income' ? 'text-indigo-400' : 'text-foreground')}>
                           {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount)}
                         </td>
                       </tr>
