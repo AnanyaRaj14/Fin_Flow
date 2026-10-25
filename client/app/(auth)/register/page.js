@@ -48,7 +48,13 @@ export default function RegisterPage() {
     );
   }
 
-  if (user) return null;
+  if (user) {
+    return (
+      <div className="flex items-center justify-center min-h-[300px]">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <motion.div

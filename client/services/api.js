@@ -1,11 +1,14 @@
 import axios from 'axios';
 
 const getBaseUrl = () => {
-  if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL;
-  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-    return 'http://localhost:5001/api';
+  // In the browser, any non-localhost environment (CloudFront, production domain)
+  // MUST use relative '/api' to route through CloudFront proxy to EC2 without CORS or mixed-content issues
+  if (typeof window !== 'undefined') {
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      return '/api';
+    }
   }
-  return '/api';
+  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
 };
 
 const api = axios.create({
@@ -13,33 +16,16 @@ const api = axios.create({
   withCredentials: true,
 });
 
-// Dynamic baseURL interceptor to ensure local dev routes to localhost:5001/api
+// Dynamic baseURL interceptor: ensures runtime hostname is respected
 api.interceptors.request.use((config) => {
-  if (!config.baseURL || config.baseURL === '/api') {
-    config.baseURL = getBaseUrl();
-  }
+  config.baseURL = getBaseUrl();
   return config;
 });
 
-// Intercept 401 responses for protected data requests (ignoring /auth/me or auth pages)
+// Response interceptor: reject errors cleanly without triggering hard window.location.href reload loops
 api.interceptors.response.use(
   (res) => res,
-  (err) => {
-    // Never trigger hard reload if it's the auth verification check or already on an auth page
-    if (
-      err.response?.status === 401 &&
-      !err.config?.url?.includes('/auth/') &&
-      typeof window !== 'undefined' &&
-      !window.location.pathname.startsWith('/login') &&
-      !window.location.pathname.startsWith('/register') &&
-      !window.location.pathname.startsWith('/forgot-password') &&
-      !window.location.pathname.startsWith('/reset-password') &&
-      !window.location.pathname.startsWith('/verify-email')
-    ) {
-      window.location.href = '/login';
-    }
-    return Promise.reject(err);
-  }
+  (err) => Promise.reject(err)
 );
 
 // Auth

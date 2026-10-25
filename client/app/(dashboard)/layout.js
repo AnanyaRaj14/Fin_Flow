@@ -46,7 +46,13 @@ export default function ProtectedLayout({ children }) {
     );
   }
 
-  if (!user) return null;
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   const getPageTitle = () => {
     if (pathname.startsWith('/accounts')) return 'Accounts & Wallets';

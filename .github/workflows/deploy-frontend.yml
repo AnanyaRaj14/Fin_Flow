@@ -59,6 +59,16 @@ jobs:
           aws s3 sync out/ s3://$S3_BUCKET/ --delete --cache-control "public, max-age=0, must-revalidate" \
             --include "*.html" --include "manifest.json" --include "robots.txt"
 
+          # Upload clean URL objects (e.g. /budgets, /dashboard, /login) so S3 direct requests never 403
+          for dir in out/*/; do
+            route=$(basename "$dir")
+            if [ -f "out/$route/index.html" ]; then
+              aws s3 cp "out/$route/index.html" "s3://$S3_BUCKET/$route" \
+                --content-type "text/html" \
+                --cache-control "public, max-age=0, must-revalidate"
+            fi
+          done
+
       - name: 🔄 Invalidate CloudFront CDN Cache
         env:
           DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID || 'E13TP2T4TVA51A' }}
