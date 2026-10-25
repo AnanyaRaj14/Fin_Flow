@@ -22,16 +22,21 @@ const createAccount = async (req, res) => {
 
 // PUT /api/accounts/:id
 const updateAccount = async (req, res) => {
-  const { name, type, color, icon } = req.body;
+  const { name, type, balance, color, icon } = req.body;
 
   const account = await prisma.account.findFirst({
     where: { id: req.params.id, userId: req.user.id },
   });
   if (!account) return res.status(404).json({ message: 'Account not found.' });
 
+  const dataToUpdate = { name, type, color, icon };
+  if (balance !== undefined && balance !== '' && balance !== null && !isNaN(balance)) {
+    dataToUpdate.balance = parseFloat(balance);
+  }
+
   const updated = await prisma.account.update({
     where: { id: req.params.id },
-    data: { name, type, color, icon },
+    data: dataToUpdate,
   });
 
   res.json({ account: updated });

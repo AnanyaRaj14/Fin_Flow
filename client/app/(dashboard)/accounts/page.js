@@ -66,12 +66,16 @@ export default function AccountsPage() {
   const onSubmit = async (data) => {
     setSaving(true);
     try {
+      const payload = {
+        ...data,
+        balance: data.balance !== '' && data.balance !== undefined ? parseFloat(data.balance) : 0,
+      };
       if (editing) {
-        const { data: res } = await accountsApi.update(editing.id, data);
+        const { data: res } = await accountsApi.update(editing.id, payload);
         setAccounts((prev) => prev.map((a) => (a.id === editing.id ? res.account : a)));
         toast.success('Account updated.');
       } else {
-        const { data: res } = await accountsApi.create(data);
+        const { data: res } = await accountsApi.create(payload);
         setAccounts((prev) => [...prev, res.account]);
         toast.success('Account created.');
       }
@@ -182,12 +186,16 @@ export default function AccountsPage() {
                 </SelectContent>
               </Select>
             </div>
-            {!editing && (
-              <div className="space-y-1.5">
-                <Label>Opening Balance</Label>
-                <Input type="number" step="0.01" placeholder="0.00" {...register('balance')} />
-              </div>
-            )}
+            <div className="space-y-1.5">
+              <Label>{editing ? 'Account Balance' : 'Opening Balance'}</Label>
+              <Input
+                type="number"
+                step="0.01"
+                placeholder="0.00"
+                {...register('balance', { required: 'Balance is required' })}
+              />
+              {errors.balance && <p className="text-xs text-destructive">{errors.balance.message}</p>}
+            </div>
             <div className="space-y-1.5">
               <Label>Color</Label>
               <div className="flex gap-2 flex-wrap">
