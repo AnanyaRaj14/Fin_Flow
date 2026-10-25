@@ -283,7 +283,7 @@ export default function TransactionsPage() {
               </Button>
             )}
           </div>
-          <div className={cn("grid gap-2", accounts.length > 1 ? "grid-cols-2 lg:grid-cols-4" : "grid-cols-2 lg:grid-cols-3")}>
+          <div className={cn("mt-3 grid gap-2.5", accounts.length > 1 ? "grid-cols-2 lg:grid-cols-4" : "grid-cols-2 lg:grid-cols-3")}>
             <Select value={filterType || 'all'} onValueChange={(v) => setFilterType(v === 'all' ? '' : v)}>
               <SelectTrigger className="h-8 text-xs dark:bg-white/[0.03] dark:border-white/10"><SelectValue placeholder="All types" /></SelectTrigger>
               <SelectContent>

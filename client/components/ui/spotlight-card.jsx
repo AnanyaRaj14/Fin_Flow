@@ -22,7 +22,7 @@ export function SpotlightCard({
       )}
       {...props}
     >
-      <div className="relative z-10">{children}</div>
+      {children}
     </div>
   );
 }
