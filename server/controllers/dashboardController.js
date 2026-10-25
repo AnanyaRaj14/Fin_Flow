@@ -22,7 +22,7 @@ const getDashboardStats = async (req, res) => {
     prisma.transaction.findMany({
       where: { userId },
       include: { category: true, account: true },
-      orderBy: { date: 'desc' },
+      orderBy: [{ date: 'desc' }, { createdAt: 'desc' }],
       take: 5,
     }),
 

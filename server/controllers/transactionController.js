@@ -17,11 +17,21 @@ const getTransactions = async (req, res) => {
     if (endDate) where.date.lte = new Date(endDate);
   }
 
+  const orderBy = [];
+  if (sortBy === 'date') {
+    orderBy.push({ date: sortOrder });
+    orderBy.push({ createdAt: 'desc' });
+  } else {
+    orderBy.push({ [sortBy]: sortOrder });
+    orderBy.push({ date: 'desc' });
+    orderBy.push({ createdAt: 'desc' });
+  }
+
   const [transactions, total] = await Promise.all([
     prisma.transaction.findMany({
       where,
       include: { category: true, account: true },
-      orderBy: { [sortBy]: sortOrder },
+      orderBy,
       skip: (parseInt(page) - 1) * parseInt(limit),
       take: parseInt(limit),
     }),
@@ -76,12 +86,30 @@ const createTransaction = async (req, res) => {
     resolvedAccountId = acc.id;
   }
 
+  let txDate;
+  if (!date) {
+    txDate = new Date();
+  } else {
+    const inputDate = new Date(date);
+    const now = new Date();
+    const inputDateStr = typeof date === 'string' ? date.slice(0, 10) : inputDate.toISOString().slice(0, 10);
+    const todayStr = now.toISOString().slice(0, 10);
+    if (inputDateStr === todayStr) {
+      txDate = now;
+    } else {
+      txDate = new Date(date);
+      if (txDate.getUTCHours() === 0 && txDate.getUTCMinutes() === 0 && txDate.getUTCSeconds() === 0) {
+        txDate.setUTCHours(now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds());
+      }
+    }
+  }
+
   const transaction = await prisma.transaction.create({
     data: {
       title,
       amount: parsedAmount,
       type,
-      date: new Date(date),
+      date: txDate,
       categoryId,
       accountId: resolvedAccountId,
       paymentMethod: paymentMethod || 'card',
@@ -153,9 +181,25 @@ const updateTransaction = async (req, res) => {
     });
   }
 
+  let txDate = existing.date;
+  if (date) {
+    const inputDate = new Date(date);
+    const now = new Date();
+    const inputDateStr = typeof date === 'string' ? date.slice(0, 10) : inputDate.toISOString().slice(0, 10);
+    const todayStr = now.toISOString().slice(0, 10);
+    if (inputDateStr === todayStr) {
+      txDate = now;
+    } else {
+      txDate = new Date(date);
+      if (txDate.getUTCHours() === 0 && txDate.getUTCMinutes() === 0 && txDate.getUTCSeconds() === 0) {
+        txDate.setUTCHours(now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds());
+      }
+    }
+  }
+
   const parsedAmount = parseFloat(amount);
   const targetAccountId = accountId || existing.accountId;
-  const data = { title, amount: parsedAmount, type, date: new Date(date), categoryId, accountId: targetAccountId, paymentMethod: paymentMethod || existing.paymentMethod, notes };
+  const data = { title, amount: parsedAmount, type, date: txDate, categoryId, accountId: targetAccountId, paymentMethod: paymentMethod || existing.paymentMethod, notes };
   if (receiptUrl) data.receiptUrl = receiptUrl;
 
   const transaction = await prisma.transaction.update({

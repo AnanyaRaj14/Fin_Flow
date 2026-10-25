@@ -59,6 +59,13 @@ export default function TransactionForm({ onSubmit, defaultValues, saving }) {
       const acc = accounts.find((a) => a.id === data.accountId);
       data.paymentMethod = acc?.type === 'cash' ? 'cash' : acc?.type === 'wallet' ? 'upi' : 'card';
     }
+    // If the selected date is today, send full ISO string with current time so it goes to the top
+    if (data.date) {
+      const todayStr = new Date().toISOString().slice(0, 10);
+      if (data.date === todayStr) {
+        data.date = new Date().toISOString();
+      }
+    }
     Object.entries(data).forEach(([k, v]) => { if (v !== '' && v !== undefined) fd.append(k, v); });
     if (receipt) fd.append('receipt', receipt);
     onSubmit(fd);
