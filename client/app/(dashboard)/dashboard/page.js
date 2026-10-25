@@ -75,41 +75,41 @@ export default function DashboardPage() {
             </div>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Top Row: Hero Net Worth (8 cols) + Monthly Performance (4 cols) */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
               {/* Bento 1: Portfolio Net Worth Hero */}
               <SpotlightCard
                 radius={450}
-                spotlightColor="rgba(99, 102, 241, 0.14)"
-                className="lg:col-span-8 p-6 sm:p-7 flex flex-col justify-between"
+                spotlightColor="rgba(99, 102, 241, 0.12)"
+                className="lg:col-span-8 p-4 sm:p-5 flex flex-col justify-between"
               >
                 <div>
-                  <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-medium text-muted-foreground">
                       {greeting()}, {displayName}
                     </span>
-                    <span className="text-[11px] font-mono text-muted-foreground/80">
+                    <span className="text-[11px] font-mono text-muted-foreground/75 px-2 py-0.5 rounded-md bg-muted/40 dark:bg-white/[0.03]">
                       {currentMonthName}
                     </span>
                   </div>
 
-                  <div className="py-1">
+                  <div>
                     <NumberTicker
                       value={stats?.totalBalance ?? 0}
                       prefix="₹"
-                      className="text-3xl sm:text-5xl font-bold tracking-tight text-foreground font-mono tabular-nums"
+                      className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground font-mono tabular-nums"
                     />
                   </div>
 
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
                     Total Portfolio Net Worth across all liquid & invested accounts
                   </p>
                 </div>
 
-                <div className="pt-6 flex items-center gap-3">
+                <div className="pt-3.5 flex items-center gap-2.5">
                   <Link href="/transactions" prefetch={false}>
-                    <ShimmerButton className="h-9 px-4 text-xs font-semibold gap-1.5 shadow-md">
+                    <ShimmerButton className="h-8 px-3.5 text-xs font-medium gap-1.5 shadow-xs">
                       <Plus className="w-3.5 h-3.5" />
                       <span>Add Transaction</span>
                     </ShimmerButton>
@@ -118,7 +118,7 @@ export default function DashboardPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="h-9 px-4 rounded-xl text-xs font-semibold bg-white/70 dark:bg-white/[0.04] border-border/80 dark:border-white/10 hover:bg-accent/80 transition-all"
+                      className="h-8 px-3.5 rounded-lg text-xs font-medium bg-white/70 dark:bg-white/[0.04] border-border/80 dark:border-white/10 hover:bg-accent/80 transition-all"
                     >
                       <Wallet className="w-3.5 h-3.5 mr-1.5 text-muted-foreground" />
                       <span>Accounts</span>
@@ -131,11 +131,11 @@ export default function DashboardPage() {
               <SpotlightCard
                 radius={350}
                 spotlightColor="rgba(16, 185, 129, 0.12)"
-                className="lg:col-span-4 p-6 flex flex-col justify-between"
+                className="lg:col-span-4 p-4 sm:p-5 flex flex-col justify-between"
               >
                 <div>
-                  <div className="flex items-center justify-between pb-3 border-b border-border/40 dark:border-white/[0.05] mb-4">
-                    <h3 className="text-xs font-semibold tracking-tight text-foreground uppercase tracking-wider">
+                  <div className="flex items-center justify-between pb-2 border-b border-border/40 dark:border-white/[0.05] mb-2.5">
+                    <h3 className="text-xs font-semibold tracking-wider text-muted-foreground uppercase font-mono">
                       Monthly Cycle
                     </h3>
                     <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
@@ -143,30 +143,30 @@ export default function DashboardPage() {
                     </span>
                   </div>
 
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="flex items-center gap-2 text-muted-foreground">
+                      <span className="flex items-center gap-1.5 text-muted-foreground">
                         <ArrowDownLeft className="w-3.5 h-3.5 text-emerald-500" />
                         Monthly Inflow
                       </span>
-                      <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
+                      <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-400 tabular-nums">
                         +{formatCurrency(income)}
                       </span>
                     </div>
 
                     <div className="flex items-center justify-between text-xs">
-                      <span className="flex items-center gap-2 text-muted-foreground">
+                      <span className="flex items-center gap-1.5 text-muted-foreground">
                         <ArrowUpRight className="w-3.5 h-3.5 text-rose-500" />
                         Monthly Outflow
                       </span>
-                      <span className="font-mono font-bold text-rose-500 tabular-nums">
+                      <span className="font-mono font-semibold text-rose-500 tabular-nums">
                         -{formatCurrency(expenses)}
                       </span>
                     </div>
 
-                    <div className="pt-2 border-t border-border/40 dark:border-white/[0.04] flex items-center justify-between text-xs">
+                    <div className="pt-1.5 border-t border-border/40 dark:border-white/[0.04] flex items-center justify-between text-xs">
                       <span className="font-medium text-foreground">Net Retained</span>
-                      <span className="font-mono font-bold text-foreground tabular-nums text-sm">
+                      <span className="font-mono font-bold text-foreground tabular-nums text-xs">
                         {formatCurrency(savings)}
                       </span>
                     </div>
@@ -174,14 +174,14 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Retention Gauge Bar */}
-                <div className="pt-4">
+                <div className="pt-2.5">
                   <div className="w-full bg-muted/60 dark:bg-white/[0.06] h-1.5 rounded-full overflow-hidden">
                     <div
                       className="bg-emerald-500 h-full rounded-full transition-all duration-700"
                       style={{ width: `${Math.min(savingsRate, 100)}%` }}
                     />
                   </div>
-                  <div className="flex justify-between items-center text-[10px] font-mono text-muted-foreground mt-1.5">
+                  <div className="flex justify-between items-center text-[10px] font-mono text-muted-foreground mt-1">
                     <span>Inflow</span>
                     <span>{savingsRate}% saved</span>
                     <span>Goal</span>
@@ -194,7 +194,7 @@ export default function DashboardPage() {
             {stats?.budgets && <BudgetWarnings budgets={stats.budgets} />}
 
             {/* Middle Row: Visual Cash Flow Analytics (8 cols) + Recent Activity (4 cols) */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
               {/* Bento 3: Financial Flow Analytics with Interactive HUD Scrubber */}
               <SpotlightCard
                 radius={400}
@@ -326,7 +326,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Bottom Row: Savings Goals (6 cols) + Upcoming Bills (6 cols) */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
               {/* Bento 5: Savings Goals */}
               <SpotlightCard
                 radius={350}
