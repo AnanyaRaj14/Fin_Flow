@@ -18,7 +18,7 @@ export default function RecentTransactions({ transactions = [] }) {
               {transactions.length} items
             </span>
           </div>
-          <Link href="/transactions" prefetch={false}>
+          <Link href="/transactions/">
             <Button variant="ghost" size="sm" className="text-xs text-muted-foreground hover:text-foreground h-7 gap-1">
               <span>View ledger</span>
               <ChevronRight className="w-3.5 h-3.5" />
@@ -34,7 +34,7 @@ export default function RecentTransactions({ transactions = [] }) {
             </div>
             <p className="text-sm font-medium text-foreground">No recent transactions</p>
             <p className="text-xs text-muted-foreground mt-0.5">Record income or expenses to see insights.</p>
-            <Link href="/transactions" prefetch={false} className="inline-block mt-3">
+            <Link href="/transactions/" className="inline-block mt-3">
               <Button size="sm" variant="outline" className="h-8 text-xs gap-1.5 rounded-xl">
                 <Plus className="w-3.5 h-3.5" />
                 Add transaction

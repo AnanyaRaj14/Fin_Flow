@@ -18,7 +18,7 @@ export default function UpcomingBills({ bills = [] }) {
               {bills.length} pending
             </span>
           </div>
-          <Link href="/bills" prefetch={false}>
+          <Link href="/bills/">
             <Button variant="ghost" size="sm" className="text-xs text-muted-foreground hover:text-foreground h-7 gap-1">
               <span>All bills</span>
               <ChevronRight className="w-3.5 h-3.5" />

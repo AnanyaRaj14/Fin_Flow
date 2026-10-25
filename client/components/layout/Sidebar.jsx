@@ -19,25 +19,25 @@ const navSections = [
   {
     title: 'OVERVIEW',
     items: [
-      { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-      { label: 'Accounts', href: '/accounts', icon: Wallet },
-      { label: 'Transactions', href: '/transactions', icon: ArrowLeftRight },
+      { label: 'Dashboard', href: '/dashboard/', icon: LayoutDashboard },
+      { label: 'Accounts', href: '/accounts/', icon: Wallet },
+      { label: 'Transactions', href: '/transactions/', icon: ArrowLeftRight },
     ],
   },
   {
     title: 'PLANNING',
     items: [
-      { label: 'Budgets', href: '/budgets', icon: PiggyBank },
-      { label: 'Goals', href: '/goals', icon: Target },
-      { label: 'Bills', href: '/bills', icon: Receipt },
+      { label: 'Budgets', href: '/budgets/', icon: PiggyBank },
+      { label: 'Goals', href: '/goals/', icon: Target },
+      { label: 'Bills', href: '/bills/', icon: Receipt },
     ],
   },
   {
     title: 'INSIGHTS',
     items: [
-      { label: 'Categories', href: '/categories', icon: Tag },
-      { label: 'Reports', href: '/reports', icon: BarChart3 },
-      { label: 'Settings', href: '/settings', icon: Settings },
+      { label: 'Categories', href: '/categories/', icon: Tag },
+      { label: 'Reports', href: '/reports/', icon: BarChart3 },
+      { label: 'Settings', href: '/settings/', icon: Settings },
     ],
   },
 ];
@@ -50,7 +50,16 @@ export default function Sidebar({ open, onClose }) {
   const handleLogout = async () => {
     await logout();
     toast.success('Logged out successfully.');
-    router.push('/login');
+    router.push('/login/');
+  };
+
+  const isItemActive = (href) => {
+    const cleanPath = (pathname || '').replace(/\/$/, '');
+    const cleanHref = href.replace(/\/$/, '');
+    if (cleanHref === '/dashboard') {
+      return cleanPath === '/dashboard';
+    }
+    return cleanPath === cleanHref || cleanPath.startsWith(cleanHref + '/');
   };
 
   const sidebarContent = (
@@ -59,7 +68,7 @@ export default function Sidebar({ open, onClose }) {
       <div className="flex-1 overflow-y-auto">
         {/* Brand Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border/40 dark:border-white/[0.04]">
-          <Link href="/dashboard" prefetch={false}>
+          <Link href="/dashboard/">
             <Logo size="sm" />
           </Link>
           <button
@@ -79,12 +88,11 @@ export default function Sidebar({ open, onClose }) {
               </p>
               <div className="space-y-0.5 pt-0.5">
                 {section.items.map(({ label, href, icon: Icon }) => {
-                  const active = pathname === href || (href !== '/dashboard' && pathname.startsWith(href));
+                  const active = isItemActive(href);
                   return (
                     <Link
                       key={href}
                       href={href}
-                      prefetch={false}
                       onClick={onClose}
                       className={cn(
                         'relative flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl text-xs font-medium transition-colors group',

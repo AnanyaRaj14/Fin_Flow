@@ -108,13 +108,13 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="pt-3.5 flex items-center gap-2.5">
-                  <Link href="/transactions" prefetch={false}>
+                  <Link href="/transactions/">
                     <ShimmerButton className="h-8 px-3.5 text-xs font-medium gap-1.5 shadow-xs">
                       <Plus className="w-3.5 h-3.5" />
                       <span>Add Transaction</span>
                     </ShimmerButton>
                   </Link>
-                  <Link href="/accounts" prefetch={false}>
+                  <Link href="/accounts/">
                     <Button
                       variant="outline"
                       size="sm"
@@ -259,7 +259,7 @@ export default function DashboardPage() {
                 <div>
                   <div className="pb-3 border-b border-border/40 dark:border-white/[0.05] flex items-center justify-between mb-3">
                     <h3 className="text-sm font-semibold tracking-tight text-foreground">Recent Activity</h3>
-                    <Link href="/transactions" prefetch={false}>
+                    <Link href="/transactions/">
                       <Button variant="ghost" size="sm" className="text-xs text-muted-foreground h-7 gap-1 hover:text-foreground">
                         <span>Ledger</span>
                         <ChevronRight className="w-3.5 h-3.5" />
@@ -315,8 +315,8 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-border/40 dark:border-white/[0.04]">
-                  <Link href="/transactions" prefetch={false} className="w-full block">
+                <div className="pt-3.5 border-t border-border/40 dark:border-white/[0.04]">
+                  <Link href="/transactions/" className="w-full block">
                     <Button variant="ghost" className="w-full h-8 text-xs text-muted-foreground hover:text-foreground">
                       <span>View all transactions →</span>
                     </Button>
@@ -340,7 +340,7 @@ export default function DashboardPage() {
                       {stats?.goals?.length ?? 0} active
                     </span>
                   </div>
-                  <Link href="/goals" prefetch={false}>
+                  <Link href="/goals/">
                     <Button variant="ghost" size="sm" className="text-xs text-muted-foreground h-7 gap-1 hover:text-foreground">
                       <span>Manage</span>
                       <ChevronRight className="w-3.5 h-3.5" />
@@ -385,7 +385,7 @@ export default function DashboardPage() {
               >
                 <div className="pb-3 border-b border-border/40 dark:border-white/[0.05] flex items-center justify-between mb-4">
                   <h3 className="text-sm font-semibold tracking-tight text-foreground">Upcoming Commitments</h3>
-                  <Link href="/bills" prefetch={false}>
+                  <Link href="/bills/">
                     <Button variant="ghost" size="sm" className="text-xs text-muted-foreground h-7 gap-1 hover:text-foreground">
                       <span>Manage</span>
                       <ChevronRight className="w-3.5 h-3.5" />
