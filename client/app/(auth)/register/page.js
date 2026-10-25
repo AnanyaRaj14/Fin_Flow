@@ -12,7 +12,7 @@ import { toast } from '@/components/ui/toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { SpotlightCard } from '@/components/ui/spotlight-card';
 import { Logo } from '@/components/ui/logo';
 
 export default function RegisterPage() {
@@ -64,14 +64,14 @@ export default function RegisterPage() {
         <p className="text-xs text-muted-foreground font-medium">Simple, quiet financial clarity</p>
       </div>
 
-      <Card className="border border-border/70 dark:border-white/[0.08] dark:bg-card/80 backdrop-blur-md shadow-xs">
-        <CardHeader className="text-center pb-4 pt-6">
-          <CardTitle className="text-xl font-semibold tracking-tight">Create your account</CardTitle>
-          <CardDescription className="text-xs text-muted-foreground mt-1">
+      <SpotlightCard className="p-0 border-border/70 dark:border-white/[0.1] dark:bg-[#121215]/85 backdrop-blur-xl shadow-2xl">
+        <div className="text-center pb-4 pt-6 px-6">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground">Create your account</h2>
+          <p className="text-xs text-muted-foreground mt-1">
             Start managing your wealth, cash flow, and budgets
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4 px-6 pb-6">
+          </p>
+        </div>
+        <div className="space-y-4 px-6 pb-6">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-1.5">
               <Label className="text-xs font-medium text-foreground">Full Name</Label>
@@ -145,8 +145,8 @@ export default function RegisterPage() {
               Sign in
             </Link>
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </SpotlightCard>
     </motion.div>
   );
 }

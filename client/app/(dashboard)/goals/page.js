@@ -5,7 +5,8 @@ import { Plus, Pencil, Trash2, Target, Loader2, CheckCircle2 } from 'lucide-reac
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { Card, CardContent } from '@/components/ui/card';
+import { SpotlightCard } from '@/components/ui/spotlight-card';
+import { ShimmerButton } from '@/components/ui/shimmer-button';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -81,68 +82,93 @@ export default function GoalsPage() {
   return (
     <DashboardLayout title="Goals">
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between pb-1">
           <div>
-            <h2 className="text-xl font-bold">Savings Goals</h2>
-            <p className="text-muted-foreground text-sm">{goals.filter((g) => !g.isCompleted).length} active goals</p>
+            <h2 className="text-xl font-bold tracking-tight text-foreground">Savings Goals</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">{goals.filter((g) => !g.isCompleted).length} active target milestones</p>
           </div>
-          <Button onClick={openCreate}><Plus className="w-4 h-4" /> Add Goal</Button>
+          <ShimmerButton
+            onClick={openCreate}
+            shimmerColor="#ffffff"
+            shimmerSize="0.08em"
+            shimmerDuration="3.5s"
+            borderRadius="10px"
+            className="h-8 px-4 text-xs font-medium gap-1.5 dark:bg-zinc-900"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Add Goal</span>
+          </ShimmerButton>
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-16"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>
+          <div className="flex justify-center py-16"><Loader2 className="w-7 h-7 animate-spin text-muted-foreground" /></div>
         ) : goals.length === 0 ? (
-          <div className="text-center py-16 text-muted-foreground">
-            <Target className="w-12 h-12 mx-auto mb-3 opacity-30" />
-            <p className="font-medium">No goals yet</p>
-            <p className="text-sm mb-4">Create a savings goal to stay motivated.</p>
-            <Button onClick={openCreate}><Plus className="w-4 h-4" /> Create Goal</Button>
-          </div>
+          <SpotlightCard className="text-center py-16 text-muted-foreground border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80">
+            <Target className="w-10 h-10 mx-auto mb-3 opacity-25" />
+            <p className="text-sm font-medium text-foreground">No goals defined</p>
+            <p className="text-xs text-muted-foreground mt-0.5 mb-4">Create a savings milestone to track asset accumulation progress.</p>
+            <ShimmerButton
+              onClick={openCreate}
+              shimmerColor="#ffffff"
+              shimmerSize="0.08em"
+              shimmerDuration="3.5s"
+              borderRadius="10px"
+              className="h-8 px-4 text-xs font-medium gap-1.5 dark:bg-zinc-900 mx-auto"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Create Goal</span>
+            </ShimmerButton>
+          </SpotlightCard>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {goals.map((goal, i) => {
               const pct = goal.targetAmount > 0 ? Math.min((goal.savedAmount / goal.targetAmount) * 100, 100) : 0;
               return (
-                <motion.div key={goal.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-                  <Card className={`relative overflow-hidden ${goal.isCompleted ? 'border-emerald-300 dark:border-emerald-700' : ''}`}>
-                    <div className="absolute top-0 left-0 right-0 h-1 rounded-t-xl" style={{ background: goal.color }} />
-                    <CardContent className="p-5 pt-6">
-                      <div className="flex items-start justify-between mb-4">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <p className="font-semibold">{goal.name}</p>
-                            {goal.isCompleted && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
-                          </div>
-                          {goal.deadline && (
-                            <p className="text-xs text-muted-foreground">Due {formatDate(goal.deadline)}</p>
-                          )}
+                <motion.div key={goal.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+                  <SpotlightCard
+                    radius={300}
+                    spotlightColor={`${goal.color || '#6366f1'}20`}
+                    className={cn(
+                      'p-5 border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80 relative overflow-hidden',
+                      goal.isCompleted && 'border-emerald-500/40 dark:border-emerald-500/30'
+                    )}
+                  >
+                    <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: goal.color }} />
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="font-semibold text-xs text-foreground truncate">{goal.name}</p>
+                          {goal.isCompleted && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />}
                         </div>
-                        <div className="flex gap-1">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(goal)}>
-                            <Pencil className="w-3.5 h-3.5" />
-                          </Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => setConfirmDelete(goal)}>
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </Button>
-                        </div>
+                        {goal.deadline && (
+                          <p className="text-[11px] text-muted-foreground mt-0.5">Target: {formatDate(goal.deadline)}</p>
+                        )}
                       </div>
+                      <div className="flex gap-1">
+                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg" onClick={() => openEdit(goal)}>
+                          <Pencil className="w-3.5 h-3.5" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg text-destructive hover:bg-destructive/10" onClick={() => setConfirmDelete(goal)}>
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
+                    </div>
 
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="font-bold text-lg" style={{ color: goal.color }}>
-                            {formatCurrency(goal.savedAmount)}
-                          </span>
-                          <span className="text-muted-foreground">{formatCurrency(goal.targetAmount)}</span>
-                        </div>
-                        <Progress
-                          value={pct}
-                          indicatorClassName={goal.isCompleted ? 'bg-emerald-500' : undefined}
-                          style={{ '--progress-color': goal.color }}
-                        />
-                        <p className="text-xs text-muted-foreground text-right">{Math.round(pct)}% saved</p>
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-baseline text-xs font-mono tabular-nums">
+                        <span className="font-bold text-base text-foreground">
+                          {formatCurrency(goal.savedAmount)}
+                        </span>
+                        <span className="text-muted-foreground">of {formatCurrency(goal.targetAmount)}</span>
                       </div>
-                    </CardContent>
-                  </Card>
+                      <Progress
+                        value={pct}
+                        className="h-1.5 rounded-full dark:bg-white/[0.06]"
+                        indicatorClassName={goal.isCompleted ? 'bg-emerald-500' : 'bg-foreground dark:bg-white'}
+                      />
+                      <p className="text-[11px] font-mono tabular-nums text-muted-foreground text-right">{Math.round(pct)}% saved</p>
+                    </div>
+                  </SpotlightCard>
                 </motion.div>
               );
             })}

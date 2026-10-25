@@ -5,7 +5,8 @@ import { Plus, Pencil, Trash2, AlertTriangle, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { SpotlightCard } from '@/components/ui/spotlight-card';
+import { ShimmerButton } from '@/components/ui/shimmer-button';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -100,103 +101,128 @@ export default function BudgetsPage() {
   return (
     <DashboardLayout title="Budgets">
       <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+        <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between pb-1">
           <div>
-            <h2 className="text-xl font-bold">Budget Planner</h2>
-            <p className="text-muted-foreground text-sm">
-              {formatCurrency(totalSpent)} spent of {formatCurrency(totalBudgeted)} budgeted
+            <h2 className="text-xl font-bold tracking-tight text-foreground">Budget Planner</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              <span className="font-mono tabular-nums">{formatCurrency(totalSpent)}</span> spent of <span className="font-mono tabular-nums">{formatCurrency(totalBudgeted)}</span> allocated
             </p>
           </div>
           <div className="flex items-center gap-2">
             <Select value={String(month)} onValueChange={(v) => setMonth(Number(v))}>
-              <SelectTrigger className="w-28"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-24 h-8 text-xs dark:bg-white/[0.03] dark:border-white/10"><SelectValue /></SelectTrigger>
               <SelectContent>
                 {MONTHS.map((m, i) => <SelectItem key={i} value={String(i + 1)}>{m}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={String(year)} onValueChange={(v) => setYear(Number(v))}>
-              <SelectTrigger className="w-24"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-24 h-8 text-xs dark:bg-white/[0.03] dark:border-white/10"><SelectValue /></SelectTrigger>
               <SelectContent>
                 {[year - 1, year, year + 1].map((y) => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}
               </SelectContent>
             </Select>
-            <Button onClick={openCreate}><Plus className="w-4 h-4" /> Add</Button>
+            <ShimmerButton
+              onClick={openCreate}
+              shimmerColor="#ffffff"
+              shimmerSize="0.08em"
+              shimmerDuration="3.5s"
+              borderRadius="10px"
+              className="h-8 px-3.5 text-xs font-medium gap-1.5 dark:bg-zinc-900"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Add Budget</span>
+            </ShimmerButton>
           </div>
         </div>
 
         {/* Summary bar */}
         {budgets.length > 0 && (
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">Overall Budget</span>
-                <span className="text-sm text-muted-foreground">
-                  {totalBudgeted > 0 ? Math.round((totalSpent / totalBudgeted) * 100) : 0}%
-                </span>
-              </div>
-              <Progress
-                value={totalBudgeted > 0 ? Math.min((totalSpent / totalBudgeted) * 100, 100) : 0}
-                indicatorClassName={totalSpent > totalBudgeted ? 'bg-destructive' : 'bg-primary'}
-              />
-              <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                <span>{formatCurrency(totalSpent)} spent</span>
-                <span>{formatCurrency(Math.max(0, totalBudgeted - totalSpent))} remaining</span>
-              </div>
-            </CardContent>
-          </Card>
+          <SpotlightCard radius={350} className="p-4 border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-medium text-foreground">Overall Allocation</span>
+              <span className="text-xs font-mono font-medium text-muted-foreground tabular-nums">
+                {totalBudgeted > 0 ? Math.round((totalSpent / totalBudgeted) * 100) : 0}% consumed
+              </span>
+            </div>
+            <Progress
+              value={totalBudgeted > 0 ? Math.min((totalSpent / totalBudgeted) * 100, 100) : 0}
+              className="h-2 rounded-full dark:bg-white/[0.06]"
+              indicatorClassName={totalSpent > totalBudgeted ? 'bg-rose-500' : 'bg-foreground dark:bg-white'}
+            />
+            <div className="flex justify-between text-[11px] text-muted-foreground mt-2">
+              <span className="font-mono tabular-nums">{formatCurrency(totalSpent)} spent</span>
+              <span className="font-mono tabular-nums">{formatCurrency(Math.max(0, totalBudgeted - totalSpent))} remaining</span>
+            </div>
+          </SpotlightCard>
         )}
 
         {loading ? (
-          <div className="flex justify-center py-16"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>
+          <div className="flex justify-center py-16"><Loader2 className="w-7 h-7 animate-spin text-muted-foreground" /></div>
         ) : budgets.length === 0 ? (
-          <div className="text-center py-16 text-muted-foreground">
-            <p className="font-medium">No budgets for {MONTHS[month - 1]} {year}</p>
-            <p className="text-sm mb-4">Set category budgets to track your spending.</p>
-            <Button onClick={openCreate}><Plus className="w-4 h-4" /> Create Budget</Button>
-          </div>
+          <SpotlightCard className="text-center py-16 text-muted-foreground border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80">
+            <p className="font-medium text-sm text-foreground">No budgets for {MONTHS[month - 1]} {year}</p>
+            <p className="text-xs text-muted-foreground mt-0.5 mb-4">Set category limits to track and control expenses.</p>
+            <ShimmerButton
+              onClick={openCreate}
+              shimmerColor="#ffffff"
+              shimmerSize="0.08em"
+              shimmerDuration="3.5s"
+              borderRadius="10px"
+              className="h-8 px-4 text-xs font-medium gap-1.5 dark:bg-zinc-900 mx-auto"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Create Budget</span>
+            </ShimmerButton>
+          </SpotlightCard>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {budgets.map((budget, i) => {
               const pct = budget.amount > 0 ? Math.min((budget.spent / budget.amount) * 100, 100) : 0;
               const over = budget.spent > budget.amount;
               return (
-                <motion.div key={budget.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-                  <Card className={over ? 'border-destructive/50' : ''}>
-                    <CardContent className="p-5">
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: budget.category?.color + '20' }}>
-                            <div className="w-3 h-3 rounded-full" style={{ background: budget.category?.color }} />
-                          </div>
-                          <div>
-                            <p className="font-medium text-sm">{budget.category?.name}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {formatCurrency(budget.spent)} / {formatCurrency(budget.amount)}
-                            </p>
-                          </div>
-                          {over && <AlertTriangle className="w-4 h-4 text-destructive" />}
+                <motion.div key={budget.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+                  <SpotlightCard
+                    radius={300}
+                    spotlightColor={over ? 'rgba(244, 63, 94, 0.15)' : 'rgba(255, 255, 255, 0.08)'}
+                    className={cn(
+                      'p-5 border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80',
+                      over && 'border-rose-500/40 dark:border-rose-500/30'
+                    )}
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-7 h-7 rounded-lg flex items-center justify-center border" style={{ background: (budget.category?.color || '#6366f1') + '15', borderColor: (budget.category?.color || '#6366f1') + '30' }}>
+                          <div className="w-2.5 h-2.5 rounded-full" style={{ background: budget.category?.color }} />
                         </div>
-                        <div className="flex gap-1">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(budget)}>
-                            <Pencil className="w-3.5 h-3.5" />
-                          </Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => setConfirmDelete(budget)}>
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </Button>
+                        <div>
+                          <p className="font-semibold text-xs text-foreground truncate">{budget.category?.name}</p>
+                          <p className="text-[11px] font-mono tabular-nums text-muted-foreground">
+                            {formatCurrency(budget.spent)} / {formatCurrency(budget.amount)}
+                          </p>
                         </div>
+                        {over && <AlertTriangle className="w-3.5 h-3.5 text-rose-500 shrink-0" />}
                       </div>
-                      <Progress
-                        value={pct}
-                        indicatorClassName={over ? 'bg-destructive' : pct > 80 ? 'bg-amber-500' : 'bg-emerald-500'}
-                      />
-                      <div className="flex justify-between text-xs mt-1">
-                        <span className="text-muted-foreground">{Math.round(pct)}% used</span>
-                        <span className={over ? 'text-destructive font-medium' : 'text-muted-foreground'}>
-                          {over ? `${formatCurrency(budget.spent - budget.amount)} over` : `${formatCurrency(budget.amount - budget.spent)} left`}
-                        </span>
+                      <div className="flex gap-1">
+                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg" onClick={() => openEdit(budget)}>
+                          <Pencil className="w-3.5 h-3.5" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg text-destructive hover:bg-destructive/10" onClick={() => setConfirmDelete(budget)}>
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
                       </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                    <Progress
+                      value={pct}
+                      className="h-1.5 rounded-full dark:bg-white/[0.06]"
+                      indicatorClassName={over ? 'bg-rose-500' : pct > 80 ? 'bg-amber-500' : 'bg-emerald-500'}
+                    />
+                    <div className="flex justify-between text-[11px] font-mono tabular-nums mt-2">
+                      <span className="text-muted-foreground">{Math.round(pct)}% used</span>
+                      <span className={over ? 'text-rose-500 font-semibold' : 'text-muted-foreground'}>
+                        {over ? `+${formatCurrency(budget.spent - budget.amount)} over` : `${formatCurrency(budget.amount - budget.spent)} left`}
+                      </span>
+                    </div>
+                  </SpotlightCard>
                 </motion.div>
               );
             })}

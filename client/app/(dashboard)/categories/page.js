@@ -5,7 +5,8 @@ import { Plus, Pencil, Trash2, Tag, Loader2, Lock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { SpotlightCard } from '@/components/ui/spotlight-card';
+import { ShimmerButton } from '@/components/ui/shimmer-button';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -89,95 +90,106 @@ export default function CategoriesPage() {
   return (
     <DashboardLayout title="Categories">
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between pb-1">
           <div>
-            <h2 className="text-xl font-bold">Categories</h2>
-            <p className="text-muted-foreground text-sm">
-              {defaults.length} default · {custom.length} custom
+            <h2 className="text-xl font-bold tracking-tight text-foreground">Categories</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {defaults.length} system presets · {custom.length} custom tags
             </p>
           </div>
-          <Button onClick={openCreate}><Plus className="w-4 h-4" /> Add Category</Button>
+          <ShimmerButton
+            onClick={openCreate}
+            shimmerColor="#ffffff"
+            shimmerSize="0.08em"
+            shimmerDuration="3.5s"
+            borderRadius="10px"
+            className="h-8 px-4 text-xs font-medium gap-1.5 dark:bg-zinc-900"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Add Category</span>
+          </ShimmerButton>
         </div>
 
         {loading ? (
           <div className="flex justify-center py-16">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            <Loader2 className="w-7 h-7 animate-spin text-muted-foreground" />
           </div>
         ) : (
           <div className="space-y-6">
-            {/* Default categories */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Lock className="w-4 h-4 text-muted-foreground" />
-                  Default Categories
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
-                  {defaults.map((cat) => (
-                    <div
+            {/* Custom categories */}
+            <SpotlightCard radius={380} className="p-5 border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80">
+              <div className="pb-3 border-b border-border/40 dark:border-white/[0.05] mb-4">
+                <h3 className="text-sm font-semibold tracking-tight text-foreground">Custom Taxonomies</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">Tailored categories created for your accounting</p>
+              </div>
+              {custom.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Tag className="w-8 h-8 mx-auto mb-2 opacity-25" />
+                  <p className="text-xs font-medium text-foreground">No custom categories yet</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">Create a specialized tag to organize transactions your way.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {custom.map((cat, i) => (
+                    <motion.div
                       key={cat.id}
-                      className="flex items-center gap-2 px-3 py-2 rounded-lg border bg-muted/30"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.05 }}
                     >
-                      <div className="w-3 h-3 rounded-full shrink-0" style={{ background: cat.color }} />
-                      <span className="text-sm font-medium truncate">{cat.name}</span>
-                      <Badge variant="outline" className="ml-auto text-xs shrink-0">
-                        {cat.type === 'both' ? 'all' : cat.type}
-                      </Badge>
-                    </div>
+                      <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-border/60 dark:border-white/[0.06] bg-card/40 hover:bg-accent/40 dark:hover:bg-white/[0.03] transition-colors group">
+                        <div
+                          className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border"
+                          style={{ background: cat.color + '15', borderColor: cat.color + '30' }}
+                        >
+                          <div className="w-2.5 h-2.5 rounded-full" style={{ background: cat.color }} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-semibold text-foreground truncate">{cat.name}</p>
+                          <p className="text-[10px] text-muted-foreground capitalize">{cat.type}</p>
+                        </div>
+                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button variant="ghost" size="icon" className="h-6 w-6 rounded-md" onClick={() => openEdit(cat)}>
+                            <Pencil className="w-3 h-3" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-6 w-6 rounded-md text-destructive hover:bg-destructive/10" onClick={() => setConfirmDelete(cat)}>
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    </motion.div>
                   ))}
                 </div>
-              </CardContent>
-            </Card>
+              )}
+            </SpotlightCard>
 
-            {/* Custom categories */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">Custom Categories</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {custom.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Tag className="w-10 h-10 mx-auto mb-2 opacity-30" />
-                    <p className="text-sm">No custom categories yet.</p>
-                    <p className="text-xs mt-1">Create one to organise transactions your way.</p>
+            {/* Default categories */}
+            <SpotlightCard radius={380} className="p-5 border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80">
+              <div className="pb-3 border-b border-border/40 dark:border-white/[0.05] mb-4 flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-semibold tracking-tight text-foreground flex items-center gap-2">
+                    <Lock className="w-3.5 h-3.5 text-muted-foreground" />
+                    <span>System Presets</span>
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">Standard baseline financial categories</p>
+                </div>
+                <span className="text-[10px] font-mono text-muted-foreground">{defaults.length} presets</span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+                {defaults.map((cat) => (
+                  <div
+                    key={cat.id}
+                    className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-border/40 dark:border-white/[0.04] bg-muted/20"
+                  >
+                    <div className="w-2 h-2 rounded-full shrink-0" style={{ background: cat.color }} />
+                    <span className="text-xs font-medium text-foreground truncate">{cat.name}</span>
+                    <span className="ml-auto text-[9px] font-mono uppercase text-muted-foreground">
+                      {cat.type === 'both' ? 'all' : cat.type}
+                    </span>
                   </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {custom.map((cat, i) => (
-                      <motion.div
-                        key={cat.id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.05 }}
-                      >
-                        <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg border hover:bg-accent/30 transition-colors group">
-                          <div
-                            className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                            style={{ background: cat.color + '20' }}
-                          >
-                            <div className="w-3 h-3 rounded-full" style={{ background: cat.color }} />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium truncate">{cat.name}</p>
-                            <p className="text-xs text-muted-foreground capitalize">{cat.type}</p>
-                          </div>
-                          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(cat)}>
-                              <Pencil className="w-3.5 h-3.5" />
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => setConfirmDelete(cat)}>
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </Button>
-                          </div>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                ))}
+              </div>
+            </SpotlightCard>
           </div>
         )}
       </div>

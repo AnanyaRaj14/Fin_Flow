@@ -5,7 +5,8 @@ import { Plus, Search, ArrowUpRight, ArrowDownLeft, ArrowLeftRight, Pencil, Tras
 import { motion, AnimatePresence } from 'framer-motion';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import TransactionForm from '@/components/transactions/TransactionForm';
-import { Card, CardContent } from '@/components/ui/card';
+import { SpotlightCard } from '@/components/ui/spotlight-card';
+import { ShimmerButton } from '@/components/ui/shimmer-button';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -112,128 +113,136 @@ export default function TransactionsPage() {
   return (
     <DashboardLayout title="Transactions">
       <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+        <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between pb-1">
           <div>
-            <h2 className="text-xl font-bold">Transactions</h2>
-            <p className="text-muted-foreground text-sm">{total} total transactions</p>
+            <h2 className="text-xl font-bold tracking-tight text-foreground">Transactions</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">{total} recorded ledger entries</p>
           </div>
-          <Button onClick={openCreate}><Plus className="w-4 h-4" /> Add Transaction</Button>
+          <ShimmerButton
+            onClick={openCreate}
+            shimmerColor="#ffffff"
+            shimmerSize="0.08em"
+            shimmerDuration="3.5s"
+            borderRadius="10px"
+            className="h-8 px-4 text-xs font-medium gap-1.5 dark:bg-zinc-900"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Add Transaction</span>
+          </ShimmerButton>
         </div>
 
         {/* Filters */}
-        <Card>
-          <CardContent className="p-4 space-y-3">
+        <SpotlightCard radius={350} className="p-4 border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80 space-y-3">
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+              <Input placeholder="Search ledger by title..." className="pl-9 h-9 text-xs dark:bg-white/[0.03] dark:border-white/10" value={search} onChange={(e) => setSearch(e.target.value)} />
+            </div>
+            {hasFilters && (
+              <Button variant="ghost" size="sm" onClick={clearFilters} className="shrink-0 text-xs text-muted-foreground hover:text-foreground">
+                Clear filters
+              </Button>
+            )}
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+            <Select value={filterType} onValueChange={setFilterType}>
+              <SelectTrigger className="h-8 text-xs dark:bg-white/[0.03] dark:border-white/10"><SelectValue placeholder="All types" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">All types</SelectItem>
+                <SelectItem value="income">Income</SelectItem>
+                <SelectItem value="expense">Expense</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={filterCategory} onValueChange={setFilterCategory}>
+              <SelectTrigger className="h-8 text-xs dark:bg-white/[0.03] dark:border-white/10"><SelectValue placeholder="All categories" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">All categories</SelectItem>
+                {categories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+              </SelectContent>
+            </Select>
+
+            <Select value={filterAccount} onValueChange={setFilterAccount}>
+              <SelectTrigger className="h-8 text-xs dark:bg-white/[0.03] dark:border-white/10"><SelectValue placeholder="All accounts" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">All accounts</SelectItem>
+                {accounts.map((a) => <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>)}
+              </SelectContent>
+            </Select>
+
             <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input placeholder="Search transactions..." className="pl-9" value={search} onChange={(e) => setSearch(e.target.value)} />
-              </div>
-              {hasFilters && (
-                <Button variant="ghost" size="sm" onClick={clearFilters} className="shrink-0 text-muted-foreground">
-                  Clear
-                </Button>
-              )}
+              <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="h-8 text-xs dark:bg-white/[0.03] dark:border-white/10" />
             </div>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-              <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger><SelectValue placeholder="All types" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">All types</SelectItem>
-                  <SelectItem value="income">Income</SelectItem>
-                  <SelectItem value="expense">Expense</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select value={filterCategory} onValueChange={setFilterCategory}>
-                <SelectTrigger><SelectValue placeholder="All categories" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">All categories</SelectItem>
-                  {categories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                </SelectContent>
-              </Select>
-
-              <Select value={filterAccount} onValueChange={setFilterAccount}>
-                <SelectTrigger><SelectValue placeholder="All accounts" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">All accounts</SelectItem>
-                  {accounts.map((a) => <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>)}
-                </SelectContent>
-              </Select>
-
-              <div className="flex gap-2">
-                <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="text-xs" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+        </SpotlightCard>
 
         {/* Transaction list */}
         {loading ? (
-          <div className="flex justify-center py-16"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>
+          <div className="flex justify-center py-16"><Loader2 className="w-7 h-7 animate-spin text-muted-foreground" /></div>
         ) : transactions.length === 0 ? (
-          <div className="text-center py-16 text-muted-foreground">
-            <ArrowLeftRight className="w-12 h-12 mx-auto mb-3 opacity-30" />
-            <p className="font-medium">No transactions found</p>
-            <p className="text-sm">Try adjusting filters or add a new transaction.</p>
-          </div>
+          <SpotlightCard className="text-center py-16 text-muted-foreground border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80">
+            <ArrowLeftRight className="w-10 h-10 mx-auto mb-3 opacity-25" />
+            <p className="text-sm font-medium text-foreground">No transactions found</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Try adjusting filters or record a new transaction.</p>
+          </SpotlightCard>
         ) : (
-          <Card>
-            <CardContent className="p-0">
-              <div className="divide-y">
-                <AnimatePresence>
-                  {transactions.map((tx) => (
-                    <motion.div
-                      key={tx.id}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="flex items-center gap-4 px-4 py-3 hover:bg-accent/30 transition-colors group"
-                    >
-                      <div className={cn(
-                        'w-9 h-9 rounded-xl flex items-center justify-center shrink-0',
-                        tx.type === 'income' ? 'bg-emerald-100 dark:bg-emerald-900/30' : 'bg-red-100 dark:bg-red-900/30'
+          <SpotlightCard radius={450} className="p-0 border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80 overflow-hidden">
+            <div className="divide-y divide-border/40 dark:divide-white/[0.04]">
+              <AnimatePresence>
+                {transactions.map((tx) => (
+                  <motion.div
+                    key={tx.id}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="flex items-center gap-4 px-4 py-3 hover:bg-accent/30 dark:hover:bg-white/[0.02] transition-colors group"
+                  >
+                    <div className={cn(
+                      'w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border',
+                      tx.type === 'income'
+                        ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
+                        : 'bg-rose-500/10 text-rose-500 border-rose-500/20'
+                    )}>
+                      {tx.type === 'income'
+                        ? <ArrowDownLeft className="w-4 h-4" />
+                        : <ArrowUpRight className="w-4 h-4" />
+                      }
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="text-xs font-semibold text-foreground truncate">{tx.title}</p>
+                        {tx.receiptUrl && <ImageIcon className="w-3 h-3 text-muted-foreground shrink-0" />}
+                      </div>
+                      <p className="text-[11px] text-muted-foreground">
+                        {tx.category?.name || 'General'} · {tx.account?.name || 'Cash'} · {formatDate(tx.date)}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-accent dark:bg-white/[0.04] border border-border/40 dark:border-white/[0.06] text-muted-foreground">
+                        {tx.paymentMethod || 'Manual'}
+                      </span>
+                      <span className={cn(
+                        'text-xs font-mono font-medium tabular-nums w-24 text-right shrink-0',
+                        tx.type === 'income' ? 'text-emerald-500' : 'text-foreground'
                       )}>
-                        {tx.type === 'income'
-                          ? <ArrowDownLeft className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                          : <ArrowUpRight className="w-4 h-4 text-red-600 dark:text-red-400" />
-                        }
+                        {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount)}
+                      </span>
+                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg" onClick={() => openEdit(tx)}>
+                          <Pencil className="w-3.5 h-3.5" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg text-destructive hover:bg-destructive/10" onClick={() => setConfirmDelete(tx)}>
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
                       </div>
-
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p className="text-sm font-medium truncate">{tx.title}</p>
-                          {tx.receiptUrl && <ImageIcon className="w-3 h-3 text-muted-foreground shrink-0" />}
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          {tx.category?.name} · {tx.account?.name} · {formatDate(tx.date)}
-                        </p>
-                      </div>
-
-                      <div className="flex items-center gap-3">
-                        <Badge variant={tx.type === 'income' ? 'income' : 'expense'}>
-                          {tx.paymentMethod}
-                        </Badge>
-                        <span className={cn(
-                          'text-sm font-semibold w-24 text-right shrink-0',
-                          tx.type === 'income' ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'
-                        )}>
-                          {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount)}
-                        </span>
-                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(tx)}>
-                            <Pencil className="w-3.5 h-3.5" />
-                          </Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => setConfirmDelete(tx)}>
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </Button>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </div>
-            </CardContent>
-          </Card>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          </SpotlightCard>
         )}
 
         {/* Pagination */}

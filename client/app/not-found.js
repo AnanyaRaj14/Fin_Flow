@@ -1,21 +1,43 @@
+'use client';
+
 import Link from 'next/link';
-import { TrendingUp } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { TrendingUp, ArrowLeft } from 'lucide-react';
+import { SpotlightCard } from '@/components/ui/spotlight-card';
+import { GridBackground } from '@/components/ui/background-grid';
+import { ShimmerButton } from '@/components/ui/shimmer-button';
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4 text-center p-4">
-      <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
-        <TrendingUp className="w-7 h-7 text-primary" />
-      </div>
-      <h1 className="text-6xl font-bold text-muted-foreground/30">404</h1>
-      <h2 className="text-xl font-semibold">Page not found</h2>
-      <p className="text-muted-foreground max-w-sm">
-        The page you&apos;re looking for doesn&apos;t exist or has been moved.
-      </p>
-      <Link href="/dashboard">
-        <Button>Go to Dashboard</Button>
-      </Link>
+    <div className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden bg-background">
+      <GridBackground />
+      <SpotlightCard
+        radius={450}
+        spotlightColor="rgba(99, 102, 241, 0.15)"
+        className="w-full max-w-md p-8 text-center border-border/80 dark:border-white/10 dark:bg-[#121215]/85 backdrop-blur-xl relative z-10"
+      >
+        <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto mb-6 border border-primary/20 shadow-lg">
+          <TrendingUp className="w-7 h-7" />
+        </div>
+        <p className="text-6xl font-black font-mono tracking-tighter text-foreground/20 mb-2">404</p>
+        <h2 className="text-xl font-bold text-foreground tracking-tight">Route Not Found</h2>
+        <p className="text-xs text-muted-foreground max-w-xs mx-auto mt-2 mb-6">
+          The requested resource is missing or has been relocated to another endpoint.
+        </p>
+        <div className="flex justify-center">
+          <Link href="/dashboard">
+            <ShimmerButton
+              shimmerColor="#ffffff"
+              shimmerSize="0.08em"
+              shimmerDuration="3.5s"
+              borderRadius="12px"
+              className="h-10 px-5 text-xs font-semibold gap-2 dark:bg-zinc-900"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Return to Dashboard</span>
+            </ShimmerButton>
+          </Link>
+        </div>
+      </SpotlightCard>
     </div>
   );
 }

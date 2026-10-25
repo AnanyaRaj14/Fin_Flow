@@ -104,40 +104,45 @@ export default function NotificationsPanel() {
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
 
           {/* Panel */}
-          <div className="absolute right-0 top-full mt-2 w-80 z-50 bg-background border rounded-xl shadow-xl overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-3 border-b">
-              <h3 className="font-semibold text-sm">Notifications</h3>
-              {notifications.length > 0 && (
-                <Badge variant="destructive" className="text-xs">{notifications.length}</Badge>
-              )}
-              <button onClick={() => setOpen(false)} className="ml-auto p-1 rounded hover:bg-accent">
+          <div className="absolute right-0 top-full mt-2 w-84 z-50 bg-card/95 backdrop-blur-xl border border-border/80 dark:border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-border/40 dark:border-white/[0.06]">
+              <div className="flex items-center gap-2">
+                <h3 className="font-semibold text-xs tracking-tight text-foreground">Notifications</h3>
+                {notifications.length > 0 && (
+                  <span className="px-1.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-rose-500/15 text-rose-500 border border-rose-500/20">
+                    {notifications.length}
+                  </span>
+                )}
+              </div>
+              <button onClick={() => setOpen(false)} className="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">
                 <X className="w-3.5 h-3.5" />
               </button>
             </div>
 
-            <div className="max-h-80 overflow-y-auto">
+            <div className="max-h-80 overflow-y-auto divide-y divide-border/30 dark:divide-white/[0.04]">
               {notifications.length === 0 ? (
-                <div className="text-center py-10 text-muted-foreground text-sm">
-                  <Bell className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                  <p>All caught up!</p>
+                <div className="text-center py-10 text-muted-foreground text-xs">
+                  <Bell className="w-8 h-8 mx-auto mb-2 opacity-20" />
+                  <p className="font-medium text-foreground">All caught up!</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">No overdue bills or budget limits exceeded.</p>
                 </div>
               ) : (
                 notifications.map((n) => (
                   <div
                     key={n.id}
                     className={cn(
-                      'flex items-start gap-3 px-4 py-3 border-b last:border-0 hover:bg-accent/30 transition-colors',
-                      n.urgent && 'bg-red-50/50 dark:bg-red-950/20'
+                      'flex items-start gap-3 px-4 py-3 hover:bg-accent/30 dark:hover:bg-white/[0.02] transition-colors',
+                      n.urgent && 'bg-rose-500/[0.03] dark:bg-rose-950/10'
                     )}
                   >
-                    <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center shrink-0', colorMap[n.type])}>
+                    <div className={cn('w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border border-white/5', colorMap[n.type])}>
                       {iconMap[n.type]}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium leading-tight">{n.title}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">{n.description}</p>
+                      <p className="text-xs font-semibold text-foreground leading-tight">{n.title}</p>
+                      <p className="text-[11px] text-muted-foreground font-mono mt-0.5">{n.description}</p>
                     </div>
-                    {n.urgent && <div className="w-2 h-2 bg-red-500 rounded-full mt-1 shrink-0" />}
+                    {n.urgent && <div className="w-1.5 h-1.5 bg-rose-500 rounded-full mt-1.5 shrink-0 animate-pulse" />}
                   </div>
                 ))
               )}

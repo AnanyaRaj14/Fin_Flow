@@ -12,7 +12,7 @@ import { toast } from '@/components/ui/toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { SpotlightCard } from '@/components/ui/spotlight-card';
 import { Logo } from '@/components/ui/logo';
 
 export default function LoginPage() {
@@ -86,14 +86,14 @@ export default function LoginPage() {
         <p className="text-xs text-muted-foreground font-medium">Simple, quiet financial clarity</p>
       </div>
 
-      <Card className="border border-border/70 dark:border-white/[0.08] dark:bg-card/80 backdrop-blur-md shadow-xs">
-        <CardHeader className="text-center pb-4 pt-6">
-          <CardTitle className="text-xl font-semibold tracking-tight">Welcome back</CardTitle>
-          <CardDescription className="text-xs text-muted-foreground mt-1">
+      <SpotlightCard className="p-0 border-border/70 dark:border-white/[0.1] dark:bg-[#121215]/85 backdrop-blur-xl shadow-2xl">
+        <div className="text-center pb-4 pt-6 px-6">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground">Welcome back</h2>
+          <p className="text-xs text-muted-foreground mt-1">
             Enter your credentials to access your financial portfolio
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4 px-6 pb-6">
+          </p>
+        </div>
+        <div className="space-y-4 px-6 pb-6">
           {/* Unverified email notification banner */}
           {unverifiedEmail && (
             <div className="flex items-start gap-3 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30">
@@ -176,8 +176,8 @@ export default function LoginPage() {
               Create account
             </Link>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </SpotlightCard>
     </motion.div>
   );
 }

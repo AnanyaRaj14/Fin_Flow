@@ -1,7 +1,7 @@
 'use client';
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { SpotlightCard } from '@/components/ui/spotlight-card';
 import { formatCurrency } from '@/lib/utils';
 import { Flame } from 'lucide-react';
 
@@ -21,11 +21,15 @@ export default function MonthlySpendingChart({ data = [] }) {
   const max = Math.max(...data.map((d) => d.amount || 0), 1);
 
   return (
-    <Card className="border border-border/80 dark:border-white/[0.08] dark:bg-card/85 backdrop-blur-md">
-      <CardHeader className="pb-2 border-b border-border/40 dark:border-white/[0.04]">
+    <SpotlightCard
+      radius={380}
+      spotlightColor="rgba(244, 63, 94, 0.12)"
+      className="border border-border/80 dark:border-white/[0.08] dark:bg-[#121215]/80 backdrop-blur-md overflow-hidden"
+    >
+      <div className="p-4 pb-3 border-b border-border/40 dark:border-white/[0.04]">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-sm font-semibold tracking-tight">Daily Outflow Velocity</CardTitle>
+            <h3 className="text-sm font-semibold tracking-tight text-foreground">Daily Outflow Velocity</h3>
             <p className="text-xs text-muted-foreground mt-0.5">Day-by-day expenditure distribution</p>
           </div>
           <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-500 border border-rose-500/20 flex items-center gap-1">
@@ -33,8 +37,8 @@ export default function MonthlySpendingChart({ data = [] }) {
             Burn Rate
           </span>
         </div>
-      </CardHeader>
-      <CardContent className="pt-4">
+      </div>
+      <div className="p-4 pt-3">
         {data.length === 0 || data.every((d) => Number(d.amount || 0) === 0) ? (
           <div className="h-[220px] flex items-center justify-center text-muted-foreground text-sm">
             No daily expense activity recorded for this period.
@@ -74,7 +78,7 @@ export default function MonthlySpendingChart({ data = [] }) {
             </BarChart>
           </ResponsiveContainer>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </SpotlightCard>
   );
 }

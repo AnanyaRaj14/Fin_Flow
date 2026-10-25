@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { Download, FileText, Table, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { SpotlightCard } from '@/components/ui/spotlight-card';
+import { ShimmerButton } from '@/components/ui/shimmer-button';
 import { Button } from '@/components/ui/button';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
@@ -93,126 +94,133 @@ export default function ReportsPage() {
   return (
     <DashboardLayout title="Reports">
       <div className="space-y-6">
-        <div>
-          <h2 className="text-xl font-bold">Reports</h2>
-          <p className="text-muted-foreground text-sm">Download your financial reports as PDF or CSV.</p>
+        <div className="pb-1">
+          <h2 className="text-xl font-bold tracking-tight text-foreground">Audit & Exports</h2>
+          <p className="text-xs text-muted-foreground mt-0.5">Generate formal ledger statements and export structured CSV/PDF reports.</p>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Generate Report</CardTitle>
-            <CardDescription>Select a period and generate your report</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="space-y-1.5">
-                <Label>Report Type</Label>
-                <Select value={reportType} onValueChange={setReportType}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="monthly">Monthly</SelectItem>
-                    <SelectItem value="yearly">Yearly</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              {reportType === 'monthly' && (
-                <div className="space-y-1.5">
-                  <Label>Month</Label>
-                  <Select value={String(month)} onValueChange={(v) => setMonth(Number(v))}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {MONTHS.map((m, i) => <SelectItem key={i} value={String(i + 1)}>{m}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-              <div className="space-y-1.5">
-                <Label>Year</Label>
-                <Select value={String(year)} onValueChange={(v) => setYear(Number(v))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {[2024, 2025, 2026, 2027].map((y) => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
+        <SpotlightCard radius={400} className="p-5 border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80 space-y-4">
+          <div className="pb-3 border-b border-border/40 dark:border-white/[0.05]">
+            <h3 className="text-sm font-semibold tracking-tight text-foreground">Statement Parameters</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">Specify accounting cycle and reporting interval</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium text-foreground">Report Type</Label>
+              <Select value={reportType} onValueChange={setReportType}>
+                <SelectTrigger className="h-8 text-xs dark:bg-white/[0.03] dark:border-white/10"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                  <SelectItem value="yearly">Yearly</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
+            {reportType === 'monthly' && (
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-foreground">Month</Label>
+                <Select value={String(month)} onValueChange={(v) => setMonth(Number(v))}>
+                  <SelectTrigger className="h-8 text-xs dark:bg-white/[0.03] dark:border-white/10"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {MONTHS.map((m, i) => <SelectItem key={i} value={String(i + 1)}>{m}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium text-foreground">Year</Label>
+              <Select value={String(year)} onValueChange={(v) => setYear(Number(v))}>
+                <SelectTrigger className="h-8 text-xs dark:bg-white/[0.03] dark:border-white/10"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {[2024, 2025, 2026, 2027].map((y) => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
 
-            <Button onClick={generateReport} disabled={loading}>
-              {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-              Generate
-            </Button>
-          </CardContent>
-        </Card>
+          <ShimmerButton
+            onClick={generateReport}
+            disabled={loading}
+            shimmerColor="#ffffff"
+            shimmerSize="0.08em"
+            shimmerDuration="3.5s"
+            borderRadius="10px"
+            className="h-8 px-4 text-xs font-medium gap-1.5 dark:bg-zinc-900"
+          >
+            {loading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+            <span>Compile Statement</span>
+          </ShimmerButton>
+        </SpotlightCard>
 
         {reportData && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
             {/* Summary */}
-            <div className="grid grid-cols-3 gap-4">
-              {[
-                { label: 'Income',   value: reportData.summary.income,   color: 'text-emerald-600' },
-                { label: 'Expenses', value: reportData.summary.expenses, color: 'text-red-600' },
-                { label: 'Savings',  value: reportData.summary.savings,  color: 'text-primary' },
-              ].map((item) => (
-                <Card key={item.label}>
-                  <CardContent className="p-4 text-center">
-                    <p className="text-sm text-muted-foreground">{item.label}</p>
-                    <p className={`text-xl font-bold mt-1 ${item.color}`}>{formatCurrency(item.value)}</p>
-                  </CardContent>
-                </Card>
-              ))}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <SpotlightCard radius={280} spotlightColor="rgba(16, 185, 129, 0.15)" className="p-4 text-center border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80">
+                <p className="text-[11px] font-medium tracking-wider uppercase text-muted-foreground">Inflow</p>
+                <p className="text-xl font-bold font-mono tabular-nums mt-1 text-emerald-500">{formatCurrency(reportData.summary.income)}</p>
+              </SpotlightCard>
+              <SpotlightCard radius={280} spotlightColor="rgba(244, 63, 94, 0.15)" className="p-4 text-center border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80">
+                <p className="text-[11px] font-medium tracking-wider uppercase text-muted-foreground">Outflow</p>
+                <p className="text-xl font-bold font-mono tabular-nums mt-1 text-rose-500">{formatCurrency(reportData.summary.expenses)}</p>
+              </SpotlightCard>
+              <SpotlightCard radius={280} spotlightColor="rgba(99, 102, 241, 0.18)" className="p-4 text-center border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80">
+                <p className="text-[11px] font-medium tracking-wider uppercase text-muted-foreground">Net Retained</p>
+                <p className="text-xl font-bold font-mono tabular-nums mt-1 text-foreground">{formatCurrency(reportData.summary.savings)}</p>
+              </SpotlightCard>
             </div>
 
             {/* Download buttons */}
-            <div className="flex gap-3">
-              <Button onClick={downloadPDF} variant="outline">
-                <FileText className="w-4 h-4" /> Download PDF
+            <div className="flex gap-2.5">
+              <Button onClick={downloadPDF} variant="outline" size="sm" className="h-8 text-xs font-medium gap-1.5 dark:bg-white/[0.02]">
+                <FileText className="w-3.5 h-3.5" />
+                <span>Export PDF</span>
               </Button>
-              <Button onClick={downloadCSV} variant="outline">
-                <Table className="w-4 h-4" /> Download CSV
+              <Button onClick={downloadCSV} variant="outline" size="sm" className="h-8 text-xs font-medium gap-1.5 dark:bg-white/[0.02]">
+                <Table className="w-3.5 h-3.5" />
+                <span>Export CSV</span>
               </Button>
             </div>
 
             {/* Transaction preview */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">Transactions ({reportData.transactions.length})</CardTitle>
-              </CardHeader>
-              <CardContent className="p-0">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b bg-muted/50">
-                        {['Date','Title','Type','Category','Amount'].map((h) => (
-                          <th key={h} className="text-left px-4 py-2 font-medium text-muted-foreground">{h}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {reportData.transactions.slice(0, 50).map((tx) => (
-                        <tr key={tx.id} className="border-b hover:bg-accent/30">
-                          <td className="px-4 py-2 text-muted-foreground">{formatDate(tx.date)}</td>
-                          <td className="px-4 py-2 font-medium">{tx.title}</td>
-                          <td className="px-4 py-2">
-                            <span className={`capitalize text-xs font-medium ${tx.type === 'income' ? 'text-emerald-600' : 'text-red-600'}`}>
-                              {tx.type}
-                            </span>
-                          </td>
-                          <td className="px-4 py-2 text-muted-foreground">{tx.category?.name}</td>
-                          <td className={`px-4 py-2 font-semibold ${tx.type === 'income' ? 'text-emerald-600' : 'text-red-600'}`}>
-                            {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount)}
-                          </td>
-                        </tr>
+            <SpotlightCard radius={400} className="p-0 border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80 overflow-hidden">
+              <div className="p-4 border-b border-border/40 dark:border-white/[0.05] flex items-center justify-between">
+                <h3 className="text-xs font-semibold tracking-tight text-foreground">Transaction Audit Log</h3>
+                <span className="text-[10px] font-mono text-muted-foreground">{reportData.transactions.length} rows</span>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="border-b border-border/40 dark:border-white/[0.05] bg-muted/20">
+                      {['Date','Title','Type','Category','Amount'].map((h) => (
+                        <th key={h} className="text-left px-4 py-2 font-medium text-[11px] uppercase tracking-wider text-muted-foreground">{h}</th>
                       ))}
-                    </tbody>
-                  </table>
-                  {reportData.transactions.length > 50 && (
-                    <p className="text-center text-xs text-muted-foreground py-3">
-                      Showing 50 of {reportData.transactions.length}. Download for full report.
-                    </p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/40 dark:divide-white/[0.04]">
+                    {reportData.transactions.slice(0, 50).map((tx) => (
+                      <tr key={tx.id} className="hover:bg-accent/30 dark:hover:bg-white/[0.02] transition-colors">
+                        <td className="px-4 py-2.5 font-mono text-muted-foreground">{formatDate(tx.date)}</td>
+                        <td className="px-4 py-2.5 font-medium text-foreground">{tx.title}</td>
+                        <td className="px-4 py-2.5">
+                          <span className={cn('capitalize text-[10px] font-mono font-medium', tx.type === 'income' ? 'text-emerald-500' : 'text-rose-500')}>
+                            {tx.type}
+                          </span>
+                        </td>
+                        <td className="px-4 py-2.5 text-muted-foreground">{tx.category?.name || 'General'}</td>
+                        <td className={cn('px-4 py-2.5 font-mono font-semibold tabular-nums', tx.type === 'income' ? 'text-emerald-500' : 'text-foreground')}>
+                          {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {reportData.transactions.length > 50 && (
+                  <p className="text-center text-[11px] text-muted-foreground py-3 border-t border-border/40 dark:border-white/[0.04]">
+                    Displaying 50 of {reportData.transactions.length} ledger entries. Export full statement above.
+                  </p>
+                )}
+              </div>
+            </SpotlightCard>
           </motion.div>
         )}
       </div>

@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/ui/logo';
 import { toast } from '@/components/ui/toast';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 
 const navSections = [
   {
@@ -85,19 +86,26 @@ export default function Sidebar({ open, onClose }) {
                       href={href}
                       onClick={onClose}
                       className={cn(
-                        'flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl text-xs font-medium transition-all duration-150 relative group',
+                        'relative flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl text-xs font-medium transition-colors group',
                         active
-                          ? 'bg-accent text-foreground font-semibold dark:bg-white/[0.08] dark:text-white shadow-xs'
-                          : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground dark:hover:bg-white/[0.03]'
+                          ? 'text-foreground dark:text-white font-semibold'
+                          : 'text-muted-foreground hover:text-foreground hover:bg-accent/40 dark:hover:bg-white/[0.03]'
                       )}
                     >
+                      {active && (
+                        <motion.div
+                          layoutId="sidebarActivePill"
+                          className="absolute inset-0 rounded-xl bg-accent dark:bg-white/[0.08] border border-border/50 dark:border-white/10 shadow-xs"
+                          transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                        />
+                      )}
                       <Icon
                         className={cn(
-                          'w-3.5 h-3.5 shrink-0 transition-colors',
+                          'w-3.5 h-3.5 shrink-0 relative z-10 transition-colors',
                           active ? 'text-foreground dark:text-white' : 'text-muted-foreground group-hover:text-foreground'
                         )}
                       />
-                      <span className="flex-1 truncate">{label}</span>
+                      <span className="flex-1 truncate relative z-10">{label}</span>
                     </Link>
                   );
                 })}

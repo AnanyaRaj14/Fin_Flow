@@ -5,7 +5,8 @@ import { Plus, Pencil, Trash2, CheckCircle2, Circle, Loader2, Receipt } from 'lu
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { Card, CardContent } from '@/components/ui/card';
+import { SpotlightCard } from '@/components/ui/spotlight-card';
+import { ShimmerButton } from '@/components/ui/shimmer-button';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -90,25 +91,45 @@ export default function BillsPage() {
   return (
     <DashboardLayout title="Bills">
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between pb-1">
           <div>
-            <h2 className="text-xl font-bold">Bills</h2>
-            <p className="text-muted-foreground text-sm">
-              {unpaid.length} unpaid · {formatCurrency(totalDue)} due
+            <h2 className="text-xl font-bold tracking-tight text-foreground">Bills</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {unpaid.length} upcoming commitments · <span className="font-mono font-medium text-foreground tabular-nums">{formatCurrency(totalDue)}</span> due
             </p>
           </div>
-          <Button onClick={openCreate}><Plus className="w-4 h-4" /> Add Bill</Button>
+          <ShimmerButton
+            onClick={openCreate}
+            shimmerColor="#ffffff"
+            shimmerSize="0.08em"
+            shimmerDuration="3.5s"
+            borderRadius="10px"
+            className="h-8 px-4 text-xs font-medium gap-1.5 dark:bg-zinc-900"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Add Bill</span>
+          </ShimmerButton>
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-16"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>
+          <div className="flex justify-center py-16"><Loader2 className="w-7 h-7 animate-spin text-muted-foreground" /></div>
         ) : bills.length === 0 ? (
-          <div className="text-center py-16 text-muted-foreground">
-            <Receipt className="w-12 h-12 mx-auto mb-3 opacity-30" />
-            <p className="font-medium">No bills yet</p>
-            <p className="text-sm mb-4">Track your recurring bills here.</p>
-            <Button onClick={openCreate}><Plus className="w-4 h-4" /> Add Bill</Button>
-          </div>
+          <SpotlightCard className="text-center py-16 text-muted-foreground border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80">
+            <Receipt className="w-10 h-10 mx-auto mb-3 opacity-25" />
+            <p className="text-sm font-medium text-foreground">No recurring bills scheduled</p>
+            <p className="text-xs text-muted-foreground mt-0.5 mb-4">Track rent, utilities, and subscription due dates automatically.</p>
+            <ShimmerButton
+              onClick={openCreate}
+              shimmerColor="#ffffff"
+              shimmerSize="0.08em"
+              shimmerDuration="3.5s"
+              borderRadius="10px"
+              className="h-8 px-4 text-xs font-medium gap-1.5 dark:bg-zinc-900 mx-auto"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Add Bill</span>
+            </ShimmerButton>
+          </SpotlightCard>
         ) : (
           <div className="space-y-4">
             {unpaid.length > 0 && (
@@ -193,40 +214,46 @@ function BillCard({ bill, index, onToggle, onEdit, onDelete }) {
   const urgent = !bill.isPaid && daysLeft <= 3;
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }}>
-      <Card className={`${bill.isPaid ? 'opacity-60' : ''} ${urgent ? 'border-amber-400 dark:border-amber-600' : ''}`}>
-        <CardContent className="p-4">
-          <div className="flex items-center gap-3">
-            <button onClick={() => onToggle(bill)} className="shrink-0">
-              {bill.isPaid
-                ? <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                : <Circle className="w-5 h-5 text-muted-foreground hover:text-primary transition-colors" />
-              }
-            </button>
-            <div className="w-1 h-10 rounded-full shrink-0" style={{ background: bill.color }} />
-            <div className="flex-1 min-w-0">
-              <p className={`font-medium text-sm ${bill.isPaid ? 'line-through text-muted-foreground' : ''}`}>{bill.name}</p>
-              <p className="text-xs text-muted-foreground">
-                {bill.isPaid ? 'Paid' : `Due on day ${bill.dueDate} · ${daysLeft}d left`}
-              </p>
+    <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }}>
+      <SpotlightCard
+        radius={280}
+        spotlightColor={`${bill.color || '#6366f1'}20`}
+        className={cn(
+          'p-4 border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80',
+          bill.isPaid && 'opacity-60',
+          urgent && 'border-amber-500/40 dark:border-amber-500/30'
+        )}
+      >
+        <div className="flex items-center gap-3">
+          <button onClick={() => onToggle(bill)} className="shrink-0 cursor-pointer">
+            {bill.isPaid
+              ? <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+              : <Circle className="w-4 h-4 text-muted-foreground hover:text-foreground transition-colors" />
+            }
+          </button>
+          <div className="w-1 h-8 rounded-full shrink-0" style={{ background: bill.color }} />
+          <div className="flex-1 min-w-0">
+            <p className={cn('font-semibold text-xs text-foreground truncate', bill.isPaid && 'line-through text-muted-foreground')}>{bill.name}</p>
+            <p className="text-[11px] text-muted-foreground">
+              {bill.isPaid ? 'Settled' : `Due on day ${bill.dueDate} · ${daysLeft}d left`}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="text-right">
+              <p className="font-semibold text-xs font-mono tabular-nums text-foreground">{formatCurrency(bill.amount)}</p>
+              {urgent && <Badge variant="warning" className="text-[10px] px-1.5 py-0">Due soon</Badge>}
             </div>
-            <div className="flex items-center gap-2">
-              <div className="text-right">
-                <p className="font-semibold text-sm">{formatCurrency(bill.amount)}</p>
-                {urgent && <Badge variant="warning" className="text-xs">Due soon</Badge>}
-              </div>
-              <div className="flex gap-1">
-                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onEdit(bill)}>
-                  <Pencil className="w-3.5 h-3.5" />
-                </Button>
-                <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => onDelete(bill)}>
-                  <Trash2 className="w-3.5 h-3.5" />
-                </Button>
-              </div>
+            <div className="flex gap-1">
+              <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg" onClick={() => onEdit(bill)}>
+                <Pencil className="w-3.5 h-3.5" />
+              </Button>
+              <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg text-destructive hover:bg-destructive/10" onClick={() => onDelete(bill)}>
+                <Trash2 className="w-3.5 h-3.5" />
+              </Button>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </SpotlightCard>
     </motion.div>
   );
 }

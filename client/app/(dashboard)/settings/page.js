@@ -8,7 +8,8 @@ import {
 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { SpotlightCard } from '@/components/ui/spotlight-card';
+import { ShimmerButton } from '@/components/ui/shimmer-button';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -134,19 +135,23 @@ export default function SettingsPage() {
           <div className="lg:col-span-7 space-y-6">
 
             {/* Profile Card */}
-            <Card className="border border-border/80 dark:border-white/[0.08] dark:bg-card/85 backdrop-blur-md">
-              <CardHeader className="pb-4 border-b border-border/40 dark:border-white/[0.04]">
+            <SpotlightCard
+              radius={400}
+              spotlightColor="rgba(99, 102, 241, 0.12)"
+              className="border border-border/80 dark:border-white/[0.08] dark:bg-[#121215]/80 backdrop-blur-md overflow-hidden"
+            >
+              <div className="p-5 pb-4 border-b border-border/40 dark:border-white/[0.04]">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center border border-primary/20">
                     <User className="w-4 h-4" />
                   </div>
                   <div>
-                    <CardTitle className="text-sm font-semibold tracking-tight">Personal Identity</CardTitle>
-                    <CardDescription className="text-xs">Your public profile name and avatar</CardDescription>
+                    <h3 className="text-sm font-semibold tracking-tight text-foreground">Personal Identity</h3>
+                    <p className="text-xs text-muted-foreground">Your public profile name and avatar</p>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent className="p-6 space-y-6">
+              </div>
+              <div className="p-6 space-y-6">
                 {/* Avatar Uploader */}
                 <div className="flex items-center gap-5 p-4 rounded-2xl bg-accent/30 dark:bg-white/[0.02] border border-border/50 dark:border-white/[0.05]">
                   <div className="relative group">
@@ -203,33 +208,45 @@ export default function SettingsPage() {
                   </div>
 
                   <div className="pt-2">
-                    <Button type="submit" size="sm" className="h-9 px-5 rounded-xl font-semibold gap-2" disabled={savingProfile}>
+                    <ShimmerButton
+                      type="submit"
+                      disabled={savingProfile}
+                      shimmerColor="#ffffff"
+                      shimmerSize="0.08em"
+                      shimmerDuration="3.5s"
+                      borderRadius="12px"
+                      className="h-9 px-5 text-xs font-semibold gap-2 dark:bg-zinc-900"
+                    >
                       {savingProfile ? (
                         <Loader2 className="w-3.5 h-3.5 animate-spin" />
                       ) : (
                         <Save className="w-3.5 h-3.5" />
                       )}
                       <span>Save Profile Changes</span>
-                    </Button>
+                    </ShimmerButton>
                   </div>
                 </form>
-              </CardContent>
-            </Card>
+              </div>
+            </SpotlightCard>
 
             {/* Security & Password Card */}
-            <Card className="border border-border/80 dark:border-white/[0.08] dark:bg-card/85 backdrop-blur-md">
-              <CardHeader className="pb-4 border-b border-border/40 dark:border-white/[0.04]">
+            <SpotlightCard
+              radius={400}
+              spotlightColor="rgba(168, 85, 247, 0.12)"
+              className="border border-border/80 dark:border-white/[0.08] dark:bg-[#121215]/80 backdrop-blur-md overflow-hidden"
+            >
+              <div className="p-5 pb-4 border-b border-border/40 dark:border-white/[0.04]">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center border border-purple-500/20">
                     <Key className="w-4 h-4" />
                   </div>
                   <div>
-                    <CardTitle className="text-sm font-semibold tracking-tight">Security & Credentials</CardTitle>
-                    <CardDescription className="text-xs">Update your password and login credentials</CardDescription>
+                    <h3 className="text-sm font-semibold tracking-tight text-foreground">Security & Credentials</h3>
+                    <p className="text-xs text-muted-foreground">Update your password and login credentials</p>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent className="p-6">
+              </div>
+              <div className="p-6">
                 <form onSubmit={passwordForm.handleSubmit(savePassword)} className="space-y-4">
                   <div className="space-y-1.5">
                     <Label className="text-xs font-semibold text-foreground">Current Password</Label>
@@ -286,8 +303,8 @@ export default function SettingsPage() {
                     </Button>
                   </div>
                 </form>
-              </CardContent>
-            </Card>
+              </div>
+            </SpotlightCard>
 
           </div>
 
@@ -297,19 +314,23 @@ export default function SettingsPage() {
           <div className="lg:col-span-5 space-y-6">
 
             {/* Appearance & Theme Selector */}
-            <Card className="border border-border/80 dark:border-white/[0.08] dark:bg-card/85 backdrop-blur-md">
-              <CardHeader className="pb-3 border-b border-border/40 dark:border-white/[0.04]">
+            <SpotlightCard
+              radius={380}
+              spotlightColor="rgba(245, 158, 11, 0.12)"
+              className="border border-border/80 dark:border-white/[0.08] dark:bg-[#121215]/80 backdrop-blur-md overflow-hidden"
+            >
+              <div className="p-4 pb-3 border-b border-border/40 dark:border-white/[0.04]">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center border border-amber-500/20">
                     <Sun className="w-4 h-4" />
                   </div>
                   <div>
-                    <CardTitle className="text-sm font-semibold tracking-tight">Visual Theme</CardTitle>
-                    <CardDescription className="text-xs">Customize application display mode</CardDescription>
+                    <h3 className="text-sm font-semibold tracking-tight text-foreground">Visual Theme</h3>
+                    <p className="text-xs text-muted-foreground">Customize application display mode</p>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent className="p-5">
+              </div>
+              <div className="p-5">
                 <div className="grid grid-cols-2 gap-3">
                   {/* Dark Mode Tile */}
                   <button
@@ -355,23 +376,27 @@ export default function SettingsPage() {
                     <p className="text-[10px] text-muted-foreground mt-0.5">Minimal daytime look</p>
                   </button>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </SpotlightCard>
 
             {/* Currency & Localization */}
-            <Card className="border border-border/80 dark:border-white/[0.08] dark:bg-card/85 backdrop-blur-md">
-              <CardHeader className="pb-3 border-b border-border/40 dark:border-white/[0.04]">
+            <SpotlightCard
+              radius={380}
+              spotlightColor="rgba(59, 130, 246, 0.12)"
+              className="border border-border/80 dark:border-white/[0.08] dark:bg-[#121215]/80 backdrop-blur-md overflow-hidden"
+            >
+              <div className="p-4 pb-3 border-b border-border/40 dark:border-white/[0.04]">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center border border-blue-500/20">
                     <Globe className="w-4 h-4" />
                   </div>
                   <div>
-                    <CardTitle className="text-sm font-semibold tracking-tight">Localization & Currency</CardTitle>
-                    <CardDescription className="text-xs">Primary currency symbol for financial amounts</CardDescription>
+                    <h3 className="text-sm font-semibold tracking-tight text-foreground">Localization & Currency</h3>
+                    <p className="text-xs text-muted-foreground">Primary currency symbol for financial amounts</p>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent className="p-5 space-y-4">
+              </div>
+              <div className="p-5 space-y-4">
                 <div className="space-y-1.5">
                   <Label className="text-xs font-semibold text-foreground">Default Currency</Label>
                   <Select value={currency} onValueChange={handleCurrencyChange}>
@@ -393,23 +418,27 @@ export default function SettingsPage() {
                     All balances, transaction figures, and reports will adapt automatically.
                   </p>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </SpotlightCard>
 
             {/* Account Metadata & Status */}
-            <Card className="border border-border/80 dark:border-white/[0.08] dark:bg-card/85 backdrop-blur-md">
-              <CardHeader className="pb-3 border-b border-border/40 dark:border-white/[0.04]">
+            <SpotlightCard
+              radius={380}
+              spotlightColor="rgba(16, 185, 129, 0.12)"
+              className="border border-border/80 dark:border-white/[0.08] dark:bg-[#121215]/80 backdrop-blur-md overflow-hidden"
+            >
+              <div className="p-4 pb-3 border-b border-border/40 dark:border-white/[0.04]">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center border border-emerald-500/20">
                     <Database className="w-4 h-4" />
                   </div>
                   <div>
-                    <CardTitle className="text-sm font-semibold tracking-tight">Account Overview</CardTitle>
-                    <CardDescription className="text-xs">Membership details and data state</CardDescription>
+                    <h3 className="text-sm font-semibold tracking-tight text-foreground">Account Overview</h3>
+                    <p className="text-xs text-muted-foreground">Membership details and data state</p>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent className="p-5 space-y-3 text-xs">
+              </div>
+              <div className="p-5 space-y-3 text-xs">
                 <div className="flex items-center justify-between py-1.5 border-b border-border/40 dark:border-white/[0.04]">
                   <span className="text-muted-foreground">Account Status</span>
                   <span className="font-semibold text-emerald-500 flex items-center gap-1">
@@ -431,8 +460,8 @@ export default function SettingsPage() {
                   <span className="text-muted-foreground">Database Pool</span>
                   <span className="text-foreground font-medium">Supabase PostgreSQL 17</span>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </SpotlightCard>
 
           </div>
 
