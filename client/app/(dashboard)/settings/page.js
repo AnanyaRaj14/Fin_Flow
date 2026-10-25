@@ -1,21 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import {
-  Loader2, Upload, Save, ShieldCheck, ShieldAlert, Key, User,
-  Globe, Moon, Sun, Bell, Database, Download, Check, Sparkles,
-  Lock, Mail, Calendar, LogOut
-} from 'lucide-react';
+import { Loader2, Upload, Check, Moon, Sun } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { SpotlightCard } from '@/components/ui/spotlight-card';
-import { ShimmerButton } from '@/components/ui/shimmer-button';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/hooks/useTheme';
 import { authApi, settingsApi } from '@/services/api';
@@ -24,22 +17,19 @@ import { toast } from '@/components/ui/toast';
 import { cn } from '@/lib/utils';
 
 export default function SettingsPage() {
-  const { user, updateUser, logout } = useAuth();
+  const { user, updateUser } = useAuth();
   const { theme, setTheme } = useTheme();
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
   const [currency, setCurrency] = useState('INR');
-  const [emailAlerts, setEmailAlerts] = useState(true);
-  const [savingSettings, setSavingSettings] = useState(false);
 
   const profileForm = useForm({ defaultValues: { name: user?.name || '' } });
   const passwordForm = useForm();
 
   useEffect(() => {
     if (user) profileForm.reset({ name: user.name });
-    // Load saved settings currency without overriding current client theme
     settingsApi.get().then(({ data }) => {
       if (data.settings?.currency) setCurrency(data.settings.currency);
     }).catch(() => {});
@@ -63,7 +53,7 @@ export default function SettingsPage() {
       if (avatarFile) fd.append('avatar', avatarFile);
       const { data: res } = await authApi.updateProfile(fd);
       updateUser(res.user);
-      toast.success('Profile updated successfully.');
+      toast.success('Profile updated.');
       setAvatarFile(null);
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to update profile.');
@@ -82,7 +72,7 @@ export default function SettingsPage() {
         currentPassword: data.currentPassword,
         newPassword: data.newPassword,
       });
-      toast.success('Password changed successfully.');
+      toast.success('Password changed.');
       passwordForm.reset();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to change password.');
@@ -93,375 +83,244 @@ export default function SettingsPage() {
 
   const handleCurrencyChange = async (val) => {
     setCurrency(val);
-    setSavingSettings(true);
     try {
       await settingsApi.update({ theme, currency: val });
       toast.success(`Currency changed to ${val}.`);
     } catch {
       toast.error('Failed to update currency.');
-    } finally {
-      setSavingSettings(false);
     }
   };
 
   return (
-    <DashboardLayout title="Settings & Preferences">
-      <div className="space-y-8 max-w-6xl mx-auto pb-12">
+    <DashboardLayout title="Settings">
+      <div className="space-y-6 max-w-3xl mx-auto pb-12">
         {/* Page Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-border/40 dark:border-white/[0.04]">
+        <div className="pb-4 border-b border-border/40 dark:border-white/[0.05] flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight text-foreground">
-              Account & Preferences
-            </h2>
-            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-              Manage your personal profile, security credentials, visual theme, and system localization.
-            </p>
+            <h2 className="text-xl font-semibold tracking-tight text-foreground">Settings</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">Manage your profile, appearance, and security.</p>
           </div>
-
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>{user?.isVerified ? 'Verified Account' : 'Pending Verification'}</span>
-            </span>
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span className={cn('w-1.5 h-1.5 rounded-full', user?.isVerified ? 'bg-emerald-500' : 'bg-muted-foreground/60')} />
+            <span>{user?.isVerified ? 'Verified' : 'Pending verification'}</span>
           </div>
         </div>
 
-        {/* 2-Column Wide Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
-          {/* ==================================================== */}
-          {/* LEFT COLUMN: Profile & Security Management (7 Cols) */}
-          {/* ==================================================== */}
-          <div className="lg:col-span-7 space-y-6">
-
-            {/* Profile Card */}
-            <SpotlightCard
-              radius={400}
-              spotlightColor="rgba(99, 102, 241, 0.12)"
-              className="border border-border/80 dark:border-white/[0.08] dark:bg-[#121215]/80 backdrop-blur-md overflow-hidden"
-            >
-              <div className="p-5 pb-4 border-b border-border/40 dark:border-white/[0.04]">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center border border-primary/20">
-                    <User className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-semibold tracking-tight text-foreground">Personal Identity</h3>
-                    <p className="text-xs text-muted-foreground">Your public profile name and avatar</p>
-                  </div>
-                </div>
-              </div>
-              <div className="p-6 space-y-6">
-                {/* Avatar Uploader */}
-                <div className="flex items-center gap-5 p-4 rounded-2xl bg-accent/30 dark:bg-white/[0.02] border border-border/50 dark:border-white/[0.05]">
-                  <div className="relative group">
-                    <Avatar className="w-20 h-20 border-2 border-border/80 dark:border-white/10 ring-4 ring-primary/10 shadow-md">
-                      <AvatarImage src={avatarPreview || user?.avatar} />
-                      <AvatarFallback className="text-xl font-bold bg-primary/10 text-primary">
-                        {getInitials(user?.name)}
-                      </AvatarFallback>
-                    </Avatar>
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="cursor-pointer inline-block">
-                      <Button type="button" variant="outline" size="sm" className="h-8.5 rounded-xl text-xs gap-1.5 font-medium dark:bg-white/[0.04]" asChild>
-                        <span>
-                          <Upload className="w-3.5 h-3.5 text-primary" />
-                          <span>Upload Photo</span>
-                        </span>
-                      </Button>
-                      <input type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
-                    </label>
-                    <p className="text-[11px] text-muted-foreground">
-                      PNG, JPG, or WEBP up to 5MB. Stored securely on AWS S3.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Form fields */}
-                <form onSubmit={profileForm.handleSubmit(saveProfile)} className="space-y-4">
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold text-foreground">Full Name</Label>
-                    <Input
-                      className="h-10 rounded-xl text-xs dark:bg-white/[0.03] dark:border-white/10"
-                      placeholder="Your full name"
-                      {...profileForm.register('name', { required: 'Full name is required' })}
-                    />
-                    {profileForm.formState.errors.name && (
-                      <p className="text-xs text-destructive">{profileForm.formState.errors.name.message}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold text-foreground">Email Address</Label>
-                    <div className="relative">
-                      <Input
-                        value={user?.email || ''}
-                        disabled
-                        className="h-10 rounded-xl pl-9 text-xs bg-muted/60 dark:bg-white/[0.02] border-dashed cursor-not-allowed opacity-90"
-                      />
-                      <Mail className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
-                    </div>
-                    <p className="text-[11px] text-muted-foreground">
-                      Email address is linked to your account authentication and cannot be changed.
-                    </p>
-                  </div>
-
-                  <div className="pt-2">
-                    <ShimmerButton
-                      type="submit"
-                      disabled={savingProfile}
-                      className="h-9 px-5 text-xs font-semibold gap-2"
-                    >
-                      {savingProfile ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      ) : (
-                        <Save className="w-3.5 h-3.5" />
-                      )}
-                      <span>Save Profile Changes</span>
-                    </ShimmerButton>
-                  </div>
-                </form>
-              </div>
-            </SpotlightCard>
-
-            {/* Security & Password Card */}
-            <SpotlightCard
-              radius={400}
-              spotlightColor="rgba(168, 85, 247, 0.12)"
-              className="border border-border/80 dark:border-white/[0.08] dark:bg-[#121215]/80 backdrop-blur-md overflow-hidden"
-            >
-              <div className="p-5 pb-4 border-b border-border/40 dark:border-white/[0.04]">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center border border-purple-500/20">
-                    <Key className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-semibold tracking-tight text-foreground">Security & Credentials</h3>
-                    <p className="text-xs text-muted-foreground">Update your password and login credentials</p>
-                  </div>
-                </div>
-              </div>
-              <div className="p-6">
-                <form onSubmit={passwordForm.handleSubmit(savePassword)} className="space-y-4">
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold text-foreground">Current Password</Label>
-                    <Input
-                      type="password"
-                      placeholder="••••••••"
-                      className="h-10 rounded-xl text-xs dark:bg-white/[0.03] dark:border-white/10"
-                      {...passwordForm.register('currentPassword', { required: 'Current password is required' })}
-                    />
-                    {passwordForm.formState.errors.currentPassword && (
-                      <p className="text-xs text-destructive">{passwordForm.formState.errors.currentPassword.message}</p>
-                    )}
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <Label className="text-xs font-semibold text-foreground">New Password</Label>
-                      <Input
-                        type="password"
-                        placeholder="Min 8 characters"
-                        className="h-10 rounded-xl text-xs dark:bg-white/[0.03] dark:border-white/10"
-                        {...passwordForm.register('newPassword', {
-                          required: 'New password is required',
-                          minLength: { value: 8, message: 'Minimum 8 characters' }
-                        })}
-                      />
-                      {passwordForm.formState.errors.newPassword && (
-                        <p className="text-xs text-destructive">{passwordForm.formState.errors.newPassword.message}</p>
-                      )}
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <Label className="text-xs font-semibold text-foreground">Confirm New Password</Label>
-                      <Input
-                        type="password"
-                        placeholder="Repeat new password"
-                        className="h-10 rounded-xl text-xs dark:bg-white/[0.03] dark:border-white/10"
-                        {...passwordForm.register('confirmPassword', { required: 'Please confirm password' })}
-                      />
-                      {passwordForm.formState.errors.confirmPassword && (
-                        <p className="text-xs text-destructive">{passwordForm.formState.errors.confirmPassword.message}</p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="pt-2">
-                    <Button type="submit" variant="outline" size="sm" className="h-9 px-5 rounded-xl font-semibold gap-2 dark:bg-white/[0.03]" disabled={savingPassword}>
-                      {savingPassword ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      ) : (
-                        <Lock className="w-3.5 h-3.5 text-primary" />
-                      )}
-                      <span>Update Password</span>
-                    </Button>
-                  </div>
-                </form>
-              </div>
-            </SpotlightCard>
-
+        {/* Profile Card */}
+        <div className="rounded-2xl border border-border/60 dark:border-white/[0.06] bg-card dark:bg-[#121215]/80 p-6 backdrop-blur-xs space-y-6">
+          <div>
+            <h3 className="text-sm font-semibold tracking-tight text-foreground">Profile</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">Your personal information and avatar</p>
           </div>
 
-          {/* ======================================================= */}
-          {/* RIGHT COLUMN: Preferences, Overview & Utilities (5 Cols)*/}
-          {/* ======================================================= */}
-          <div className="lg:col-span-5 space-y-6">
-
-            {/* Appearance & Theme Selector */}
-            <SpotlightCard
-              radius={380}
-              spotlightColor="rgba(245, 158, 11, 0.12)"
-              className="border border-border/80 dark:border-white/[0.08] dark:bg-[#121215]/80 backdrop-blur-md overflow-hidden"
-            >
-              <div className="p-4 pb-3 border-b border-border/40 dark:border-white/[0.04]">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center border border-amber-500/20">
-                    <Sun className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-semibold tracking-tight text-foreground">Visual Theme</h3>
-                    <p className="text-xs text-muted-foreground">Customize application display mode</p>
-                  </div>
-                </div>
-              </div>
-              <div className="p-5">
-                <div className="grid grid-cols-2 gap-3">
-                  {/* Dark Mode Tile */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setTheme('dark');
-                      settingsApi.update({ theme: 'dark', currency }).catch(() => {});
-                    }}
-                    className={cn(
-                      'p-3.5 rounded-2xl border text-left transition-all relative overflow-hidden group',
-                      theme === 'dark'
-                        ? 'border-primary bg-primary/10 shadow-xs ring-2 ring-primary/20'
-                        : 'border-border/60 hover:border-border dark:border-white/[0.06] bg-card'
-                    )}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <Moon className={cn('w-4 h-4', theme === 'dark' ? 'text-primary' : 'text-muted-foreground')} />
-                      {theme === 'dark' && <Check className="w-3.5 h-3.5 text-primary" />}
-                    </div>
-                    <p className="text-xs font-semibold text-foreground">Dark Obsidian</p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">Sleek high-contrast</p>
-                  </button>
-
-                  {/* Light Mode Tile */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setTheme('light');
-                      settingsApi.update({ theme: 'light', currency }).catch(() => {});
-                    }}
-                    className={cn(
-                      'p-3.5 rounded-2xl border text-left transition-all relative overflow-hidden group',
-                      theme === 'light'
-                        ? 'border-primary bg-primary/10 shadow-xs ring-2 ring-primary/20'
-                        : 'border-border/60 hover:border-border dark:border-white/[0.06] bg-card'
-                    )}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <Sun className={cn('w-4 h-4', theme === 'light' ? 'text-primary' : 'text-muted-foreground')} />
-                      {theme === 'light' && <Check className="w-3.5 h-3.5 text-primary" />}
-                    </div>
-                    <p className="text-xs font-semibold text-foreground">Clean Light</p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">Minimal daytime look</p>
-                  </button>
-                </div>
-              </div>
-            </SpotlightCard>
-
-            {/* Currency & Localization */}
-            <SpotlightCard
-              radius={380}
-              spotlightColor="rgba(59, 130, 246, 0.12)"
-              className="border border-border/80 dark:border-white/[0.08] dark:bg-[#121215]/80 backdrop-blur-md overflow-hidden"
-            >
-              <div className="p-4 pb-3 border-b border-border/40 dark:border-white/[0.04]">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center border border-blue-500/20">
-                    <Globe className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-semibold tracking-tight text-foreground">Localization & Currency</h3>
-                    <p className="text-xs text-muted-foreground">Primary currency symbol for financial amounts</p>
-                  </div>
-                </div>
-              </div>
-              <div className="p-5 space-y-4">
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold text-foreground">Default Currency</Label>
-                  <Select value={currency} onValueChange={handleCurrencyChange}>
-                    <SelectTrigger className="h-10 rounded-xl text-xs dark:bg-white/[0.03] dark:border-white/10">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="rounded-xl">
-                      <SelectItem value="INR">🇮🇳 INR — Indian Rupee (₹)</SelectItem>
-                      <SelectItem value="USD">🇺🇸 USD — US Dollar ($)</SelectItem>
-                      <SelectItem value="EUR">🇪🇺 EUR — Euro (€)</SelectItem>
-                      <SelectItem value="GBP">🇬🇧 GBP — British Pound (£)</SelectItem>
-                      <SelectItem value="JPY">🇯🇵 JPY — Japanese Yen (¥)</SelectItem>
-                      <SelectItem value="AUD">🇦🇺 AUD — Australian Dollar (A$)</SelectItem>
-                      <SelectItem value="CAD">🇨🇦 CAD — Canadian Dollar (C$)</SelectItem>
-                      <SelectItem value="SGD">🇸🇬 SGD — Singapore Dollar (S$)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <p className="text-[11px] text-muted-foreground mt-1">
-                    All balances, transaction figures, and reports will adapt automatically.
-                  </p>
-                </div>
-              </div>
-            </SpotlightCard>
-
-            {/* Account Metadata & Status */}
-            <SpotlightCard
-              radius={380}
-              spotlightColor="rgba(16, 185, 129, 0.12)"
-              className="border border-border/80 dark:border-white/[0.08] dark:bg-[#121215]/80 backdrop-blur-md overflow-hidden"
-            >
-              <div className="p-4 pb-3 border-b border-border/40 dark:border-white/[0.04]">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center border border-emerald-500/20">
-                    <Database className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-semibold tracking-tight text-foreground">Account Overview</h3>
-                    <p className="text-xs text-muted-foreground">Membership details and data state</p>
-                  </div>
-                </div>
-              </div>
-              <div className="p-5 space-y-3 text-xs">
-                <div className="flex items-center justify-between py-1.5 border-b border-border/40 dark:border-white/[0.04]">
-                  <span className="text-muted-foreground">Account Status</span>
-                  <span className="font-semibold text-emerald-500 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                    Active (Tier Pro)
+          {/* Avatar Row */}
+          <div className="flex items-center gap-4">
+            <Avatar className="w-14 h-14 border border-border/80 dark:border-white/10">
+              <AvatarImage src={avatarPreview || user?.avatar} />
+              <AvatarFallback className="text-base font-semibold bg-accent text-foreground">
+                {getInitials(user?.name)}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <label className="cursor-pointer inline-block">
+                <Button type="button" variant="outline" size="sm" className="h-8 px-3 rounded-lg text-xs font-medium dark:bg-white/[0.02]" asChild>
+                  <span>
+                    <Upload className="w-3.5 h-3.5 mr-1.5 text-muted-foreground" />
+                    <span>Change avatar</span>
                   </span>
-                </div>
-                <div className="flex items-center justify-between py-1.5 border-b border-border/40 dark:border-white/[0.04]">
-                  <span className="text-muted-foreground">Member Since</span>
-                  <span className="font-mono font-medium text-foreground">
-                    {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'August 2026'}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between py-1.5 border-b border-border/40 dark:border-white/[0.04]">
-                  <span className="text-muted-foreground">Storage Engine</span>
-                  <span className="text-foreground font-medium">AWS S3 (Encrypted)</span>
-                </div>
-                <div className="flex items-center justify-between py-1.5">
-                  <span className="text-muted-foreground">Database Pool</span>
-                  <span className="text-foreground font-medium">Supabase PostgreSQL 17</span>
-                </div>
-              </div>
-            </SpotlightCard>
-
+                </Button>
+                <input type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
+              </label>
+              <p className="text-[11px] text-muted-foreground mt-1">JPG, PNG, or WEBP up to 5MB</p>
+            </div>
           </div>
 
+          <form onSubmit={profileForm.handleSubmit(saveProfile)} className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-foreground">Full Name</Label>
+                <Input
+                  className="h-9 rounded-lg text-xs dark:bg-white/[0.02] dark:border-white/10"
+                  placeholder="Your name"
+                  {...profileForm.register('name', { required: 'Name is required' })}
+                />
+                {profileForm.formState.errors.name && (
+                  <p className="text-xs text-destructive">{profileForm.formState.errors.name.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-foreground">Email</Label>
+                <Input
+                  value={user?.email || ''}
+                  disabled
+                  className="h-9 rounded-lg text-xs bg-muted/40 dark:bg-white/[0.02] dark:border-white/10 cursor-not-allowed opacity-80"
+                />
+              </div>
+            </div>
+
+            <div className="pt-2 flex justify-end">
+              <Button type="submit" size="sm" disabled={savingProfile} className="h-8 px-4 text-xs font-medium rounded-lg shadow-none">
+                {savingProfile && <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />}
+                Save Profile
+              </Button>
+            </div>
+          </form>
         </div>
+
+        {/* Preferences Card */}
+        <div className="rounded-2xl border border-border/60 dark:border-white/[0.06] bg-card dark:bg-[#121215]/80 p-6 backdrop-blur-xs space-y-6">
+          <div>
+            <h3 className="text-sm font-semibold tracking-tight text-foreground">Preferences</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">Application theme and localization</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {/* Theme */}
+            <div className="space-y-2">
+              <Label className="text-xs font-medium text-foreground">Theme</Label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTheme('dark');
+                    settingsApi.update({ theme: 'dark', currency }).catch(() => {});
+                  }}
+                  className={cn(
+                    'flex items-center justify-between p-2.5 rounded-lg border text-xs font-medium transition-colors',
+                    theme === 'dark'
+                      ? 'border-foreground/30 bg-accent/60 dark:bg-white/[0.08] text-foreground'
+                      : 'border-border/60 dark:border-white/[0.06] text-muted-foreground hover:text-foreground'
+                  )}
+                >
+                  <span className="flex items-center gap-2">
+                    <Moon className="w-3.5 h-3.5" />
+                    Dark
+                  </span>
+                  {theme === 'dark' && <Check className="w-3.5 h-3.5 text-foreground" />}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTheme('light');
+                    settingsApi.update({ theme: 'light', currency }).catch(() => {});
+                  }}
+                  className={cn(
+                    'flex items-center justify-between p-2.5 rounded-lg border text-xs font-medium transition-colors',
+                    theme === 'light'
+                      ? 'border-foreground/30 bg-accent/60 text-foreground'
+                      : 'border-border/60 dark:border-white/[0.06] text-muted-foreground hover:text-foreground'
+                  )}
+                >
+                  <span className="flex items-center gap-2">
+                    <Sun className="w-3.5 h-3.5" />
+                    Light
+                  </span>
+                  {theme === 'light' && <Check className="w-3.5 h-3.5 text-foreground" />}
+                </button>
+              </div>
+            </div>
+
+            {/* Currency */}
+            <div className="space-y-2">
+              <Label className="text-xs font-medium text-foreground">Currency</Label>
+              <Select value={currency} onValueChange={handleCurrencyChange}>
+                <SelectTrigger className="h-9 rounded-lg text-xs dark:bg-white/[0.02] dark:border-white/10">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="INR">INR — Indian Rupee (₹)</SelectItem>
+                  <SelectItem value="USD">USD — US Dollar ($)</SelectItem>
+                  <SelectItem value="EUR">EUR — Euro (€)</SelectItem>
+                  <SelectItem value="GBP">GBP — British Pound (£)</SelectItem>
+                  <SelectItem value="JPY">JPY — Japanese Yen (¥)</SelectItem>
+                  <SelectItem value="AUD">AUD — Australian Dollar (A$)</SelectItem>
+                  <SelectItem value="CAD">CAD — Canadian Dollar (C$)</SelectItem>
+                  <SelectItem value="SGD">SGD — Singapore Dollar (S$)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+
+        {/* Security Card */}
+        <div className="rounded-2xl border border-border/60 dark:border-white/[0.06] bg-card dark:bg-[#121215]/80 p-6 backdrop-blur-xs space-y-6">
+          <div>
+            <h3 className="text-sm font-semibold tracking-tight text-foreground">Security</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">Update your password</p>
+          </div>
+
+          <form onSubmit={passwordForm.handleSubmit(savePassword)} className="space-y-4">
+            <div className="space-y-1.5 max-w-sm">
+              <Label className="text-xs font-medium text-foreground">Current Password</Label>
+              <Input
+                type="password"
+                placeholder="••••••••"
+                className="h-9 rounded-lg text-xs dark:bg-white/[0.02] dark:border-white/10"
+                {...passwordForm.register('currentPassword', { required: 'Current password is required' })}
+              />
+              {passwordForm.formState.errors.currentPassword && (
+                <p className="text-xs text-destructive">{passwordForm.formState.errors.currentPassword.message}</p>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-foreground">New Password</Label>
+                <Input
+                  type="password"
+                  placeholder="Min 8 characters"
+                  className="h-9 rounded-lg text-xs dark:bg-white/[0.02] dark:border-white/10"
+                  {...passwordForm.register('newPassword', {
+                    required: 'New password is required',
+                    minLength: { value: 8, message: 'Minimum 8 characters' }
+                  })}
+                />
+                {passwordForm.formState.errors.newPassword && (
+                  <p className="text-xs text-destructive">{passwordForm.formState.errors.newPassword.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-foreground">Confirm New Password</Label>
+                <Input
+                  type="password"
+                  placeholder="Repeat password"
+                  className="h-9 rounded-lg text-xs dark:bg-white/[0.02] dark:border-white/10"
+                  {...passwordForm.register('confirmPassword', { required: 'Please confirm password' })}
+                />
+                {passwordForm.formState.errors.confirmPassword && (
+                  <p className="text-xs text-destructive">{passwordForm.formState.errors.confirmPassword.message}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="pt-2 flex justify-end">
+              <Button type="submit" size="sm" variant="outline" disabled={savingPassword} className="h-8 px-4 text-xs font-medium rounded-lg dark:bg-white/[0.02]">
+                {savingPassword && <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />}
+                Update Password
+              </Button>
+            </div>
+          </form>
+        </div>
+
+        {/* Account Details Footer */}
+        <div className="rounded-2xl border border-border/60 dark:border-white/[0.06] bg-card dark:bg-[#121215]/80 p-5 backdrop-blur-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <div>
+              <span className="text-muted-foreground">Account Status: </span>
+              <span className="font-medium text-foreground">Active</span>
+            </div>
+            <div>
+              <span className="text-muted-foreground">Member Since: </span>
+              <span className="font-mono text-muted-foreground">
+                {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'August 2026'}
+              </span>
+            </div>
+          </div>
+        </div>
+
       </div>
     </DashboardLayout>
   );
