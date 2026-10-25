@@ -62,119 +62,217 @@ async function seedUserData(userEmail) {
   const existingTxCount = await prisma.transaction.count({ where: { userId: user.id } });
   console.log(`Current transactions count: ${existingTxCount}`);
 
-  if (existingTxCount < 5) {
-    const months = [
-      { m: 0, year: 2026, salary: 185000, extra: 35000 },
-      { m: 1, year: 2026, salary: 185000, extra: 20000 },
-      { m: 2, year: 2026, salary: 185000, extra: 45000 },
-      { m: 3, year: 2026, salary: 195000, extra: 15000 },
-      { m: 4, year: 2026, salary: 195000, extra: 25000 },
-      { m: 5, year: 2026, salary: 195000, extra: 50000 },
-      { m: 6, year: 2026, salary: 195000, extra: 18000 },
-      { m: 7, year: 2026, salary: 210000, extra: 30000 },
-      { m: 8, year: 2026, salary: 210000, extra: 40000 },
-      { m: 9, year: 2026, salary: 210000, extra: 45000 }, // Current month (October)
-    ];
+  const monthlyProfiles = [
+    {
+      month: 0,
+      incomes: [
+        { title: 'Tech Lead Monthly Retainer & Salary', amount: 185000, day: 1, hour: 10, minute: 0, cat: 'Salary', acc: 'primary' },
+        { title: 'Annual Performance Stock Bonus', amount: 75000, day: 5, hour: 14, minute: 30, cat: 'Investment', acc: 'savings' }
+      ],
+      expenses: [
+        { title: 'Annual Comprehensive Health Cover', amount: 24500, day: 3, hour: 11, minute: 0, cat: 'Health', acc: 'primary' },
+        { title: 'Apartment Maintenance & Property Dues', amount: 14500, day: 6, hour: 10, minute: 30, cat: 'Bills', acc: 'primary' },
+        { title: 'New Year Dinner & Fine Dining', amount: 11800, day: 8, hour: 20, minute: 15, cat: 'Food', acc: 'primary' },
+        { title: 'Winter Apparel & Merino Sweaters', amount: 16400, day: 14, hour: 17, minute: 0, cat: 'Shopping', acc: 'primary' },
+        { title: 'Organic Pantry & Weekly Essentials', amount: 11200, day: 19, hour: 18, minute: 30, cat: 'Food', acc: 'cash' },
+        { title: 'Subscriptions (AWS, Netflix, Spotify)', amount: 4890, day: 22, hour: 12, minute: 0, cat: 'Bills', acc: 'primary' },
+        { title: 'Fuel & Airport Express Tolls', amount: 4500, day: 26, hour: 9, minute: 15, cat: 'Travel', acc: 'primary' },
+        { title: 'Weekend Roastery & Artisan Cafe', amount: 3000, day: 28, hour: 16, minute: 45, cat: 'Food', acc: 'cash' }
+      ]
+    },
+    {
+      month: 1,
+      incomes: [
+        { title: 'Tech Lead Monthly Retainer & Salary', amount: 185000, day: 1, hour: 10, minute: 0, cat: 'Salary', acc: 'primary' },
+        { title: 'Tech Blog & Advisory Stipend', amount: 20000, day: 5, hour: 15, minute: 0, cat: 'Investment', acc: 'savings' }
+      ],
+      expenses: [
+        { title: 'Apartment Utilities & Power Grid', amount: 11200, day: 6, hour: 11, minute: 0, cat: 'Bills', acc: 'primary' },
+        { title: 'Gourmet Weekly Market & Provisions', amount: 9800, day: 10, hour: 18, minute: 15, cat: 'Food', acc: 'cash' },
+        { title: 'Valentine Bistro & Wine Tasting', amount: 7200, day: 14, hour: 20, minute: 0, cat: 'Food', acc: 'primary' },
+        { title: 'Fuel & Metro Smart Card Reload', amount: 3900, day: 18, hour: 9, minute: 30, cat: 'Travel', acc: 'primary' },
+        { title: 'Subscriptions (AWS, Netflix, Spotify)', amount: 4890, day: 22, hour: 12, minute: 0, cat: 'Bills', acc: 'primary' },
+        { title: 'Kindle Books & Engineering Journals', amount: 2300, day: 25, hour: 14, minute: 30, cat: 'Entertainment', acc: 'primary' }
+      ]
+    },
+    {
+      month: 2,
+      incomes: [
+        { title: 'Tech Lead Monthly Retainer & Salary', amount: 185000, day: 1, hour: 10, minute: 0, cat: 'Salary', acc: 'primary' },
+        { title: 'Quarterly Mutual Fund Dividend', amount: 45000, day: 5, hour: 14, minute: 0, cat: 'Investment', acc: 'savings' }
+      ],
+      expenses: [
+        { title: 'Apartment Maintenance & Utilities', amount: 14500, day: 5, hour: 10, minute: 0, cat: 'Bills', acc: 'primary' },
+        { title: 'CA Year-End Tax Advisory & Audit', amount: 18000, day: 10, hour: 14, minute: 30, cat: 'Bills', acc: 'primary' },
+        { title: 'Ergonomic Desk & Monitor Arm Setup', amount: 32000, day: 14, hour: 16, minute: 0, cat: 'Shopping', acc: 'primary' },
+        { title: 'Whole Foods Market & Organics', amount: 12600, day: 18, hour: 18, minute: 45, cat: 'Food', acc: 'cash' },
+        { title: 'Fiber Broadband & Cloud Dev Server', amount: 5200, day: 22, hour: 12, minute: 0, cat: 'Bills', acc: 'primary' },
+        { title: 'Weekend Dining & Craft Brewery', amount: 7800, day: 25, hour: 20, minute: 30, cat: 'Food', acc: 'primary' },
+        { title: 'Fuel & Highway Fastag', amount: 5100, day: 28, hour: 9, minute: 15, cat: 'Travel', acc: 'primary' }
+      ]
+    },
+    {
+      month: 3,
+      incomes: [
+        { title: 'Tech Lead Monthly Retainer & Salary', amount: 195000, day: 1, hour: 10, minute: 0, cat: 'Salary', acc: 'primary' },
+        { title: 'Design System Consulting Fee', amount: 35000, day: 5, hour: 14, minute: 30, cat: 'Investment', acc: 'savings' }
+      ],
+      expenses: [
+        { title: 'Goa Coastal Villa & Return Airfare', amount: 52000, day: 4, hour: 12, minute: 0, cat: 'Travel', acc: 'primary' },
+        { title: 'Beachside Shack Dinners & Fresh Catch', amount: 14500, day: 9, hour: 20, minute: 0, cat: 'Food', acc: 'primary' },
+        { title: 'Apartment Maintenance & Security', amount: 14500, day: 12, hour: 10, minute: 0, cat: 'Bills', acc: 'primary' },
+        { title: 'Resort Wear & Sunglasses', amount: 12800, day: 16, hour: 16, minute: 30, cat: 'Shopping', acc: 'primary' },
+        { title: 'Weekly Groceries & Cold Press Juices', amount: 9800, day: 20, hour: 18, minute: 0, cat: 'Food', acc: 'cash' },
+        { title: 'Subscriptions (AWS, Netflix, Spotify)', amount: 4890, day: 22, hour: 12, minute: 0, cat: 'Bills', acc: 'primary' },
+        { title: 'Airport Transfers & Rental Vehicles', amount: 6400, day: 27, hour: 11, minute: 15, cat: 'Travel', acc: 'primary' }
+      ]
+    },
+    {
+      month: 4,
+      incomes: [
+        { title: 'Tech Lead Monthly Retainer & Salary', amount: 195000, day: 1, hour: 10, minute: 0, cat: 'Salary', acc: 'primary' },
+        { title: 'Secondary SaaS Product Royalty', amount: 25000, day: 5, hour: 15, minute: 0, cat: 'Investment', acc: 'savings' }
+      ],
+      expenses: [
+        { title: '4K Studio Ultrawide & Mechanical Board', amount: 58000, day: 7, hour: 15, minute: 30, cat: 'Shopping', acc: 'primary' },
+        { title: 'Apartment Maintenance & Peak AC Power', amount: 18400, day: 10, hour: 11, minute: 0, cat: 'Bills', acc: 'primary' },
+        { title: 'Organic Supermarket & Fresh Produce', amount: 12200, day: 15, hour: 18, minute: 30, cat: 'Food', acc: 'cash' },
+        { title: 'Summer Cocktails & Rooftop Lounge', amount: 8500, day: 19, hour: 21, minute: 0, cat: 'Food', acc: 'primary' },
+        { title: 'Dental Clean & Annual Health Diagnostic', amount: 6200, day: 22, hour: 10, minute: 0, cat: 'Health', acc: 'primary' },
+        { title: 'Fuel & High-speed Transit', amount: 5900, day: 26, hour: 9, minute: 30, cat: 'Travel', acc: 'primary' },
+        { title: 'Subscriptions (AWS, Netflix, Spotify)', amount: 4890, day: 28, hour: 12, minute: 0, cat: 'Bills', acc: 'primary' }
+      ]
+    },
+    {
+      month: 5,
+      incomes: [
+        { title: 'Tech Lead Monthly Retainer & Salary', amount: 195000, day: 1, hour: 10, minute: 0, cat: 'Salary', acc: 'primary' },
+        { title: 'Enterprise Architecture Consulting', amount: 50000, day: 5, hour: 14, minute: 0, cat: 'Investment', acc: 'savings' }
+      ],
+      expenses: [
+        { title: 'Apartment Maintenance & Utilities', amount: 13500, day: 5, hour: 10, minute: 0, cat: 'Bills', acc: 'primary' },
+        { title: 'Weekly Groceries & Daily Dairy', amount: 10800, day: 12, hour: 18, minute: 30, cat: 'Food', acc: 'cash' },
+        { title: 'Fuel & Rapid Metro Commute', amount: 4400, day: 16, hour: 9, minute: 15, cat: 'Travel', acc: 'primary' },
+        { title: 'Neighborhood Trattoria Dinner', amount: 5200, day: 20, hour: 20, minute: 0, cat: 'Food', acc: 'primary' },
+        { title: 'Subscriptions (AWS, Netflix, Spotify)', amount: 4890, day: 22, hour: 12, minute: 0, cat: 'Bills', acc: 'primary' },
+        { title: 'Indie Video Games & IMAX Premieres', amount: 3500, day: 27, hour: 17, minute: 30, cat: 'Entertainment', acc: 'primary' }
+      ]
+    },
+    {
+      month: 6,
+      incomes: [
+        { title: 'Tech Lead Monthly Retainer & Salary', amount: 195000, day: 1, hour: 10, minute: 0, cat: 'Salary', acc: 'primary' },
+        { title: 'Equity Dividend Payout', amount: 18000, day: 5, hour: 14, minute: 30, cat: 'Investment', acc: 'savings' }
+      ],
+      expenses: [
+        { title: 'Coorg Monsoon Plantation Stay', amount: 28000, day: 6, hour: 12, minute: 0, cat: 'Travel', acc: 'primary' },
+        { title: 'Apartment Maintenance & High-speed Fiber', amount: 14500, day: 10, hour: 10, minute: 0, cat: 'Bills', acc: 'primary' },
+        { title: 'Gourmet Food Market & Specialty Beans', amount: 11900, day: 14, hour: 18, minute: 15, cat: 'Food', acc: 'cash' },
+        { title: 'Waterproof Rainwear & Casual Linens', amount: 8600, day: 18, hour: 16, minute: 0, cat: 'Shopping', acc: 'primary' },
+        { title: 'Fine Dining Degustation Menu', amount: 9400, day: 22, hour: 20, minute: 0, cat: 'Food', acc: 'primary' },
+        { title: 'Interstate Highway Tolls & Fuel', amount: 4800, day: 26, hour: 9, minute: 30, cat: 'Travel', acc: 'primary' },
+        { title: 'Subscriptions (AWS, Netflix, Spotify)', amount: 4890, day: 29, hour: 12, minute: 0, cat: 'Bills', acc: 'primary' }
+      ]
+    },
+    {
+      month: 7,
+      incomes: [
+        { title: 'Tech Lead Monthly Retainer & Salary', amount: 210000, day: 1, hour: 10, minute: 0, cat: 'Salary', acc: 'primary' },
+        { title: 'Advisory Retainer & Mentorship', amount: 30000, day: 5, hour: 14, minute: 0, cat: 'Investment', acc: 'savings' }
+      ],
+      expenses: [
+        { title: 'Living Room Teak Bookshelf & Lighting', amount: 34000, day: 8, hour: 16, minute: 30, cat: 'Shopping', acc: 'primary' },
+        { title: 'Apartment Maintenance & Grid Power', amount: 14200, day: 11, hour: 10, minute: 0, cat: 'Bills', acc: 'primary' },
+        { title: 'Monthly Groceries & Artisanal Cheeses', amount: 12800, day: 15, hour: 18, minute: 30, cat: 'Food', acc: 'cash' },
+        { title: 'Weekend Socials & Gastropub Bistro', amount: 9600, day: 20, hour: 20, minute: 0, cat: 'Food', acc: 'primary' },
+        { title: 'Live Symphony Concert & Drama', amount: 5500, day: 23, hour: 19, minute: 0, cat: 'Entertainment', acc: 'primary' },
+        { title: 'AWS Cloud Infrastructure & Fiber', amount: 4890, day: 26, hour: 12, minute: 0, cat: 'Bills', acc: 'primary' },
+        { title: 'Fuel & High-speed Transit', amount: 5200, day: 29, hour: 9, minute: 15, cat: 'Travel', acc: 'primary' }
+      ]
+    },
+    {
+      month: 8,
+      incomes: [
+        { title: 'Tech Lead Monthly Retainer & Salary', amount: 210000, day: 1, hour: 10, minute: 0, cat: 'Salary', acc: 'primary' },
+        { title: 'Annual Project Milestone Payout', amount: 65000, day: 5, hour: 14, minute: 30, cat: 'Investment', acc: 'savings' }
+      ],
+      expenses: [
+        { title: 'Next-Gen Flagship Smartphone', amount: 74000, day: 8, hour: 15, minute: 0, cat: 'Shopping', acc: 'primary' },
+        { title: 'Festive Designer Kurtas & Ethnic Wear', amount: 26500, day: 12, hour: 17, minute: 30, cat: 'Shopping', acc: 'primary' },
+        { title: 'Apartment Maintenance & Festive Dues', amount: 15000, day: 15, hour: 10, minute: 0, cat: 'Bills', acc: 'primary' },
+        { title: 'Festive Sweets & Confectionery Gift Boxes', amount: 14200, day: 18, hour: 18, minute: 0, cat: 'Food', acc: 'cash' },
+        { title: 'Family Festive Feast & Catering', amount: 16800, day: 21, hour: 20, minute: 0, cat: 'Food', acc: 'primary' },
+        { title: 'Subscriptions (AWS, Netflix, Spotify)', amount: 4890, day: 23, hour: 12, minute: 0, cat: 'Bills', acc: 'primary' },
+        { title: 'Festive Road Trip Fuel & Cabs', amount: 7600, day: 27, hour: 9, minute: 0, cat: 'Travel', acc: 'primary' }
+      ]
+    },
+    {
+      month: 9,
+      incomes: [
+        { title: 'Tech Lead Monthly Retainer & Salary', amount: 210000, day: 1, hour: 10, minute: 0, cat: 'Salary', acc: 'primary' },
+        { title: 'Consulting & Dividend Payout', amount: 46000, day: 5, hour: 14, minute: 30, cat: 'Investment', acc: 'savings' }
+      ],
+      expenses: [
+        { title: 'Apartment Maintenance & Utilities', amount: 14500, day: 6, hour: 11, minute: 0, cat: 'Bills', acc: 'primary' },
+        { title: 'Gourmet Grocery & Organics', amount: 12400, day: 11, hour: 18, minute: 0, cat: 'Food', acc: 'cash' },
+        { title: 'Fuel & High-speed Transit', amount: 5800, day: 15, hour: 9, minute: 30, cat: 'Travel', acc: 'primary' },
+        { title: 'Weekend Dining & Bistros', amount: 8200, day: 21, hour: 20, minute: 0, cat: 'Food', acc: 'primary' },
+        { title: 'Subscriptions (Netflix, AWS, Fiber)', amount: 4890, day: 22, hour: 12, minute: 0, cat: 'Bills', acc: 'primary' },
+        { title: 'Apparel & Lifestyle Shopping', amount: 17800, day: 24, hour: 16, minute: 45, cat: 'Shopping', acc: 'primary' },
+        { title: 'Artisan Coffee Roasters & Bakery', amount: 2100, day: 25, hour: 11, minute: 15, cat: 'Food', acc: 'cash' }
+      ]
+    }
+  ];
+
+  const accLookup = {
+    primary: primaryAccount.id,
+    savings: savingsAccount.id,
+    cash: cashAccount.id,
+  };
+
+  const force = process.argv.includes('--force') || process.argv.includes('--reseed');
+
+  if (existingTxCount < 5 || force) {
+    if (force && existingTxCount > 0) {
+      await prisma.transaction.deleteMany({ where: { userId: user.id } });
+      console.log('Cleared existing transactions for reseed.');
+    }
 
     const txToInsert = [];
-
-    for (const item of months) {
-      // Monthly Salary
-      txToInsert.push({
-        title: 'Monthly Tech Lead Salary',
-        amount: item.salary,
-        type: 'income',
-        date: new Date(item.year, item.m, 1, 10, 0),
-        categoryId: catMap['Salary'] || categories[0].id,
-        accountId: primaryAccount.id,
-        paymentMethod: 'bank_transfer',
-        userId: user.id,
-      });
-
-      // Secondary Income / Consulting
-      if (item.extra > 0) {
+    for (const mData of monthlyProfiles) {
+      const year = 2026;
+      const m = mData.month;
+      for (const inc of mData.incomes) {
         txToInsert.push({
-          title: 'Consulting & Dividend Payout',
-          amount: item.extra,
+          title: inc.title,
+          amount: inc.amount,
           type: 'income',
-          date: new Date(item.year, item.m, 5, 14, 30),
-          categoryId: catMap['Investment'] || categories[0].id,
-          accountId: savingsAccount.id,
+          date: new Date(year, m, inc.day, inc.hour, inc.minute),
+          categoryId: catMap[inc.cat] || catMap['Salary'] || categories[0].id,
+          accountId: accLookup[inc.acc] || primaryAccount.id,
           paymentMethod: 'bank_transfer',
           userId: user.id,
         });
       }
-
-      // Expenses for each month
-      txToInsert.push(
-        {
-          title: 'Apartment Maintenance & Utilities',
-          amount: 14500,
+      for (const exp of mData.expenses) {
+        txToInsert.push({
+          title: exp.title,
+          amount: exp.amount,
           type: 'expense',
-          date: new Date(item.year, item.m, 6, 11, 0),
-          categoryId: catMap['Bills'] || categories[0].id,
-          accountId: primaryAccount.id,
-          paymentMethod: 'card',
+          date: new Date(year, m, exp.day, exp.hour, exp.minute),
+          categoryId: catMap[exp.cat] || catMap['Bills'] || categories[0].id,
+          accountId: accLookup[exp.acc] || primaryAccount.id,
+          paymentMethod: exp.acc === 'cash' ? 'cash' : 'card',
           userId: user.id,
-        },
-        {
-          title: 'Gourmet Grocery & Organics',
-          amount: 12400,
-          type: 'expense',
-          date: new Date(item.year, item.m, 11, 18, 0),
-          categoryId: catMap['Food'] || categories[0].id,
-          accountId: cashAccount.id,
-          paymentMethod: 'card',
-          userId: user.id,
-        },
-        {
-          title: 'Fuel & High-speed Transit',
-          amount: 5800,
-          type: 'expense',
-          date: new Date(item.year, item.m, 15, 9, 30),
-          categoryId: catMap['Travel'] || categories[0].id,
-          accountId: primaryAccount.id,
-          paymentMethod: 'card',
-          userId: user.id,
-        },
-        {
-          title: 'Weekend Dining & Bistros',
-          amount: 8200,
-          type: 'expense',
-          date: new Date(item.year, item.m, 20, 20, 0),
-          categoryId: catMap['Food'] || categories[0].id,
-          accountId: primaryAccount.id,
-          paymentMethod: 'card',
-          userId: user.id,
-        },
-        {
-          title: 'Subscriptions (Netflix, AWS, Fiber)',
-          amount: 4890,
-          type: 'expense',
-          date: new Date(item.year, item.m, 22, 12, 0),
-          categoryId: catMap['Bills'] || categories[0].id,
-          accountId: primaryAccount.id,
-          paymentMethod: 'card',
-          userId: user.id,
-        },
-        {
-          title: 'Apparel & Lifestyle Shopping',
-          amount: 9500,
-          type: 'expense',
-          date: new Date(item.year, item.m, 24, 16, 45),
-          categoryId: catMap['Shopping'] || categories[0].id,
-          accountId: primaryAccount.id,
-          paymentMethod: 'card',
-          userId: user.id,
-        }
-      );
+        });
+      }
     }
 
     // Insert all transactions
     for (const t of txToInsert) {
       await prisma.transaction.create({ data: t });
     }
-    console.log(`Inserted ${txToInsert.length} transactions for year 2026.`);
+    console.log(`Inserted ${txToInsert.length} varied transactions for year 2026.`);
   }
 
   // 4. Update / Insert Budgets for October 2026
@@ -182,12 +280,12 @@ async function seedUserData(userEmail) {
   const currentYear = 2026;
 
   const standardBudgets = [
-    { category: 'Food', amount: 25000, spent: 18450 },
-    { category: 'Shopping', amount: 20000, spent: 12800 },
-    { category: 'Travel', amount: 10000, spent: 6200 },
-    { category: 'Bills', amount: 20000, spent: 14500 },
-    { category: 'Entertainment', amount: 8000, spent: 4890 },
-    { category: 'Health', amount: 12000, spent: 3200 },
+    { category: 'Food', amount: 28000, spent: 22700 },
+    { category: 'Shopping', amount: 25000, spent: 17800 },
+    { category: 'Travel', amount: 10000, spent: 5800 },
+    { category: 'Bills', amount: 22000, spent: 19390 },
+    { category: 'Entertainment', amount: 6000, spent: 0 },
+    { category: 'Health', amount: 8000, spent: 0 },
   ];
 
   for (const b of standardBudgets) {
