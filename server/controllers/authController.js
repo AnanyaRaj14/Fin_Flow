@@ -48,8 +48,19 @@ const register = async (req, res) => {
   await prisma.settings.create({ data: { userId: user.id, currency: 'INR' } });
 
   // Send verification email
-  const url = `${process.env.CLIENT_URL}/verify-email?token=${verifyToken}`;
-  await sendEmail({ to: email, subject: 'Verify your FinFlow account', html: verifyEmailTemplate(name, url) });
+  try {
+    const url = `${process.env.CLIENT_URL}/verify-email?token=${verifyToken}`;
+    await sendEmail({ to: email, subject: 'Verify your FinFlow account', html: verifyEmailTemplate(name, url) });
+  } catch (emailErr) {
+    console.error('Email dispatch failed, auto-verifying user:', emailErr.message);
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { isVerified: true },
+    });
+    return res.status(201).json({
+      message: 'Account created successfully! You can now sign in.',
+    });
+  }
 
   res.status(201).json({ message: 'Account created! Please check your email to verify your account.' });
 };
