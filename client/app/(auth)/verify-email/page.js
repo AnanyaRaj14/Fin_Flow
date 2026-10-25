@@ -39,7 +39,7 @@ function VerifyEmailContent() {
           <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto" />
           <h2 className="text-lg font-semibold text-foreground">Email verified successfully!</h2>
           <p className="text-xs text-muted-foreground">Your account is fully activated. You may now sign in.</p>
-          <Link href="/login" className="block pt-2">
+          <Link href="/login" prefetch={false} className="block pt-2">
             <Button className="w-full text-xs h-10 shadow-sm">
               Sign In <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
             </Button>
@@ -51,7 +51,7 @@ function VerifyEmailContent() {
           <XCircle className="w-10 h-10 text-destructive mx-auto" />
           <h2 className="text-lg font-semibold text-foreground">Verification failed</h2>
           <p className="text-xs text-muted-foreground">The link is invalid or has expired.</p>
-          <Link href="/login" className="block pt-2">
+          <Link href="/login" prefetch={false} className="block pt-2">
             <Button variant="outline" className="w-full text-xs h-10">
               Back to sign in
             </Button>
@@ -72,7 +72,7 @@ export default function VerifyEmailPage() {
     >
       {/* Brand Header */}
       <div className="flex flex-col items-center justify-center mb-8 text-center">
-        <Link href="/dashboard" className="mb-3 inline-block">
+        <Link href="/dashboard" prefetch={false} className="mb-3 inline-block">
           <Logo size="lg" />
         </Link>
         <p className="text-xs text-muted-foreground font-medium">Simple, quiet financial clarity</p>

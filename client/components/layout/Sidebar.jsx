@@ -59,7 +59,7 @@ export default function Sidebar({ open, onClose }) {
       <div className="flex-1 overflow-y-auto">
         {/* Brand Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border/40 dark:border-white/[0.04]">
-          <Link href="/dashboard">
+          <Link href="/dashboard" prefetch={false}>
             <Logo size="sm" />
           </Link>
           <button
@@ -84,6 +84,7 @@ export default function Sidebar({ open, onClose }) {
                     <Link
                       key={href}
                       href={href}
+                      prefetch={false}
                       onClick={onClose}
                       className={cn(
                         'relative flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl text-xs font-medium transition-colors group',

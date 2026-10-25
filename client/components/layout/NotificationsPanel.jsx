@@ -72,7 +72,9 @@ export default function NotificationsPanel() {
   };
 
   useEffect(() => {
-    fetchNotifications();
+    if (open) {
+      fetchNotifications();
+    }
   }, [open]);
 
   const iconMap = {

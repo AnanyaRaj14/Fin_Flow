@@ -90,13 +90,13 @@ export default function DashboardPage() {
 
             {/* Quick Actions with Aceternity Shimmer Button */}
             <div className="flex items-center gap-2.5">
-              <Link href="/transactions">
+              <Link href="/transactions" prefetch={false}>
                 <ShimmerButton className="h-8 px-3.5 text-xs font-medium gap-1.5">
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Transaction</span>
                 </ShimmerButton>
               </Link>
-              <Link href="/accounts">
+              <Link href="/accounts" prefetch={false}>
                 <Button variant="outline" size="sm" className="h-8 px-3.5 rounded-lg text-xs font-medium dark:bg-white/[0.02]">
                   <Wallet className="w-3.5 h-3.5 mr-1.5 text-muted-foreground" />
                   <span>Accounts</span>
@@ -252,7 +252,7 @@ export default function DashboardPage() {
                     {stats?.goals?.length ?? 0} active
                   </span>
                 </div>
-                <Link href="/goals">
+                <Link href="/goals" prefetch={false}>
                   <Button variant="ghost" size="sm" className="text-xs text-muted-foreground h-7 gap-1 hover:text-foreground">
                     <span>View all</span>
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -301,7 +301,7 @@ export default function DashboardPage() {
             >
               <div className="pb-3 border-b border-border/40 dark:border-white/[0.05] flex items-center justify-between mb-2">
                 <h3 className="text-sm font-semibold tracking-tight text-foreground">Recent Activity</h3>
-                <Link href="/transactions">
+                <Link href="/transactions" prefetch={false}>
                   <Button variant="ghost" size="sm" className="text-xs text-muted-foreground h-7 gap-1 hover:text-foreground">
                     <span>Ledger</span>
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -363,7 +363,7 @@ export default function DashboardPage() {
             >
               <div className="pb-3 border-b border-border/40 dark:border-white/[0.05] flex items-center justify-between mb-2">
                 <h3 className="text-sm font-semibold tracking-tight text-foreground">Upcoming Commitments</h3>
-                <Link href="/bills">
+                <Link href="/bills" prefetch={false}>
                   <Button variant="ghost" size="sm" className="text-xs text-muted-foreground h-7 gap-1 hover:text-foreground">
                     <span>Manage</span>
                     <ChevronRight className="w-3.5 h-3.5" />

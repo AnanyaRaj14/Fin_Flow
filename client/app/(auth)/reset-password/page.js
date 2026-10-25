@@ -85,7 +85,7 @@ function ResetPasswordForm() {
         Reset Password
       </Button>
 
-      <Link href="/login" className="block text-center pt-2">
+      <Link href="/login" prefetch={false} className="block text-center pt-2">
         <Button variant="ghost" className="w-full text-xs h-9 text-muted-foreground hover:text-foreground">
           <ArrowLeft className="w-3.5 h-3.5 mr-1.5" /> Back to sign in
         </Button>
@@ -104,7 +104,7 @@ export default function ResetPasswordPage() {
     >
       {/* Brand Header */}
       <div className="flex flex-col items-center justify-center mb-8 text-center">
-        <Link href="/dashboard" className="mb-3 inline-block">
+        <Link href="/dashboard" prefetch={false} className="mb-3 inline-block">
           <Logo size="lg" />
         </Link>
         <p className="text-xs text-muted-foreground font-medium">Simple, quiet financial clarity</p>

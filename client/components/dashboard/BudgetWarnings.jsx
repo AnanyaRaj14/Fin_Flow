@@ -26,6 +26,7 @@ export default function BudgetWarnings({ budgets = [] }) {
         </div>
         <Link
           href="/budgets"
+          prefetch={false}
           className="text-xs font-semibold text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1 shrink-0"
         >
           <span>Adjust</span>
@@ -35,7 +36,7 @@ export default function BudgetWarnings({ budgets = [] }) {
 
       <div className="flex flex-wrap gap-2">
         {exceeded.map((b) => (
-          <Link key={b.id} href="/budgets">
+          <Link key={b.id} href="/budgets" prefetch={false}>
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-amber-500/10 dark:bg-amber-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-xs font-semibold hover:bg-amber-500/20 transition-colors">
               <span
                 className="w-2 h-2 rounded-full ring-2 ring-amber-500/20"

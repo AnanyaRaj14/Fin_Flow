@@ -24,7 +24,7 @@ export default function NotFound() {
           The requested resource is missing or has been relocated to another endpoint.
         </p>
         <div className="flex justify-center">
-          <Link href="/dashboard">
+          <Link href="/dashboard" prefetch={false}>
             <ShimmerButton className="h-9 px-5 text-xs font-semibold gap-2">
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Return to Dashboard</span>

@@ -65,7 +65,7 @@ export default function RegisterPage() {
     >
       {/* Brand Header */}
       <div className="flex flex-col items-center justify-center mb-8 text-center">
-        <Link href="/dashboard" className="mb-3 inline-block">
+        <Link href="/dashboard" prefetch={false} className="mb-3 inline-block">
           <Logo size="lg" />
         </Link>
         <p className="text-xs text-muted-foreground font-medium">Simple, quiet financial clarity</p>
@@ -148,7 +148,7 @@ export default function RegisterPage() {
 
           <p className="text-center text-xs text-muted-foreground pt-2">
             Already have an account?{' '}
-            <Link href="/login" className="text-foreground font-medium hover:underline">
+            <Link href="/login" prefetch={false} className="text-foreground font-medium hover:underline">
               Sign in
             </Link>
           </p>

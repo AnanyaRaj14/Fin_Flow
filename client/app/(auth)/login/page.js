@@ -87,7 +87,7 @@ export default function LoginPage() {
     >
       {/* Brand Header */}
       <div className="flex flex-col items-center justify-center mb-8 text-center">
-        <Link href="/dashboard" className="mb-3 inline-block">
+        <Link href="/dashboard" prefetch={false} className="mb-3 inline-block">
           <Logo size="lg" />
         </Link>
         <p className="text-xs text-muted-foreground font-medium">Simple, quiet financial clarity</p>
@@ -142,7 +142,7 @@ export default function LoginPage() {
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <Label className="text-xs font-medium text-foreground">Password</Label>
-                <Link href="/forgot-password" className="text-xs text-muted-foreground hover:text-foreground font-medium transition-colors">
+                <Link href="/forgot-password" prefetch={false} className="text-xs text-muted-foreground hover:text-foreground font-medium transition-colors">
                   Forgot password?
                 </Link>
               </div>
@@ -179,7 +179,7 @@ export default function LoginPage() {
 
           <div className="pt-2 text-center text-xs text-muted-foreground">
             Don&apos;t have an account yet?{' '}
-            <Link href="/register" className="text-foreground font-medium hover:underline">
+            <Link href="/register" prefetch={false} className="text-foreground font-medium hover:underline">
               Create account
             </Link>
           </div>
