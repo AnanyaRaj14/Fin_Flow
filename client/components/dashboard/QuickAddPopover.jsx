@@ -64,7 +64,11 @@ export default function QuickAddPopover({
       formData.append('type', type);
       formData.append('date', new Date().toISOString().split('T')[0]);
       if (categoryId) formData.append('categoryId', categoryId);
-      if (accountId) formData.append('accountId', accountId);
+      if (accountId) {
+        formData.append('accountId', accountId);
+      } else if (accounts?.length > 0) {
+        formData.append('accountId', accounts[0].id);
+      }
 
       await transactionsApi.create(formData);
       toast.success(`${type === 'income' ? 'Income' : 'Expense'} recorded.`);
@@ -181,37 +185,20 @@ export default function QuickAddPopover({
               />
             </div>
 
-            {/* Category & Account Selectors */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <Label className="text-xs font-semibold text-muted-foreground">Category</Label>
-                <select
-                  value={categoryId}
-                  onChange={(e) => setCategoryId(e.target.value)}
-                  className="w-full h-9.5 text-xs rounded-xl px-3 bg-background dark:bg-[#1E1E1E] border border-border/80 dark:border-white/10 text-foreground"
-                >
-                  {categories.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="space-y-1">
-                <Label className="text-xs font-semibold text-muted-foreground">Account</Label>
-                <select
-                  value={accountId}
-                  onChange={(e) => setAccountId(e.target.value)}
-                  className="w-full h-9.5 text-xs rounded-xl px-3 bg-background dark:bg-[#1E1E1E] border border-border/80 dark:border-white/10 text-foreground"
-                >
-                  {accounts.map((a) => (
-                    <option key={a.id} value={a.id}>
-                      {a.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            {/* Category Selector */}
+            <div className="space-y-1">
+              <Label className="text-xs font-semibold text-muted-foreground">Category</Label>
+              <select
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
+                className="w-full h-9.5 text-xs rounded-xl px-3 bg-background dark:bg-[#1E1E1E] border border-border/80 dark:border-white/10 text-foreground"
+              >
+                {categories.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
             </div>
 
             {/* Action Buttons */}

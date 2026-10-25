@@ -44,6 +44,16 @@ const register = async (req, res) => {
     data: defaultCategories.map((c) => ({ ...c, userId: user.id })),
   });
 
+  // Create default account for the user
+  await prisma.account.create({
+    data: {
+      name: 'Primary Account',
+      type: 'cash',
+      balance: 0,
+      userId: user.id,
+    },
+  });
+
   // Create default settings
   await prisma.settings.create({ data: { userId: user.id, currency: 'INR' } });
 

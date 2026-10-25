@@ -60,6 +60,22 @@ const createTransaction = async (req, res) => {
 
   const parsedAmount = parseFloat(amount);
 
+  let resolvedAccountId = accountId;
+  if (!resolvedAccountId) {
+    let acc = await prisma.account.findFirst({ where: { userId: req.user.id } });
+    if (!acc) {
+      acc = await prisma.account.create({
+        data: {
+          name: 'Primary Account',
+          type: 'cash',
+          balance: 0,
+          userId: req.user.id,
+        },
+      });
+    }
+    resolvedAccountId = acc.id;
+  }
+
   const transaction = await prisma.transaction.create({
     data: {
       title,
@@ -67,8 +83,8 @@ const createTransaction = async (req, res) => {
       type,
       date: new Date(date),
       categoryId,
-      accountId,
-      paymentMethod,
+      accountId: resolvedAccountId,
+      paymentMethod: paymentMethod || 'card',
       notes,
       receiptUrl,
       userId: req.user.id,
@@ -78,7 +94,7 @@ const createTransaction = async (req, res) => {
 
   // Update account balance
   await prisma.account.update({
-    where: { id: accountId },
+    where: { id: resolvedAccountId },
     data: {
       balance: { increment: type === 'income' ? parsedAmount : -parsedAmount },
     },
@@ -138,7 +154,8 @@ const updateTransaction = async (req, res) => {
   }
 
   const parsedAmount = parseFloat(amount);
-  const data = { title, amount: parsedAmount, type, date: new Date(date), categoryId, accountId, paymentMethod, notes };
+  const targetAccountId = accountId || existing.accountId;
+  const data = { title, amount: parsedAmount, type, date: new Date(date), categoryId, accountId: targetAccountId, paymentMethod: paymentMethod || existing.paymentMethod, notes };
   if (receiptUrl) data.receiptUrl = receiptUrl;
 
   const transaction = await prisma.transaction.update({
@@ -149,7 +166,7 @@ const updateTransaction = async (req, res) => {
 
   // Apply new balance effect
   await prisma.account.update({
-    where: { id: accountId },
+    where: { id: targetAccountId },
     data: {
       balance: { increment: type === 'income' ? parsedAmount : -parsedAmount },
     },

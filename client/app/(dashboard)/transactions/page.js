@@ -140,7 +140,7 @@ export default function TransactionsPage() {
               </Button>
             )}
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+          <div className={cn("grid gap-2", accounts.length > 1 ? "grid-cols-2 lg:grid-cols-4" : "grid-cols-2 lg:grid-cols-3")}>
             <Select value={filterType} onValueChange={setFilterType}>
               <SelectTrigger className="h-8 text-xs dark:bg-white/[0.03] dark:border-white/10"><SelectValue placeholder="All types" /></SelectTrigger>
               <SelectContent>
@@ -158,13 +158,15 @@ export default function TransactionsPage() {
               </SelectContent>
             </Select>
 
-            <Select value={filterAccount} onValueChange={setFilterAccount}>
-              <SelectTrigger className="h-8 text-xs dark:bg-white/[0.03] dark:border-white/10"><SelectValue placeholder="All accounts" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="">All accounts</SelectItem>
-                {accounts.map((a) => <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>)}
-              </SelectContent>
-            </Select>
+            {accounts.length > 1 && (
+              <Select value={filterAccount} onValueChange={setFilterAccount}>
+                <SelectTrigger className="h-8 text-xs dark:bg-white/[0.03] dark:border-white/10"><SelectValue placeholder="All accounts" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">All accounts</SelectItem>
+                  {accounts.map((a) => <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            )}
 
             <div className="flex gap-2">
               <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="h-8 text-xs dark:bg-white/[0.03] dark:border-white/10" />
@@ -211,7 +213,7 @@ export default function TransactionsPage() {
                         {tx.receiptUrl && <ImageIcon className="w-3 h-3 text-muted-foreground shrink-0" />}
                       </div>
                       <p className="text-[11px] text-muted-foreground">
-                        {tx.category?.name || 'General'} · {tx.account?.name || 'Cash'} · {formatDate(tx.date)}
+                        {tx.category?.name || 'General'} · {formatDate(tx.date)}
                       </p>
                     </div>
 

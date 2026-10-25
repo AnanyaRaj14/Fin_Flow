@@ -40,13 +40,20 @@ export default function TransactionForm({ onSubmit, defaultValues, saving }) {
 
   useEffect(() => {
     Promise.all([categoriesApi.getAll(), accountsApi.getAll()]).then(([c, a]) => {
-      setCategories(c.data.categories);
-      setAccounts(a.data.accounts);
-    });
-  }, []);
+      setCategories(c.data?.categories || []);
+      const accList = a.data?.accounts || [];
+      setAccounts(accList);
+      if (accList.length > 0 && !defaultValues?.accountId) {
+        setValue('accountId', accList[0].id);
+      }
+    }).catch(() => {});
+  }, [defaultValues, setValue]);
 
   const handleFormSubmit = (data) => {
     const fd = new FormData();
+    if (!data.accountId && accounts.length > 0) {
+      data.accountId = accounts[0].id;
+    }
     Object.entries(data).forEach(([k, v]) => { if (v !== '' && v !== undefined) fd.append(k, v); });
     if (receipt) fd.append('receipt', receipt);
     onSubmit(fd);
@@ -98,7 +105,7 @@ export default function TransactionForm({ onSubmit, defaultValues, saving }) {
         <div className="space-y-1.5">
           <Label>Category</Label>
           <Select value={selectedCategory} onValueChange={(v) => setValue('categoryId', v)}>
-            <SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger>
+            <SelectTrigger><SelectValue placeholder="Select category..." /></SelectTrigger>
             <SelectContent>
               {filteredCategories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
             </SelectContent>
@@ -107,19 +114,9 @@ export default function TransactionForm({ onSubmit, defaultValues, saving }) {
         </div>
 
         <div className="space-y-1.5">
-          <Label>Account</Label>
-          <Select value={selectedAccount} onValueChange={(v) => setValue('accountId', v)}>
-            <SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger>
-            <SelectContent>
-              {accounts.map((a) => <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>)}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="col-span-2 space-y-1.5">
           <Label>Payment Method</Label>
-          <Select value={selectedPayment} onValueChange={(v) => setValue('paymentMethod', v)}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+          <Select value={selectedPayment || 'card'} onValueChange={(v) => setValue('paymentMethod', v)}>
+            <SelectTrigger><SelectValue placeholder="Payment Method" /></SelectTrigger>
             <SelectContent>
               {PAYMENT_METHODS.map((m) => <SelectItem key={m} value={m} className="capitalize">{m.toUpperCase()}</SelectItem>)}
             </SelectContent>
@@ -152,7 +149,7 @@ export default function TransactionForm({ onSubmit, defaultValues, saving }) {
       </div>
 
       <div className="flex gap-2 pt-2">
-        <Button type="submit" className="flex-1" disabled={saving || !selectedCategory || !selectedAccount}>
+        <Button type="submit" className="flex-1" disabled={saving || !selectedCategory}>
           {saving && <Loader2 className="w-4 h-4 animate-spin" />}
           Save Transaction
         </Button>
