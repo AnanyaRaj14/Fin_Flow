@@ -55,6 +55,10 @@ export default function TransactionForm({ onSubmit, defaultValues, saving }) {
     if (!data.accountId && accounts.length > 0) {
       data.accountId = accounts[0].id;
     }
+    if (!data.paymentMethod) {
+      const acc = accounts.find((a) => a.id === data.accountId);
+      data.paymentMethod = acc?.type === 'cash' ? 'cash' : acc?.type === 'wallet' ? 'upi' : 'card';
+    }
     Object.entries(data).forEach(([k, v]) => { if (v !== '' && v !== undefined) fd.append(k, v); });
     if (receipt) fd.append('receipt', receipt);
     onSubmit(fd);
@@ -115,13 +119,14 @@ export default function TransactionForm({ onSubmit, defaultValues, saving }) {
         </div>
 
         <div className="space-y-1.5">
-          <Label>Payment Method</Label>
-          <Select value={selectedPayment || 'card'} onValueChange={(v) => setValue('paymentMethod', v)}>
-            <SelectTrigger><SelectValue placeholder="Payment Method" /></SelectTrigger>
+          <Label>Account</Label>
+          <Select value={selectedAccount} onValueChange={(v) => setValue('accountId', v)}>
+            <SelectTrigger><SelectValue placeholder="Select account..." /></SelectTrigger>
             <SelectContent>
-              {PAYMENT_METHODS.map((m) => <SelectItem key={m} value={m} className="capitalize">{m.toUpperCase()}</SelectItem>)}
+              {accounts.map((a) => <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>)}
             </SelectContent>
           </Select>
+          {!selectedAccount && <p className="text-xs text-muted-foreground">Required</p>}
         </div>
 
         <div className="col-span-2 space-y-1.5">
@@ -150,7 +155,7 @@ export default function TransactionForm({ onSubmit, defaultValues, saving }) {
       </div>
 
       <div className="flex gap-2 pt-2">
-        <ShimmerButton type="submit" className="w-full h-9 rounded-xl font-medium" disabled={saving || !selectedCategory}>
+        <ShimmerButton type="submit" className="w-full h-9 rounded-xl font-medium" disabled={saving || !selectedCategory || !selectedAccount}>
           {saving && <Loader2 className="w-4 h-4 animate-spin" />}
           <span>{defaultValues ? 'Update Transaction' : 'Save Transaction'}</span>
         </ShimmerButton>

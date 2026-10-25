@@ -5,7 +5,6 @@ import { Menu, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/hooks/useTheme';
 import NotificationsPanel from './NotificationsPanel';
-import QuickAddPopover from '@/components/dashboard/QuickAddPopover';
 import { cn } from '@/lib/utils';
 
 export default function Header({ onMenuClick, title }) {
@@ -24,9 +23,6 @@ export default function Header({ onMenuClick, title }) {
 
       {/* Right Controls */}
       <div className="flex items-center gap-2 sm:gap-3">
-        {/* Fancy Quick Add Entry Popover */}
-        <QuickAddPopover />
-
         {/* Super Minimal Segmented Theme Toggle Pill */}
         <div className="flex items-center p-0.5 rounded-full bg-accent/60 dark:bg-white/[0.05] border border-border/50 dark:border-white/[0.06]">
           <button

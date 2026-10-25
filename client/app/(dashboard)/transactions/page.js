@@ -141,28 +141,28 @@ export default function TransactionsPage() {
             )}
           </div>
           <div className={cn("grid gap-2", accounts.length > 1 ? "grid-cols-2 lg:grid-cols-4" : "grid-cols-2 lg:grid-cols-3")}>
-            <Select value={filterType} onValueChange={setFilterType}>
+            <Select value={filterType || 'all'} onValueChange={(v) => setFilterType(v === 'all' ? '' : v)}>
               <SelectTrigger className="h-8 text-xs dark:bg-white/[0.03] dark:border-white/10"><SelectValue placeholder="All types" /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All types</SelectItem>
+                <SelectItem value="all">All types</SelectItem>
                 <SelectItem value="income">Income</SelectItem>
                 <SelectItem value="expense">Expense</SelectItem>
               </SelectContent>
             </Select>
 
-            <Select value={filterCategory} onValueChange={setFilterCategory}>
+            <Select value={filterCategory || 'all'} onValueChange={(v) => setFilterCategory(v === 'all' ? '' : v)}>
               <SelectTrigger className="h-8 text-xs dark:bg-white/[0.03] dark:border-white/10"><SelectValue placeholder="All categories" /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All categories</SelectItem>
+                <SelectItem value="all">All categories</SelectItem>
                 {categories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
               </SelectContent>
             </Select>
 
             {accounts.length > 1 && (
-              <Select value={filterAccount} onValueChange={setFilterAccount}>
+              <Select value={filterAccount || 'all'} onValueChange={(v) => setFilterAccount(v === 'all' ? '' : v)}>
                 <SelectTrigger className="h-8 text-xs dark:bg-white/[0.03] dark:border-white/10"><SelectValue placeholder="All accounts" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All accounts</SelectItem>
+                  <SelectItem value="all">All accounts</SelectItem>
                   {accounts.map((a) => <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>)}
                 </SelectContent>
               </Select>
@@ -219,7 +219,7 @@ export default function TransactionsPage() {
 
                     <div className="flex items-center gap-3">
                       <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-accent dark:bg-white/[0.04] border border-border/40 dark:border-white/[0.06] text-muted-foreground">
-                        {tx.paymentMethod || 'Manual'}
+                        {tx.account?.name || tx.paymentMethod || 'Manual'}
                       </span>
                       <span className={cn(
                         'text-xs font-mono font-medium tabular-nums w-24 text-right shrink-0',
