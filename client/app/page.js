@@ -10,10 +10,13 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    // If the browser is on a subpath (e.g. /budgets, /login, /dashboard) due to an SPA fallback,
-    // do NOT redirect away from that subpath!
-    if (typeof window !== 'undefined' && window.location.pathname !== '/' && window.location.pathname !== '') {
-      return;
+    // If the browser loaded /index.html as a fallback for another route (e.g. /login/ or /budgets/):
+    if (typeof window !== 'undefined') {
+      const cleanPath = window.location.pathname.replace(/\/$/, '') || '/';
+      if (cleanPath !== '/' && cleanPath !== window.location.pathname) {
+        router.replace(cleanPath);
+        return;
+      }
     }
 
     if (!loading) {

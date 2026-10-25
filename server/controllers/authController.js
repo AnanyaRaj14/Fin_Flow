@@ -105,16 +105,33 @@ const logout = (req, res) => {
   res.json({ message: 'Logged out successfully.' });
 };
 
-// GET /api/auth/me
+// GET /api/auth/me - returns current user or null if not authenticated (avoids 401 console errors on public pages)
 const getMe = async (req, res) => {
-  const user = await prisma.user.findUnique({
-    where: { id: req.user.id },
-    select: { id: true, name: true, email: true, avatar: true, isVerified: true, createdAt: true },
-  });
-  if (user && user.avatar) {
-    user.avatar = await getPresignedUrl(user.avatar);
+  const token = req.cookies.token;
+  if (!token) {
+    return res.json({ user: null });
   }
-  res.json({ user });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.id },
+      select: { id: true, name: true, email: true, avatar: true, isVerified: true, createdAt: true },
+    });
+
+    if (!user) {
+      res.clearCookie('token');
+      return res.json({ user: null });
+    }
+
+    if (user.avatar) {
+      user.avatar = await getPresignedUrl(user.avatar);
+    }
+    return res.json({ user });
+  } catch {
+    res.clearCookie('token');
+    return res.json({ user: null });
+  }
 };
 
 // POST /api/auth/verify-email

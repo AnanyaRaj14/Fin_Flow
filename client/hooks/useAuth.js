@@ -14,7 +14,7 @@ export function AuthProvider({ children }) {
   const fetchUser = useCallback(async () => {
     try {
       const { data } = await authApi.getMe();
-      setUser(data.user);
+      setUser(data?.user || null);
       setServerError(false);
     } catch (err) {
       setUser(null);
