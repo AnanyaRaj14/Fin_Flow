@@ -47,7 +47,13 @@ resource "aws_cloudfront_distribution" "cdn" {
     compress               = true
 
     forwarded_values {
-      query_string = false
+      query_string = true
+      headers = [
+        "RSC",
+        "Next-Router-State-Tree",
+        "Next-Router-Prefetch",
+        "Next-Url",
+      ]
       cookies {
         forward = "none"
       }
@@ -60,6 +66,11 @@ resource "aws_cloudfront_distribution" "cdn" {
     function_association {
       event_type   = "viewer-request"
       function_arn = "arn:aws:cloudfront::838885265032:function/finflow-url-rewrite"
+    }
+
+    function_association {
+      event_type   = "viewer-response"
+      function_arn = "arn:aws:cloudfront::838885265032:function/finflow-rsc-response"
     }
   }
 

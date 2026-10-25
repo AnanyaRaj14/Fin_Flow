@@ -93,7 +93,13 @@ export default function Sidebar({ open, onClose }) {
                     <Link
                       key={href}
                       href={href}
-                      onClick={onClose}
+                      scroll={false}
+                      onClick={(e) => {
+                        if (active) {
+                          e.preventDefault();
+                        }
+                        onClose?.();
+                      }}
                       className={cn(
                         'relative flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl text-xs font-medium transition-colors group',
                         active
