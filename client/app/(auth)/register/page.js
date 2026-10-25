@@ -61,6 +61,7 @@ export default function RegisterPage() {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: 'easeOut' }}
+      className="w-full"
     >
       {/* Brand Header */}
       <div className="flex flex-col items-center justify-center mb-8 text-center">

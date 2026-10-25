@@ -9,7 +9,7 @@ export function GridBackground({
   pattern = 'grid',
 }) {
   return (
-    <div className={cn('relative w-full overflow-hidden', className)}>
+    <div className={cn('relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden', className)}>
       {/* Aceternity Grid Pattern with Radial Gradient Mask */}
       <div
         className={cn(
@@ -19,11 +19,11 @@ export function GridBackground({
             : 'bg-[radial-gradient(rgba(0,0,0,0.08)_1px,transparent_1px)] dark:bg-[radial-gradient(rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:20px_20px]'
         )}
         style={{
-          maskImage: 'radial-gradient(ellipse 80% 50% at 50% 0%, #000 70%, transparent 100%)',
-          WebkitMaskImage: 'radial-gradient(ellipse 80% 50% at 50% 0%, #000 70%, transparent 100%)',
+          maskImage: 'radial-gradient(ellipse 75% 75% at center, #000 55%, transparent 100%)',
+          WebkitMaskImage: 'radial-gradient(ellipse 75% 75% at center, #000 55%, transparent 100%)',
         }}
       />
-      <div className="relative z-10 w-full">{children}</div>
+      <div className="relative z-10 w-full flex flex-col items-center justify-center">{children}</div>
     </div>
   );
 }
