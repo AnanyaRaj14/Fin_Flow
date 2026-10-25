@@ -4,17 +4,18 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
   Wallet, Plus, ArrowUpRight, ArrowDownLeft, Calendar,
-  Receipt, CheckCircle2, ChevronRight, BarChart3, TrendingUp
+  Receipt, CheckCircle2, ChevronRight, BarChart3, TrendingUp, Sparkles
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import IncomeExpenseChart from '@/components/charts/IncomeExpenseChart';
+import AceternityCashFlowChart from '@/components/charts/AceternityCashFlowChart';
 import ExpensesByCategoryChart from '@/components/charts/ExpensesByCategoryChart';
 import SavingsTrendChart from '@/components/charts/SavingsTrendChart';
 import BudgetWarnings from '@/components/dashboard/BudgetWarnings';
 import { Button } from '@/components/ui/button';
 import { SpotlightCard } from '@/components/ui/spotlight-card';
 import { ShimmerButton } from '@/components/ui/shimmer-button';
+import { NumberTicker } from '@/components/ui/number-ticker';
 import { SkeletonCard } from '@/components/ui/skeleton';
 import { dashboardApi } from '@/services/api';
 import { formatCurrency, formatDate, getDaysUntilDue } from '@/lib/utils';
@@ -52,50 +53,63 @@ export default function DashboardPage() {
   const expenses = Number(stats?.totalExpenses || 0);
   const savings = Number(stats?.totalSavings || 0);
   const savingsRate = income > 0 ? Math.max(0, Math.round(((income - expenses) / income) * 100)) : 0;
+  const currentMonthName = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
   return (
     <DashboardLayout title="Home">
-      <div className="space-y-6 max-w-6xl mx-auto pb-10">
-
-        {/* Aceternity Hero Master Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        className="space-y-6 max-w-6xl mx-auto pb-10"
+      >
         {loading ? (
           <div className="space-y-4">
-            <SkeletonCard />
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <SkeletonCard />
-              <SkeletonCard />
-              <SkeletonCard />
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+              <div className="lg:col-span-8"><SkeletonCard /></div>
+              <div className="lg:col-span-4"><SkeletonCard /></div>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+              <div className="lg:col-span-8"><SkeletonCard /></div>
+              <div className="lg:col-span-4"><SkeletonCard /></div>
             </div>
           </div>
         ) : (
-          <div className="space-y-4">
-            {/* Top Net Worth Card with Aceternity Radiant Halo */}
-            <SpotlightCard
-              radius={450}
-              spotlightColor="rgba(99, 102, 241, 0.12)"
-              className="p-6 sm:p-7"
-            >
-              <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="space-y-6">
+            {/* Top Row: Hero Net Worth (8 cols) + Monthly Performance (4 cols) */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+              {/* Bento 1: Portfolio Net Worth Hero */}
+              <SpotlightCard
+                radius={450}
+                spotlightColor="rgba(99, 102, 241, 0.14)"
+                className="lg:col-span-8 p-6 sm:p-7 flex flex-col justify-between"
+              >
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground mb-1">
-                    {greeting()}, {displayName}
-                  </p>
-                  
-                  <div className="flex items-baseline gap-3">
-                    <span className="text-3xl sm:text-4xl font-bold tracking-tight font-mono tabular-nums text-foreground">
-                      {formatCurrency(stats?.totalBalance ?? 0)}
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-medium text-muted-foreground">
+                      {greeting()}, {displayName}
+                    </span>
+                    <span className="text-[11px] font-mono text-muted-foreground/80">
+                      {currentMonthName}
                     </span>
                   </div>
 
-                  <p className="text-[11px] text-muted-foreground mt-1">
-                    Total Portfolio Net Worth · {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                  <div className="py-1">
+                    <NumberTicker
+                      value={stats?.totalBalance ?? 0}
+                      prefix="₹"
+                      className="text-3xl sm:text-5xl font-bold tracking-tight text-foreground font-mono tabular-nums"
+                    />
+                  </div>
+
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Total Portfolio Net Worth across all liquid & invested accounts
                   </p>
                 </div>
 
-                {/* Quick Actions with Aceternity Shimmer Button */}
-                <div className="flex items-center gap-2.5">
+                <div className="pt-6 flex items-center gap-3">
                   <Link href="/transactions" prefetch={false}>
-                    <ShimmerButton className="h-8.5 px-4 text-xs font-semibold gap-1.5 shadow-md">
+                    <ShimmerButton className="h-9 px-4 text-xs font-semibold gap-1.5 shadow-md">
                       <Plus className="w-3.5 h-3.5" />
                       <span>Add Transaction</span>
                     </ShimmerButton>
@@ -104,305 +118,319 @@ export default function DashboardPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="h-8.5 px-3.5 rounded-xl text-xs font-semibold bg-white/60 dark:bg-white/[0.04] border-border/80 dark:border-white/10 hover:bg-accent/80 transition-all"
+                      className="h-9 px-4 rounded-xl text-xs font-semibold bg-white/70 dark:bg-white/[0.04] border-border/80 dark:border-white/10 hover:bg-accent/80 transition-all"
                     >
                       <Wallet className="w-3.5 h-3.5 mr-1.5 text-muted-foreground" />
                       <span>Accounts</span>
                     </Button>
                   </Link>
                 </div>
-              </div>
-            </SpotlightCard>
+              </SpotlightCard>
 
-            {/* 3 Bento Metrics Cards with Custom Halos */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {/* Monthly Inflow */}
+              {/* Bento 2: Monthly Cycle Performance */}
               <SpotlightCard
-                radius={280}
+                radius={350}
                 spotlightColor="rgba(16, 185, 129, 0.12)"
-                className="p-5"
+                className="lg:col-span-4 p-6 flex flex-col justify-between"
               >
-                <div className="flex items-center justify-between text-muted-foreground">
-                  <span className="text-xs font-medium">Monthly Inflow</span>
-                  <ArrowDownLeft className="w-4 h-4 text-emerald-500" />
+                <div>
+                  <div className="flex items-center justify-between pb-3 border-b border-border/40 dark:border-white/[0.05] mb-4">
+                    <h3 className="text-xs font-semibold tracking-tight text-foreground uppercase tracking-wider">
+                      Monthly Cycle
+                    </h3>
+                    <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                      {savingsRate}% retention
+                    </span>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="flex items-center gap-2 text-muted-foreground">
+                        <ArrowDownLeft className="w-3.5 h-3.5 text-emerald-500" />
+                        Monthly Inflow
+                      </span>
+                      <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
+                        +{formatCurrency(income)}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="flex items-center gap-2 text-muted-foreground">
+                        <ArrowUpRight className="w-3.5 h-3.5 text-rose-500" />
+                        Monthly Outflow
+                      </span>
+                      <span className="font-mono font-bold text-rose-500 tabular-nums">
+                        -{formatCurrency(expenses)}
+                      </span>
+                    </div>
+
+                    <div className="pt-2 border-t border-border/40 dark:border-white/[0.04] flex items-center justify-between text-xs">
+                      <span className="font-medium text-foreground">Net Retained</span>
+                      <span className="font-mono font-bold text-foreground tabular-nums text-sm">
+                        {formatCurrency(savings)}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div className="text-2xl font-bold font-mono tabular-nums text-emerald-600 dark:text-emerald-400 mt-2 tracking-tight">
-                  +{formatCurrency(income)}
+
+                {/* Retention Gauge Bar */}
+                <div className="pt-4">
+                  <div className="w-full bg-muted/60 dark:bg-white/[0.06] h-1.5 rounded-full overflow-hidden">
+                    <div
+                      className="bg-emerald-500 h-full rounded-full transition-all duration-700"
+                      style={{ width: `${Math.min(savingsRate, 100)}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-between items-center text-[10px] font-mono text-muted-foreground mt-1.5">
+                    <span>Inflow</span>
+                    <span>{savingsRate}% saved</span>
+                    <span>Goal</span>
+                  </div>
                 </div>
-                <p className="text-[11px] text-muted-foreground mt-1">Cash received this month</p>
+              </SpotlightCard>
+            </div>
+
+            {/* Budget Warning Alert (if any) */}
+            {stats?.budgets && <BudgetWarnings budgets={stats.budgets} />}
+
+            {/* Middle Row: Visual Cash Flow Analytics (8 cols) + Recent Activity (4 cols) */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+              {/* Bento 3: Financial Flow Analytics with Interactive HUD Scrubber */}
+              <SpotlightCard
+                radius={400}
+                spotlightColor="rgba(99, 102, 241, 0.12)"
+                className="lg:col-span-8 p-5 sm:p-6"
+              >
+                <div className="pb-3 border-b border-border/40 dark:border-white/[0.05] flex flex-row items-center justify-between mb-4">
+                  <div>
+                    <h3 className="text-sm font-semibold tracking-tight text-foreground">Financial Flow</h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">Interactive cash movement & trajectory</p>
+                  </div>
+
+                  {/* Aceternity Sliding Pill Tab Switcher */}
+                  <div className="relative flex items-center p-1 rounded-xl bg-muted/60 dark:bg-white/[0.04] border border-border/40 dark:border-white/[0.06]">
+                    {[
+                      { id: 'cashflow', label: 'Cash Flow' },
+                      { id: 'categories', label: 'Categories' },
+                      { id: 'savings', label: 'Trajectory' },
+                    ].map((tab) => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveChartTab(tab.id)}
+                        className={cn(
+                          'relative px-3 py-1 text-xs font-medium transition-colors z-10',
+                          activeChartTab === tab.id
+                            ? 'text-foreground font-semibold dark:text-white'
+                            : 'text-muted-foreground hover:text-foreground'
+                        )}
+                      >
+                        {activeChartTab === tab.id && (
+                          <motion.div
+                            layoutId="chartActivePill"
+                            className="absolute inset-0 rounded-lg bg-background shadow-xs dark:bg-white/10 border border-border/60 dark:border-white/10"
+                            transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                          />
+                        )}
+                        <span className="relative z-20">{tab.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  {activeChartTab === 'cashflow' && (
+                    <AceternityCashFlowChart data={charts?.monthlyData ?? []} />
+                  )}
+                  {activeChartTab === 'categories' && (
+                    <ExpensesByCategoryChart data={charts?.expensesByCategory ?? []} />
+                  )}
+                  {activeChartTab === 'savings' && (
+                    <SavingsTrendChart data={charts?.savingsTrend ?? []} />
+                  )}
+                </div>
               </SpotlightCard>
 
-              {/* Monthly Outflow */}
+              {/* Bento 4: Recent Ledger Activity */}
               <SpotlightCard
-                radius={280}
+                radius={350}
+                spotlightColor="rgba(255, 255, 255, 0.08)"
+                className="lg:col-span-4 p-5 sm:p-6 flex flex-col justify-between"
+              >
+                <div>
+                  <div className="pb-3 border-b border-border/40 dark:border-white/[0.05] flex items-center justify-between mb-3">
+                    <h3 className="text-sm font-semibold tracking-tight text-foreground">Recent Activity</h3>
+                    <Link href="/transactions" prefetch={false}>
+                      <Button variant="ghost" size="sm" className="text-xs text-muted-foreground h-7 gap-1 hover:text-foreground">
+                        <span>Ledger</span>
+                        <ChevronRight className="w-3.5 h-3.5" />
+                      </Button>
+                    </Link>
+                  </div>
+
+                  <div className="space-y-1">
+                    {(stats?.recentTransactions || []).length === 0 ? (
+                      <div className="text-center py-10 text-xs text-muted-foreground">
+                        No transactions recorded yet.
+                      </div>
+                    ) : (
+                      (stats?.recentTransactions || []).slice(0, 5).map((tx) => {
+                        const isIncome = tx.type === 'income';
+                        return (
+                          <div
+                            key={tx.id}
+                            className="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-accent/40 dark:hover:bg-white/[0.03] transition-colors group"
+                          >
+                            <div
+                              className={cn(
+                                'w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border transition-transform group-hover:scale-105',
+                                isIncome
+                                  ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
+                                  : 'bg-rose-500/10 text-rose-500 border-rose-500/20'
+                              )}
+                            >
+                              {isIncome ? <ArrowDownLeft className="w-3.5 h-3.5" /> : <ArrowUpRight className="w-3.5 h-3.5" />}
+                            </div>
+
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-semibold text-foreground truncate">
+                                {tx.title}
+                              </p>
+                              <p className="text-[11px] text-muted-foreground truncate">
+                                {tx.category?.name || 'General'} · {formatDate(tx.date)}
+                              </p>
+                            </div>
+
+                            <span
+                              className={cn(
+                                'text-xs font-mono font-bold tabular-nums shrink-0',
+                                isIncome ? 'text-emerald-600 dark:text-emerald-400' : 'text-foreground'
+                              )}
+                            >
+                              {isIncome ? '+' : '-'}{formatCurrency(tx.amount)}
+                            </span>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-border/40 dark:border-white/[0.04]">
+                  <Link href="/transactions" prefetch={false} className="w-full block">
+                    <Button variant="ghost" className="w-full h-8 text-xs text-muted-foreground hover:text-foreground">
+                      <span>View all transactions →</span>
+                    </Button>
+                  </Link>
+                </div>
+              </SpotlightCard>
+            </div>
+
+            {/* Bottom Row: Savings Goals (6 cols) + Upcoming Bills (6 cols) */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+              {/* Bento 5: Savings Goals */}
+              <SpotlightCard
+                radius={350}
+                spotlightColor="rgba(99, 102, 241, 0.12)"
+                className="lg:col-span-6 p-5 sm:p-6"
+              >
+                <div className="pb-3 border-b border-border/40 dark:border-white/[0.05] flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-semibold tracking-tight text-foreground">Savings Goals</h3>
+                    <span className="text-[10px] font-mono text-muted-foreground px-2 py-0.5 rounded-full bg-accent dark:bg-white/[0.04] border border-border/40 dark:border-white/[0.06]">
+                      {stats?.goals?.length ?? 0} active
+                    </span>
+                  </div>
+                  <Link href="/goals" prefetch={false}>
+                    <Button variant="ghost" size="sm" className="text-xs text-muted-foreground h-7 gap-1 hover:text-foreground">
+                      <span>Manage</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </Button>
+                  </Link>
+                </div>
+
+                <div className="space-y-3">
+                  {(stats?.goals || []).length === 0 ? (
+                    <div className="text-center py-6 text-xs text-muted-foreground">
+                      No active savings goals. Create one in Goals.
+                    </div>
+                  ) : (
+                    (stats?.goals || []).slice(0, 3).map((goal) => {
+                      const pct = Math.min(100, Math.round((Number(goal.savedAmount || 0) / Number(goal.targetAmount || 1)) * 100));
+                      return (
+                        <div key={goal.id} className="space-y-1.5 p-2 rounded-xl hover:bg-accent/40 dark:hover:bg-white/[0.02] transition-colors">
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="font-semibold text-foreground truncate">{goal.name}</span>
+                            <span className="font-mono tabular-nums text-muted-foreground text-[11px]">
+                              {formatCurrency(goal.savedAmount)} / {formatCurrency(goal.targetAmount)} ({pct}%)
+                            </span>
+                          </div>
+                          <div className="w-full h-1.5 rounded-full bg-muted/60 dark:bg-white/[0.06] overflow-hidden">
+                            <div
+                              className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500"
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </SpotlightCard>
+
+              {/* Bento 6: Upcoming Commitments */}
+              <SpotlightCard
+                radius={350}
                 spotlightColor="rgba(244, 63, 94, 0.12)"
-                className="p-5"
+                className="lg:col-span-6 p-5 sm:p-6"
               >
-                <div className="flex items-center justify-between text-muted-foreground">
-                  <span className="text-xs font-medium">Monthly Outflow</span>
-                  <ArrowUpRight className="w-4 h-4 text-rose-500" />
+                <div className="pb-3 border-b border-border/40 dark:border-white/[0.05] flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-semibold tracking-tight text-foreground">Upcoming Commitments</h3>
+                  <Link href="/bills" prefetch={false}>
+                    <Button variant="ghost" size="sm" className="text-xs text-muted-foreground h-7 gap-1 hover:text-foreground">
+                      <span>Manage</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </Button>
+                  </Link>
                 </div>
-                <div className="text-2xl font-bold font-mono tabular-nums text-foreground mt-2 tracking-tight">
-                  -{formatCurrency(expenses)}
-                </div>
-                <p className="text-[11px] text-muted-foreground mt-1">Total expenses recorded</p>
-              </SpotlightCard>
 
-              {/* Net Savings */}
-              <SpotlightCard
-                radius={280}
-                spotlightColor="rgba(99, 102, 241, 0.14)"
-                className="p-5"
-              >
-                <div className="flex items-center justify-between text-muted-foreground">
-                  <span className="text-xs font-medium">Net Savings</span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium">
-                    {savingsRate}% saved
-                  </span>
+                <div className="space-y-1">
+                  {(stats?.upcomingBills || []).length === 0 ? (
+                    <div className="text-center py-6 text-xs text-muted-foreground flex items-center justify-center gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                      <span>No pending bills scheduled for this cycle</span>
+                    </div>
+                  ) : (
+                    (stats?.upcomingBills || []).slice(0, 3).map((bill) => {
+                      const days = getDaysUntilDue(bill.dueDate);
+                      return (
+                        <div
+                          key={bill.id}
+                          className="flex items-center justify-between gap-3 px-2.5 py-2 rounded-xl hover:bg-accent/40 dark:hover:bg-white/[0.03] transition-colors"
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <div className="w-7 h-7 rounded-lg bg-accent/60 dark:bg-white/[0.04] flex items-center justify-center text-muted-foreground border border-border/40 shrink-0">
+                              <Calendar className="w-3.5 h-3.5" />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-xs font-semibold text-foreground truncate">{bill.name}</p>
+                              <p className="text-[11px] text-muted-foreground">
+                                {days === 0 ? 'Due today' : `In ${days} days`}
+                              </p>
+                            </div>
+                          </div>
+                          <span className="text-xs font-mono font-bold tabular-nums text-foreground shrink-0">
+                            {formatCurrency(bill.amount)}
+                          </span>
+                        </div>
+                      );
+                    })
+                  )}
                 </div>
-                <div className="text-2xl font-bold font-mono tabular-nums text-foreground mt-2 tracking-tight">
-                  {formatCurrency(savings)}
-                </div>
-                <p className="text-[11px] text-muted-foreground mt-1">Net surplus retained</p>
               </SpotlightCard>
             </div>
           </div>
         )}
-
-        {/* Budget Warning Alert (if any) */}
-        {stats?.budgets && <BudgetWarnings budgets={stats.budgets} />}
-
-        {/* Main Analytics + Ledger Split Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-          {/* Left Column: Visual Analytics & Savings Goals (7 Cols) */}
-          <div className="lg:col-span-7 space-y-6">
-            <SpotlightCard
-              radius={400}
-              spotlightColor="rgba(99, 102, 241, 0.12)"
-              className="p-5 sm:p-6"
-            >
-              <div className="pb-3 border-b border-border/50 dark:border-white/[0.05] flex flex-row items-center justify-between mb-4">
-                <div>
-                  <h3 className="text-sm font-semibold tracking-tight text-foreground">Financial Flow</h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">Visual cash movement and allocation</p>
-                </div>
-
-                {/* Aceternity Sliding Pill Tab Switcher */}
-                <div className="relative flex items-center p-1 rounded-xl bg-muted/60 dark:bg-white/[0.04] border border-border/50 dark:border-white/[0.06]">
-                  {[
-                    { id: 'cashflow', label: 'Cash Flow' },
-                    { id: 'categories', label: 'Categories' },
-                    { id: 'savings', label: 'Trajectory' },
-                  ].map((tab) => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveChartTab(tab.id)}
-                      className={cn(
-                        'relative px-3 py-1 text-xs font-medium transition-colors z-10',
-                        activeChartTab === tab.id
-                          ? 'text-foreground font-semibold dark:text-white'
-                          : 'text-muted-foreground hover:text-foreground'
-                      )}
-                    >
-                      {activeChartTab === tab.id && (
-                        <motion.div
-                          layoutId="chartActivePill"
-                          className="absolute inset-0 rounded-lg bg-background shadow-xs dark:bg-white/10 border border-border/60 dark:border-white/10"
-                          transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                        />
-                      )}
-                      <span className="relative z-20">{tab.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                {activeChartTab === 'cashflow' && (
-                  <IncomeExpenseChart data={charts?.monthlyData ?? []} />
-                )}
-                {activeChartTab === 'categories' && (
-                  <ExpensesByCategoryChart data={charts?.expensesByCategory ?? []} />
-                )}
-                {activeChartTab === 'savings' && (
-                  <SavingsTrendChart data={charts?.savingsTrend ?? []} />
-                )}
-              </div>
-            </SpotlightCard>
-
-            {/* Savings Goals & Target Milestones */}
-            <SpotlightCard
-              radius={350}
-              spotlightColor="rgba(255, 255, 255, 0.08)"
-              className="p-5 sm:p-6"
-            >
-              <div className="pb-3 border-b border-border/50 dark:border-white/[0.05] flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-semibold tracking-tight text-foreground">Savings Goals</h3>
-                  <span className="text-[10px] font-mono text-muted-foreground px-2 py-0.5 rounded-full bg-accent dark:bg-white/[0.04] border border-border/40 dark:border-white/[0.06]">
-                    {stats?.goals?.length ?? 0} active
-                  </span>
-                </div>
-                <Link href="/goals" prefetch={false}>
-                  <Button variant="ghost" size="sm" className="text-xs text-muted-foreground h-7 gap-1 hover:text-foreground">
-                    <span>View all</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </Button>
-                </Link>
-              </div>
-
-              <div className="space-y-3">
-                {stats?.goals?.length === 0 ? (
-                  <div className="text-center py-6 text-xs text-muted-foreground">
-                    No active savings goals. Create one to start tracking milestones.
-                  </div>
-                ) : (
-                  (stats?.goals || []).slice(0, 3).map((goal) => {
-                    const pct = Math.min(100, Math.round((Number(goal.savedAmount || 0) / Number(goal.targetAmount || 1)) * 100));
-                    return (
-                      <div key={goal.id} className="space-y-1.5 p-2 rounded-xl hover:bg-accent/40 dark:hover:bg-white/[0.02] transition-colors">
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="font-semibold text-foreground truncate">{goal.name}</span>
-                          <span className="font-mono tabular-nums text-muted-foreground text-[11px]">
-                            {formatCurrency(goal.savedAmount)} / {formatCurrency(goal.targetAmount)} ({pct}%)
-                          </span>
-                        </div>
-                        <div className="w-full h-1.5 rounded-full bg-muted/60 dark:bg-white/[0.06] overflow-hidden">
-                          <div
-                            className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 dark:from-white dark:to-zinc-300 transition-all duration-500 shadow-xs"
-                            style={{ width: `${pct}%` }}
-                          />
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </SpotlightCard>
-          </div>
-
-          {/* Right Column: Passbook Ledger & Upcoming Bills (5 Cols) */}
-          <div className="lg:col-span-5 space-y-6">
-
-            {/* Recent Passbook Activity */}
-            <SpotlightCard
-              radius={350}
-              spotlightColor="rgba(255, 255, 255, 0.08)"
-              className="p-5 sm:p-6"
-            >
-              <div className="pb-3 border-b border-border/50 dark:border-white/[0.05] flex items-center justify-between mb-2">
-                <h3 className="text-sm font-semibold tracking-tight text-foreground">Recent Activity</h3>
-                <Link href="/transactions" prefetch={false}>
-                  <Button variant="ghost" size="sm" className="text-xs text-muted-foreground h-7 gap-1 hover:text-foreground">
-                    <span>Ledger</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </Button>
-                </Link>
-              </div>
-
-              <div className="space-y-1">
-                {(stats?.recentTransactions || []).length === 0 ? (
-                  <div className="text-center py-8 text-xs text-muted-foreground">
-                    No recent transactions recorded.
-                  </div>
-                ) : (
-                  (stats?.recentTransactions || []).slice(0, 6).map((tx) => {
-                    const isIncome = tx.type === 'income';
-                    return (
-                      <div
-                        key={tx.id}
-                        className="flex items-center gap-3 px-2.5 py-2 rounded-xl hover:bg-accent/40 dark:hover:bg-white/[0.03] transition-colors group"
-                      >
-                        <div
-                          className={cn(
-                            'w-7 h-7 rounded-xl flex items-center justify-center shrink-0 border transition-transform group-hover:scale-105',
-                            isIncome
-                              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
-                              : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20'
-                          )}
-                        >
-                          {isIncome ? <ArrowDownLeft className="w-3.5 h-3.5" /> : <ArrowUpRight className="w-3.5 h-3.5" />}
-                        </div>
-
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-semibold text-foreground truncate group-hover:text-primary transition-colors">
-                            {tx.title}
-                          </p>
-                          <p className="text-[11px] text-muted-foreground truncate">
-                            {tx.category?.name || 'General'} · {formatDate(tx.date)}
-                          </p>
-                        </div>
-
-                        <span
-                          className={cn(
-                            'text-xs font-mono font-bold tabular-nums shrink-0',
-                            isIncome ? 'text-emerald-600 dark:text-emerald-400' : 'text-foreground'
-                          )}
-                        >
-                          {isIncome ? '+' : '-'}{formatCurrency(tx.amount)}
-                        </span>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </SpotlightCard>
-
-            {/* Upcoming Bills Widget */}
-            <SpotlightCard
-              radius={350}
-              spotlightColor="rgba(255, 255, 255, 0.08)"
-              className="p-5 sm:p-6"
-            >
-              <div className="pb-3 border-b border-border/50 dark:border-white/[0.05] flex items-center justify-between mb-2">
-                <h3 className="text-sm font-semibold tracking-tight text-foreground">Upcoming Commitments</h3>
-                <Link href="/bills" prefetch={false}>
-                  <Button variant="ghost" size="sm" className="text-xs text-muted-foreground h-7 gap-1 hover:text-foreground">
-                    <span>Manage</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </Button>
-                </Link>
-              </div>
-
-              <div className="space-y-1">
-                {(stats?.upcomingBills || []).length === 0 ? (
-                  <div className="text-center py-6 text-xs text-muted-foreground flex items-center justify-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                    <span>No upcoming bills scheduled</span>
-                  </div>
-                ) : (
-                  (stats?.upcomingBills || []).slice(0, 4).map((bill) => {
-                    const days = getDaysUntilDue(bill.dueDate);
-                    return (
-                      <div
-                        key={bill.id}
-                        className="flex items-center justify-between gap-3 px-2.5 py-2 rounded-xl hover:bg-accent/40 dark:hover:bg-white/[0.03] transition-colors"
-                      >
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <div className="w-7 h-7 rounded-xl bg-accent/60 dark:bg-white/[0.04] flex items-center justify-center text-muted-foreground border border-border/40 shrink-0">
-                            <Calendar className="w-3.5 h-3.5" />
-                          </div>
-                          <div className="min-w-0">
-                            <p className="text-xs font-semibold text-foreground truncate">{bill.name}</p>
-                            <p className="text-[11px] text-muted-foreground">
-                              {days === 0 ? 'Due today' : `In ${days} days`}
-                            </p>
-                          </div>
-                        </div>
-                        <span className="text-xs font-mono font-bold tabular-nums text-foreground shrink-0">
-                          {formatCurrency(bill.amount)}
-                        </span>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </SpotlightCard>
-
-          </div>
-        </div>
-      </div>
+      </motion.div>
     </DashboardLayout>
   );
 }
