@@ -56,6 +56,11 @@ resource "aws_cloudfront_distribution" "cdn" {
     min_ttl     = 0
     default_ttl = 86400
     max_ttl     = 31536000
+
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = "arn:aws:cloudfront::838885265032:function/finflow-url-rewrite"
+    }
   }
 
   # Ordered cache behavior routing API requests (/api/*) directly to EC2 Backend
