@@ -32,9 +32,10 @@ jobs:
           script_stop: true
           script: |
             echo "==== 🚀 Starting FinFlow Backend Deployment ===="
+            export PATH=$PATH:/usr/bin:/usr/local/bin
             
             # Navigate to repository or clone if fresh
-            if [ ! -d "$HOME/Fin_Flow" ]; then
+            if [ ! -d "$HOME/Fin_Flow/.git" ]; then
               echo "Cloning FinFlow repository..."
               git clone https://github.com/AnanyaRaj14/Fin_Flow.git "$HOME/Fin_Flow"
             fi
