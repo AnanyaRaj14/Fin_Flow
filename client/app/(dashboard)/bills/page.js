@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Plus, Pencil, Trash2, CheckCircle2, Circle, Loader2, Receipt } from 'lucide-react';
+import { Plus, Pencil, Trash2, CheckCircle2, Circle, Loader2, Receipt, FileText, Table } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import DashboardLayout from '@/components/layout/DashboardLayout';
@@ -84,6 +84,102 @@ export default function BillsPage() {
     finally { setConfirmDelete(null); }
   };
 
+  const [exporting, setExporting] = useState(null);
+
+  const escapeCSV = (val) => {
+    if (val === null || val === undefined) return '""';
+    const str = String(val).replace(/"/g, '""');
+    return `"${str}"`;
+  };
+
+  const downloadCSV = () => {
+    if (bills.length === 0) {
+      toast.error('No bills available to export.');
+      return;
+    }
+    setExporting('csv');
+    try {
+      const headers = ['Bill Name', 'Category', 'Amount', 'Due Day of Month', 'Status', 'Frequency'];
+      const rows = bills.map((b) => [
+        escapeCSV(b.name),
+        escapeCSV(b.category || 'General'),
+        escapeCSV(b.amount),
+        escapeCSV(`Day ${b.dueDate}`),
+        escapeCSV(b.isPaid ? 'Paid' : 'Unpaid'),
+        escapeCSV(b.isRecurring ? 'Recurring' : 'One-time'),
+      ]);
+      const csv = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `finflow-bills-${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success('Bills CSV downloaded.');
+    } catch {
+      toast.error('Failed to export CSV.');
+    } finally {
+      setExporting(null);
+    }
+  };
+
+  const downloadPDF = async () => {
+    if (bills.length === 0) {
+      toast.error('No bills available to export.');
+      return;
+    }
+    setExporting('pdf');
+    try {
+      const { default: jsPDF } = await import('jspdf');
+      const { default: autoTable } = await import('jspdf-autotable');
+
+      const doc = new jsPDF();
+      doc.setFontSize(18);
+      doc.setTextColor(99, 102, 241);
+      doc.text('FinFlow', 14, 20);
+
+      doc.setFontSize(12);
+      doc.setTextColor(30, 41, 59);
+      doc.text('Recurring Bills & Commitments', 14, 28);
+
+      doc.setFontSize(9);
+      doc.setTextColor(100, 116, 139);
+      const dateStr = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+      doc.text(`Generated on ${dateStr} • ${bills.length} total commitments`, 14, 34);
+
+      doc.setFontSize(9.5);
+      doc.setTextColor(30, 41, 59);
+      doc.text(`Unpaid Due: ${formatCurrency(totalDue)} (${unpaid.length} bills)`, 14, 43);
+      doc.text(`Paid: ${paid.length} bills`, 95, 43);
+
+      autoTable(doc, {
+        startY: 50,
+        head: [['Bill Name', 'Category', 'Amount', 'Due Day', 'Status', 'Frequency']],
+        body: bills.map((b) => [
+          b.name,
+          b.category || 'General',
+          formatCurrency(b.amount),
+          `Day ${b.dueDate}`,
+          b.isPaid ? 'PAID' : 'DUE / UNPAID',
+          b.isRecurring ? 'Monthly' : 'One-time',
+        ]),
+        headStyles: { fillColor: [99, 102, 241], fontStyle: 'bold' },
+        alternateRowStyles: { fillColor: [248, 250, 252] },
+        styles: { fontSize: 8.5, cellPadding: 2.5 },
+      });
+
+      doc.save(`finflow-bills-${new Date().toISOString().split('T')[0]}.pdf`);
+      toast.success('Bills PDF downloaded.');
+    } catch {
+      toast.error('Failed to export PDF.');
+    } finally {
+      setExporting(null);
+    }
+  };
+
   const unpaid = bills.filter((b) => !b.isPaid);
   const paid = bills.filter((b) => b.isPaid);
   const totalDue = unpaid.reduce((s, b) => s + b.amount, 0);
@@ -91,20 +187,42 @@ export default function BillsPage() {
   return (
     <DashboardLayout title="Bills">
       <div className="space-y-6">
-        <div className="flex items-center justify-between pb-1">
+        <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between pb-3 border-b border-border/40 dark:border-white/[0.04]">
           <div>
             <h2 className="text-xl font-bold tracking-tight text-foreground">Bills</h2>
             <p className="text-xs text-muted-foreground mt-0.5">
               {unpaid.length} upcoming commitments · <span className="font-mono font-medium text-foreground tabular-nums">{formatCurrency(totalDue)}</span> due
             </p>
           </div>
-          <ShimmerButton
-            onClick={openCreate}
-            className="h-8 px-3.5 text-xs font-medium gap-1.5"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Add Bill</span>
-          </ShimmerButton>
+          <div className="flex items-center gap-2 flex-wrap">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={downloadCSV}
+              disabled={exporting !== null || bills.length === 0}
+              className="h-8 px-3 text-xs font-medium gap-1.5 rounded-lg border-border/70 dark:border-white/10 hover:bg-muted/50"
+            >
+              {exporting === 'csv' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Table className="w-3.5 h-3.5 text-muted-foreground" />}
+              <span>Export CSV</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={downloadPDF}
+              disabled={exporting !== null || bills.length === 0}
+              className="h-8 px-3 text-xs font-medium gap-1.5 rounded-lg border-border/70 dark:border-white/10 hover:bg-muted/50"
+            >
+              {exporting === 'pdf' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileText className="w-3.5 h-3.5 text-muted-foreground" />}
+              <span>Export PDF</span>
+            </Button>
+            <ShimmerButton
+              onClick={openCreate}
+              className="h-8 px-3.5 text-xs font-medium gap-1.5"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Add Bill</span>
+            </ShimmerButton>
+          </div>
         </div>
 
         {loading ? (

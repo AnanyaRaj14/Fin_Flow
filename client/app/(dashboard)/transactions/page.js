@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { Plus, Search, ArrowUpRight, ArrowDownLeft, ArrowLeftRight, Pencil, Trash2, Loader2, ImageIcon } from 'lucide-react';
+import { Plus, Search, ArrowUpRight, ArrowDownLeft, ArrowLeftRight, Pencil, Trash2, Loader2, ImageIcon, FileText, Table } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import TransactionForm from '@/components/transactions/TransactionForm';
@@ -108,6 +108,127 @@ export default function TransactionsPage() {
     setFilterType(''); setStartDate(''); setEndDate('');
   };
 
+  const [exporting, setExporting] = useState(null);
+
+  const fetchItemsForExport = async () => {
+    try {
+      const params = { page: 1, limit: 1000 };
+      if (search) params.search = search;
+      if (filterCategory) params.categoryId = filterCategory;
+      if (filterAccount) params.accountId = filterAccount;
+      if (filterType) params.type = filterType;
+      if (startDate) params.startDate = startDate;
+      if (endDate) params.endDate = endDate;
+
+      const { data } = await transactionsApi.getAll(params);
+      return data.transactions && data.transactions.length > 0 ? data.transactions : transactions;
+    } catch {
+      return transactions;
+    }
+  };
+
+  const escapeCSV = (val) => {
+    if (val === null || val === undefined) return '""';
+    const str = String(val).replace(/"/g, '""');
+    return `"${str}"`;
+  };
+
+  const downloadCSV = async () => {
+    if (transactions.length === 0) {
+      toast.error('No transactions available to export.');
+      return;
+    }
+    setExporting('csv');
+    try {
+      const items = await fetchItemsForExport();
+      const headers = ['Date', 'Title', 'Type', 'Category', 'Account', 'Amount', 'Payment Method', 'Notes'];
+      const rows = items.map((t) => [
+        escapeCSV(formatDate(t.date)),
+        escapeCSV(t.title),
+        escapeCSV(t.type),
+        escapeCSV(t.category?.name || ''),
+        escapeCSV(t.account?.name || ''),
+        escapeCSV(t.amount),
+        escapeCSV(t.paymentMethod || ''),
+        escapeCSV(t.notes || ''),
+      ]);
+      const csv = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `finflow-transactions-${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success('Transactions CSV downloaded.');
+    } catch {
+      toast.error('Failed to export CSV.');
+    } finally {
+      setExporting(null);
+    }
+  };
+
+  const downloadPDF = async () => {
+    if (transactions.length === 0) {
+      toast.error('No transactions available to export.');
+      return;
+    }
+    setExporting('pdf');
+    try {
+      const items = await fetchItemsForExport();
+      const { default: jsPDF } = await import('jspdf');
+      const { default: autoTable } = await import('jspdf-autotable');
+
+      const doc = new jsPDF();
+      doc.setFontSize(18);
+      doc.setTextColor(99, 102, 241);
+      doc.text('FinFlow', 14, 20);
+
+      doc.setFontSize(12);
+      doc.setTextColor(30, 41, 59);
+      doc.text('Transactions Ledger Statement', 14, 28);
+
+      doc.setFontSize(9);
+      doc.setTextColor(100, 116, 139);
+      const dateStr = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+      doc.text(`Generated on ${dateStr} • ${items.length} records`, 14, 34);
+
+      const totalInflow = items.filter((t) => t.type === 'income').reduce((s, t) => s + (Number(t.amount) || 0), 0);
+      const totalOutflow = items.filter((t) => t.type === 'expense').reduce((s, t) => s + (Number(t.amount) || 0), 0);
+
+      doc.setFontSize(9.5);
+      doc.setTextColor(30, 41, 59);
+      doc.text(`Inflow: ${formatCurrency(totalInflow)}`, 14, 43);
+      doc.text(`Outflow: ${formatCurrency(totalOutflow)}`, 75, 43);
+      doc.text(`Net: ${formatCurrency(totalInflow - totalOutflow)}`, 140, 43);
+
+      autoTable(doc, {
+        startY: 50,
+        head: [['Date', 'Title', 'Type', 'Category', 'Account', 'Amount']],
+        body: items.map((t) => [
+          formatDate(t.date),
+          t.title,
+          (t.type || '').toUpperCase(),
+          t.category?.name || '—',
+          t.account?.name || '—',
+          (t.type === 'expense' ? '-' : t.type === 'income' ? '+' : '') + formatCurrency(t.amount),
+        ]),
+        headStyles: { fillColor: [99, 102, 241], fontStyle: 'bold' },
+        alternateRowStyles: { fillColor: [248, 250, 252] },
+        styles: { fontSize: 8.5, cellPadding: 2.5 },
+      });
+
+      doc.save(`finflow-transactions-${new Date().toISOString().split('T')[0]}.pdf`);
+      toast.success('Transactions PDF downloaded.');
+    } catch {
+      toast.error('Failed to export PDF.');
+    } finally {
+      setExporting(null);
+    }
+  };
+
   const hasFilters = search || filterCategory || filterAccount || filterType || startDate || endDate;
 
   return (
@@ -118,13 +239,35 @@ export default function TransactionsPage() {
             <h2 className="text-xl font-bold tracking-tight text-foreground">Transactions</h2>
             <p className="text-xs text-muted-foreground mt-0.5">{total} recorded ledger entries</p>
           </div>
-          <ShimmerButton
-            onClick={openCreate}
-            className="h-8 px-3.5 text-xs font-medium gap-1.5"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Add Transaction</span>
-          </ShimmerButton>
+          <div className="flex items-center gap-2 flex-wrap">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={downloadCSV}
+              disabled={exporting !== null || transactions.length === 0}
+              className="h-8 px-3 text-xs font-medium gap-1.5 rounded-lg border-border/70 dark:border-white/10 hover:bg-muted/50"
+            >
+              {exporting === 'csv' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Table className="w-3.5 h-3.5 text-muted-foreground" />}
+              <span>Export CSV</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={downloadPDF}
+              disabled={exporting !== null || transactions.length === 0}
+              className="h-8 px-3 text-xs font-medium gap-1.5 rounded-lg border-border/70 dark:border-white/10 hover:bg-muted/50"
+            >
+              {exporting === 'pdf' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileText className="w-3.5 h-3.5 text-muted-foreground" />}
+              <span>Export PDF</span>
+            </Button>
+            <ShimmerButton
+              onClick={openCreate}
+              className="h-8 px-3.5 text-xs font-medium gap-1.5"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Add Transaction</span>
+            </ShimmerButton>
+          </div>
         </div>
 
         {/* Filters */}
