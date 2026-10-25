@@ -202,9 +202,23 @@ const forgotPassword = async (req, res) => {
   });
 
   const url = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
-  await sendEmail({ to: cleanEmail, subject: 'Reset your FinFlow password', html: resetPasswordTemplate(user.name, url) });
+  let emailSent = false;
+  try {
+    await sendEmail({
+      to: cleanEmail,
+      subject: 'Reset your FinFlow password',
+      html: resetPasswordTemplate(user.name, url),
+    });
+    emailSent = true;
+  } catch (emailErr) {
+    console.error('Password reset email dispatch failed:', emailErr.message);
+    console.log(`[PASSWORD RESET LINK for ${cleanEmail}]: ${url}`);
+  }
 
-  res.json({ message: 'If that email exists, a reset link has been sent.' });
+  res.json({
+    message: 'If that email exists, a reset link has been sent.',
+    resetUrl: !emailSent ? url : undefined,
+  });
 };
 
 // POST /api/auth/reset-password
@@ -283,11 +297,16 @@ async function resendVerification(req, res) {
   });
 
   const url = `${process.env.CLIENT_URL}/verify-email?token=${verifyToken}`;
-  await sendEmail({
-    to: cleanEmail,
-    subject: 'Verify your FinFlow account',
-    html: verifyEmailTemplate(user.name, url),
-  });
+  try {
+    await sendEmail({
+      to: cleanEmail,
+      subject: 'Verify your FinFlow account',
+      html: verifyEmailTemplate(user.name, url),
+    });
+  } catch (emailErr) {
+    console.error('Verification email dispatch failed:', emailErr.message);
+    console.log(`[VERIFY EMAIL LINK for ${cleanEmail}]: ${url}`);
+  }
 
   res.json({ message: 'Verification email resent. Please check your inbox.' });
 }

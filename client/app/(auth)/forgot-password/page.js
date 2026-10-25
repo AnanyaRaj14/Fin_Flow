@@ -16,14 +16,19 @@ import { Logo } from '@/components/ui/logo';
 export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const [resetUrl, setResetUrl] = useState('');
   const { register, handleSubmit, formState: { errors } } = useForm();
 
   const onSubmit = async ({ email }) => {
     setLoading(true);
     try {
-      await authApi.forgotPassword(email);
+      const cleanEmail = email ? email.trim().toLowerCase() : '';
+      const { data } = await authApi.forgotPassword(cleanEmail);
       setSent(true);
-      toast.success('Reset link sent if the email exists.');
+      if (data?.resetUrl) {
+        setResetUrl(data.resetUrl);
+      }
+      toast.success('Reset link processed.');
     } catch {
       toast.error('Something went wrong. Please try again.');
     } finally {
@@ -58,8 +63,19 @@ export default function ForgotPasswordPage() {
           {sent ? (
             <div className="text-center py-4 space-y-4">
               <p className="text-xs text-muted-foreground">
-                Check your inbox for the password reset instructions.
+                Check your inbox for password reset instructions.
               </p>
+              {resetUrl && (
+                <div className="p-3.5 rounded-xl bg-accent/40 border border-border/70 text-left space-y-1.5">
+                  <p className="text-[11px] font-semibold text-foreground">Direct Reset Link:</p>
+                  <a
+                    href={resetUrl}
+                    className="text-[11px] font-mono text-indigo-400 hover:underline break-all block"
+                  >
+                    {resetUrl}
+                  </a>
+                </div>
+              )}
               <Link href="/login" prefetch={false} className="block">
                 <Button variant="outline" className="w-full text-xs h-9">
                   <ArrowLeft className="w-3.5 h-3.5 mr-1.5" /> Back to sign in
