@@ -106,7 +106,7 @@ export default function NotificationsPanel() {
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
 
           {/* Panel */}
-          <div className="absolute right-0 top-full mt-2 w-84 z-50 bg-card/95 backdrop-blur-xl border border-border/80 dark:border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+          <div className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] sm:w-84 max-w-[22rem] z-50 bg-card/95 backdrop-blur-xl border border-border/80 dark:border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between px-4 py-3 border-b border-border/40 dark:border-white/[0.06]">
               <div className="flex items-center gap-2">
                 <h3 className="font-semibold text-xs tracking-tight text-foreground">Notifications</h3>

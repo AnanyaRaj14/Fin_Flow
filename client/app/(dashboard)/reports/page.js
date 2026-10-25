@@ -202,7 +202,7 @@ export default function ReportsPage() {
           <p className="text-xs text-muted-foreground mt-0.5">Generate formal ledger statements and export structured PDF reports.</p>
         </div>
 
-        <SpotlightCard radius={400} className="p-5 border-border/80 dark:border-white/[0.08] dark:bg-[#121215]/80">
+        <SpotlightCard radius={400} className="p-4 sm:p-5 border-border/80 dark:border-white/[0.08] dark:bg-[#121215]/80">
           <div className="pb-3.5 border-b border-border/40 dark:border-white/[0.05] mb-4">
             <h3 className="text-sm font-semibold tracking-tight text-foreground">Statement Parameters</h3>
             <p className="text-xs text-muted-foreground mt-0.5">Specify accounting cycle and reporting interval</p>
@@ -290,7 +290,7 @@ export default function ReportsPage() {
                 <span className="text-[10px] font-mono text-muted-foreground">{reportData.transactions.length} rows</span>
               </div>
               <div className="overflow-x-auto">
-                <table className="w-full text-xs">
+                <table className="w-full min-w-[500px] text-xs">
                   <thead>
                     <tr className="border-b border-border/40 dark:border-white/[0.05] bg-muted/20">
                       {['Date','Title','Type','Category','Amount'].map((h) => (

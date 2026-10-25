@@ -63,7 +63,7 @@ export default function Sidebar({ open, onClose }) {
   };
 
   const sidebarContent = (
-    <aside className="h-full w-60 bg-card/95 border-r border-border/60 dark:border-white/[0.06] dark:bg-[#121215] flex flex-col justify-between select-none">
+    <aside className="h-full w-64 max-w-[82vw] sm:w-60 bg-card/95 border-r border-border/60 dark:border-white/[0.06] dark:bg-[#121215] flex flex-col justify-between select-none">
       {/* Header & Navigation */}
       <div className="flex-1 overflow-y-auto">
         {/* Brand Header */}
@@ -73,7 +73,8 @@ export default function Sidebar({ open, onClose }) {
           </Link>
           <button
             onClick={onClose}
-            className="lg:hidden p-1 rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+            className="lg:hidden p-2 -mr-1.5 rounded-xl text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+            aria-label="Close sidebar"
           >
             <X className="w-4 h-4" />
           </button>
@@ -101,7 +102,7 @@ export default function Sidebar({ open, onClose }) {
                         onClose?.();
                       }}
                       className={cn(
-                        'relative flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl text-xs font-medium transition-colors group',
+                        'relative flex items-center gap-2.5 px-3 sm:px-2.5 py-2 sm:py-1.5 rounded-xl text-xs font-medium transition-colors group',
                         active
                           ? 'text-foreground dark:text-white font-semibold'
                           : 'text-muted-foreground hover:text-foreground hover:bg-accent/40 dark:hover:bg-white/[0.03]'

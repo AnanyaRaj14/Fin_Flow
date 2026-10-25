@@ -82,14 +82,14 @@ export default function GoalsPage() {
   return (
     <DashboardLayout title="Goals">
       <div className="space-y-6">
-        <div className="flex items-center justify-between pb-1">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1">
           <div>
             <h2 className="text-xl font-bold tracking-tight text-foreground">Savings Goals</h2>
             <p className="text-xs text-muted-foreground mt-0.5">{goals.filter((g) => !g.isCompleted).length} active target milestones</p>
           </div>
           <ShimmerButton
             onClick={openCreate}
-            className="h-8 px-3.5 text-xs font-medium gap-1.5"
+            className="h-8 px-3.5 text-xs font-medium gap-1.5 self-start sm:self-auto"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Goal</span>
@@ -120,7 +120,7 @@ export default function GoalsPage() {
                   <SpotlightCard
                     radius={300}
                     spotlightColor={`${goal.color || '#6366f1'}22`}
-                    className="group p-5 border-border/60 dark:border-white/[0.07] dark:bg-[#121215]/80 hover:border-border dark:hover:border-white/[0.14] transition-all duration-300 relative rounded-2xl shadow-xs hover:shadow-lg"
+                    className="group p-4 sm:p-5 border-border/60 dark:border-white/[0.07] dark:bg-[#121215]/80 hover:border-border dark:hover:border-white/[0.14] transition-all duration-300 relative rounded-2xl shadow-xs hover:shadow-lg"
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div>
@@ -133,11 +133,11 @@ export default function GoalsPage() {
                           <p className="text-[11px] text-muted-foreground mt-0.5">Target: {formatDate(goal.deadline)}</p>
                         )}
                       </div>
-                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent/60" onClick={() => openEdit(goal)}>
+                      <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200">
+                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent/60" onClick={() => openEdit(goal)} title="Edit goal">
                           <Pencil className="w-3.5 h-3.5" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10" onClick={() => setConfirmDelete(goal)}>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10" onClick={() => setConfirmDelete(goal)} title="Delete goal">
                           <Trash2 className="w-3.5 h-3.5" />
                         </Button>
                       </div>

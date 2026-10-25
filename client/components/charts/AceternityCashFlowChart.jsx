@@ -72,7 +72,7 @@ export default function AceternityCashFlowChart({ data = [], currency }) {
             </span>
           </div>
 
-          <div className="flex items-baseline gap-4 pt-1">
+          <div className="flex flex-wrap items-baseline gap-x-3.5 gap-y-1.5 pt-1">
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-indigo-500 shrink-0" />
               <span className="text-xs text-muted-foreground font-medium">In:</span>
@@ -89,7 +89,7 @@ export default function AceternityCashFlowChart({ data = [], currency }) {
               </span>
             </div>
 
-            <div className="hidden sm:flex items-center gap-1.5 pl-2 border-l border-border/40 dark:border-white/10">
+            <div className="flex items-center gap-1.5 pl-0 sm:pl-2 sm:border-l sm:border-border/40 dark:sm:border-white/10">
               <span className="text-xs text-muted-foreground font-medium">Net:</span>
               <span className="text-sm sm:text-base font-bold font-mono text-foreground tabular-nums">
                 {currentNet >= 0 ? '+' : ''}{formatCurrency(currentNet, currency)}
@@ -99,7 +99,7 @@ export default function AceternityCashFlowChart({ data = [], currency }) {
         </div>
 
         {/* Right: Controls (Range & Mode) */}
-        <div className="flex items-center gap-2 self-start sm:self-auto">
+        <div className="flex items-center gap-2 flex-wrap self-start sm:self-auto pt-1 sm:pt-0">
           {/* Time range pills */}
           <div className="flex items-center p-0.5 rounded-lg bg-muted/60 dark:bg-white/[0.04] border border-border/40 dark:border-white/[0.06]">
             {[

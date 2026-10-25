@@ -143,7 +143,7 @@ export default function AccountsPage() {
                   <SpotlightCard
                     radius={320}
                     spotlightColor={`${account.color || '#6366f1'}22`}
-                    className="group p-5 border-border/60 dark:border-white/[0.07] dark:bg-[#121215]/80 hover:border-border dark:hover:border-white/[0.14] transition-all duration-300 relative rounded-2xl shadow-xs hover:shadow-lg"
+                    className="group p-4 sm:p-5 border-border/60 dark:border-white/[0.07] dark:bg-[#121215]/80 hover:border-border dark:hover:border-white/[0.14] transition-all duration-300 relative rounded-2xl shadow-xs hover:shadow-lg"
                   >
                     {/* Top Row: Icon Pill & Subtle Hover Actions */}
                     <div className="flex items-start justify-between mb-4">
@@ -151,7 +151,7 @@ export default function AccountsPage() {
                         <Icon className="w-4 h-4 text-foreground/80 group-hover:text-foreground transition-colors" />
                       </div>
 
-                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                      <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200">
                         <Button
                           variant="ghost"
                           size="icon"

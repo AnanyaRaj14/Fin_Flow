@@ -361,13 +361,13 @@ function BillCard({ bill, index, onToggle, onEdit, onDelete }) {
         radius={280}
         spotlightColor={`${bill.color || '#6366f1'}20`}
         className={cn(
-          'p-4 border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80',
+          'p-3.5 sm:p-4 border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80',
           bill.isPaid && 'opacity-60',
           urgent && 'border-amber-500/40 dark:border-amber-500/30'
         )}
       >
-        <div className="flex items-center gap-3">
-          <button onClick={() => onToggle(bill)} className="shrink-0 cursor-pointer">
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          <button onClick={() => onToggle(bill)} className="shrink-0 cursor-pointer p-0.5">
             {bill.isPaid
               ? <CheckCircle2 className="w-4 h-4 text-emerald-500" />
               : <Circle className="w-4 h-4 text-muted-foreground hover:text-foreground transition-colors" />
@@ -375,20 +375,20 @@ function BillCard({ bill, index, onToggle, onEdit, onDelete }) {
           </button>
           <div className="flex-1 min-w-0">
             <p className={cn('font-semibold text-xs text-foreground truncate', bill.isPaid && 'line-through text-muted-foreground')}>{bill.name}</p>
-            <p className="text-[11px] text-muted-foreground">
-              {bill.isPaid ? 'Settled' : `Due on day ${bill.dueDate} · ${daysLeft}d left`}
+            <p className="text-[11px] text-muted-foreground truncate">
+              {bill.isPaid ? 'Settled' : `Due day ${bill.dueDate} · ${daysLeft}d left`}
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <div className="text-right">
               <p className="font-semibold text-xs font-mono tabular-nums text-foreground">{formatCurrency(bill.amount)}</p>
               {urgent && <Badge variant="warning" className="text-[10px] px-1.5 py-0">Due soon</Badge>}
             </div>
-            <div className="flex gap-1">
-              <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg" onClick={() => onEdit(bill)}>
+            <div className="flex gap-0.5 sm:gap-1">
+              <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg" onClick={() => onEdit(bill)} title="Edit bill">
                 <Pencil className="w-3.5 h-3.5" />
               </Button>
-              <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg text-destructive hover:bg-destructive/10" onClick={() => onDelete(bill)}>
+              <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg text-destructive hover:bg-destructive/10" onClick={() => onDelete(bill)} title="Delete bill">
                 <Trash2 className="w-3.5 h-3.5" />
               </Button>
             </div>

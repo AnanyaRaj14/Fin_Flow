@@ -202,15 +202,15 @@ export default function DashboardPage() {
               <SpotlightCard
                 radius={400}
                 spotlightColor="rgba(99, 102, 241, 0.12)"
-                className="lg:col-span-8 p-5 sm:p-6"
+                className="lg:col-span-8 p-4 sm:p-6"
               >
-                <div className="pb-3 border-b border-border/40 dark:border-white/[0.05] flex flex-row items-center justify-between mb-4">
+                <div className="pb-3 border-b border-border/40 dark:border-white/[0.05] flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                   <div>
                     <h3 className="text-sm font-semibold tracking-tight text-foreground">Financial Flow</h3>
                   </div>
 
                   {/* Aceternity Sliding Pill Tab Switcher */}
-                  <div className="relative flex items-center p-1 rounded-xl bg-muted/60 dark:bg-white/[0.04] border border-border/40 dark:border-white/[0.06]">
+                  <div className="relative flex items-center p-1 rounded-xl bg-muted/60 dark:bg-white/[0.04] border border-border/40 dark:border-white/[0.06] overflow-x-auto max-w-full">
                     {[
                       { id: 'cashflow', label: 'Cash Flow' },
                       { id: 'categories', label: 'Categories' },
@@ -256,7 +256,7 @@ export default function DashboardPage() {
               <SpotlightCard
                 radius={350}
                 spotlightColor="rgba(255, 255, 255, 0.08)"
-                className="lg:col-span-4 p-5 sm:p-6 flex flex-col justify-between"
+                className="lg:col-span-4 p-4 sm:p-6 flex flex-col justify-between"
               >
                 <div>
                   <div className="pb-3 border-b border-border/40 dark:border-white/[0.05] flex items-center justify-between mb-3">
@@ -330,7 +330,7 @@ export default function DashboardPage() {
               <SpotlightCard
                 radius={350}
                 spotlightColor="rgba(99, 102, 241, 0.12)"
-                className="lg:col-span-6 p-5 sm:p-6"
+                className="lg:col-span-6 p-4 sm:p-6"
               >
                 <div className="pb-3 border-b border-border/40 dark:border-white/[0.05] flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
@@ -380,7 +380,7 @@ export default function DashboardPage() {
               <SpotlightCard
                 radius={350}
                 spotlightColor="rgba(99, 102, 241, 0.1)"
-                className="lg:col-span-6 p-5 sm:p-6"
+                className="lg:col-span-6 p-4 sm:p-6"
               >
                 <div className="pb-3 border-b border-border/40 dark:border-white/[0.05] flex items-center justify-between mb-4">
                   <h3 className="text-sm font-semibold tracking-tight text-foreground">Upcoming Commitments</h3>

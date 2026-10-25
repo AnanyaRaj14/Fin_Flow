@@ -100,7 +100,7 @@ export default function SettingsPage() {
     <DashboardLayout title="Settings">
       <div className="space-y-6 max-w-3xl mx-auto pb-12">
         {/* Page Header */}
-        <div className="pb-4 border-b border-border/40 dark:border-white/[0.05] flex items-center justify-between">
+        <div className="pb-4 border-b border-border/40 dark:border-white/[0.05] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <h2 className="text-xl font-semibold tracking-tight text-foreground">Settings</h2>
             <p className="text-xs text-muted-foreground mt-0.5">Manage your profile, appearance, and security.</p>
@@ -112,7 +112,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Profile Card */}
-        <SpotlightCard radius={400} spotlightColor="rgba(99, 102, 241, 0.12)" className="border-border/60 dark:border-white/[0.06] p-6 space-y-6">
+        <SpotlightCard radius={400} spotlightColor="rgba(99, 102, 241, 0.12)" className="border-border/60 dark:border-white/[0.06] p-4 sm:p-6 space-y-4 sm:space-y-6">
           <div>
             <h3 className="text-sm font-semibold tracking-tight text-foreground">Profile</h3>
             <p className="text-xs text-muted-foreground mt-0.5">Your personal information and avatar</p>
@@ -174,7 +174,7 @@ export default function SettingsPage() {
         </SpotlightCard>
 
         {/* Preferences Card */}
-        <SpotlightCard radius={400} spotlightColor="rgba(99, 102, 241, 0.12)" className="border-border/60 dark:border-white/[0.06] p-6 space-y-6">
+        <SpotlightCard radius={400} spotlightColor="rgba(99, 102, 241, 0.12)" className="border-border/60 dark:border-white/[0.06] p-4 sm:p-6 space-y-4 sm:space-y-6">
           <div>
             <h3 className="text-sm font-semibold tracking-tight text-foreground">Preferences</h3>
             <p className="text-xs text-muted-foreground mt-0.5">Application theme and localization</p>
@@ -250,7 +250,7 @@ export default function SettingsPage() {
         </SpotlightCard>
 
         {/* Security Card */}
-        <SpotlightCard radius={400} spotlightColor="rgba(99, 102, 241, 0.12)" className="border-border/60 dark:border-white/[0.06] p-6 space-y-6">
+        <SpotlightCard radius={400} spotlightColor="rgba(99, 102, 241, 0.12)" className="border-border/60 dark:border-white/[0.06] p-4 sm:p-6 space-y-4 sm:space-y-6">
           <div>
             <h3 className="text-sm font-semibold tracking-tight text-foreground">Security</h3>
             <p className="text-xs text-muted-foreground mt-0.5">Update your password</p>

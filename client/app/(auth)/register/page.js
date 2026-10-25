@@ -82,13 +82,13 @@ export default function RegisterPage() {
         spotlightColor="rgba(99, 102, 241, 0.16)"
         className="p-0 border-border/70 dark:border-white/[0.1] dark:bg-[#121215]/85 backdrop-blur-xl shadow-2xl"
       >
-        <div className="text-center pb-4 pt-6 px-6">
+        <div className="text-center pb-4 pt-6 px-4 sm:px-6">
           <h2 className="text-xl font-semibold tracking-tight text-foreground">Create your account</h2>
           <p className="text-xs text-muted-foreground mt-1">
             Start managing your wealth, cash flow, and budgets
           </p>
         </div>
-        <div className="space-y-4 px-6 pb-6">
+        <div className="space-y-4 px-4 sm:px-6 pb-6">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-1.5">
               <Label className="text-xs font-medium text-foreground">Full Name</Label>

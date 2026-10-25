@@ -90,7 +90,7 @@ export default function CategoriesPage() {
   return (
     <DashboardLayout title="Categories">
       <div className="space-y-6">
-        <div className="flex items-center justify-between pb-1">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1">
           <div>
             <h2 className="text-xl font-bold tracking-tight text-foreground">Categories</h2>
             <p className="text-xs text-muted-foreground mt-0.5">
@@ -99,7 +99,7 @@ export default function CategoriesPage() {
           </div>
           <ShimmerButton
             onClick={openCreate}
-            className="h-8 px-3.5 text-xs font-medium gap-1.5"
+            className="h-8 px-3.5 text-xs font-medium gap-1.5 self-start sm:self-auto"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Category</span>
@@ -113,7 +113,7 @@ export default function CategoriesPage() {
         ) : (
           <div className="space-y-6">
             {/* Custom categories */}
-            <SpotlightCard radius={380} className="p-5 border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80">
+            <SpotlightCard radius={380} className="p-4 sm:p-5 border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80">
               <div className="pb-3 border-b border-border/40 dark:border-white/[0.05] mb-4">
                 <h3 className="text-sm font-semibold tracking-tight text-foreground">Custom Taxonomies</h3>
                 <p className="text-xs text-muted-foreground mt-0.5">Tailored categories created for your accounting</p>
@@ -144,11 +144,11 @@ export default function CategoriesPage() {
                           <p className="text-xs font-semibold text-foreground truncate">{cat.name}</p>
                           <p className="text-[10px] text-muted-foreground capitalize">{cat.type}</p>
                         </div>
-                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button variant="ghost" size="icon" className="h-6 w-6 rounded-md" onClick={() => openEdit(cat)}>
+                        <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                          <Button variant="ghost" size="icon" className="h-6 w-6 rounded-md" onClick={() => openEdit(cat)} title="Edit category">
                             <Pencil className="w-3 h-3" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-6 w-6 rounded-md text-destructive hover:bg-destructive/10" onClick={() => setConfirmDelete(cat)}>
+                          <Button variant="ghost" size="icon" className="h-6 w-6 rounded-md text-destructive hover:bg-destructive/10" onClick={() => setConfirmDelete(cat)} title="Delete category">
                             <Trash2 className="w-3 h-3" />
                           </Button>
                         </div>
@@ -160,7 +160,7 @@ export default function CategoriesPage() {
             </SpotlightCard>
 
             {/* Default categories */}
-            <SpotlightCard radius={380} className="p-5 border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80">
+            <SpotlightCard radius={380} className="p-4 sm:p-5 border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80">
               <div className="pb-3 border-b border-border/40 dark:border-white/[0.05] mb-4 flex items-center justify-between">
                 <div>
                   <h3 className="text-sm font-semibold tracking-tight text-foreground flex items-center gap-2">

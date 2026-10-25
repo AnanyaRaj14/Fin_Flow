@@ -36,12 +36,12 @@ export default function ConfirmDialog({
       <DialogContent className="max-w-sm">
         <DialogHeader>
           <div className="flex items-center gap-3 mb-1">
-            <div className="w-10 h-10 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
-              <AlertTriangle className="w-5 h-5 text-destructive" />
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
+              <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-destructive" />
             </div>
-            <DialogTitle className="text-base">{title}</DialogTitle>
+            <DialogTitle className="text-base text-left">{title}</DialogTitle>
           </div>
-          <DialogDescription className="text-sm text-muted-foreground pl-[52px]">
+          <DialogDescription className="text-sm text-muted-foreground pl-0 sm:pl-[52px] text-left pt-1 sm:pt-0">
             {description}
           </DialogDescription>
         </DialogHeader>

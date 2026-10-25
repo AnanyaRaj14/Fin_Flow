@@ -12,12 +12,12 @@ export default function Header({ onMenuClick, title }) {
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-4 border-b border-border/60 bg-background/85 backdrop-blur-md px-4 lg:px-8 dark:border-white/[0.06] dark:bg-[#121215]/80 transition-colors select-none">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
         <Button variant="ghost" size="icon" className="lg:hidden shrink-0 w-8 h-8 rounded-lg" onClick={onMenuClick}>
           <Menu className="h-4 w-4" />
         </Button>
-        <div>
-          <h1 className="font-semibold text-sm tracking-tight text-foreground">{title}</h1>
+        <div className="min-w-0">
+          <h1 className="font-semibold text-sm tracking-tight text-foreground truncate max-w-[150px] xs:max-w-[200px] sm:max-w-none">{title}</h1>
         </div>
       </div>
 

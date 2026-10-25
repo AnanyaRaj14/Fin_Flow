@@ -95,8 +95,8 @@ export default function TransactionForm({ onSubmit, defaultValues, saving }) {
         ))}
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="col-span-2 space-y-1.5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <div className="col-span-1 sm:col-span-2 space-y-1.5">
           <Label>Title</Label>
           <Input placeholder="e.g. Netflix Subscription" {...register('title', { required: 'Title is required' })} />
           {errors.title && <p className="text-xs text-destructive">{errors.title.message}</p>}
@@ -136,13 +136,13 @@ export default function TransactionForm({ onSubmit, defaultValues, saving }) {
           {!selectedAccount && <p className="text-xs text-muted-foreground">Required</p>}
         </div>
 
-        <div className="col-span-2 space-y-1.5">
+        <div className="col-span-1 sm:col-span-2 space-y-1.5">
           <Label>Notes (optional)</Label>
           <Textarea placeholder="Any additional notes..." rows={2} {...register('notes')} />
         </div>
 
         {/* Receipt upload */}
-        <div className="col-span-2 space-y-1.5">
+        <div className="col-span-1 sm:col-span-2 space-y-1.5">
           <Label>Receipt (optional)</Label>
           {receipt ? (
             <div className="flex items-center gap-2 p-2 border rounded-lg text-sm">

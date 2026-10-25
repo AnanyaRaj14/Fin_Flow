@@ -109,15 +109,15 @@ export default function BudgetsPage() {
               <span className="font-mono tabular-nums">{formatCurrency(totalSpent)}</span> spent of <span className="font-mono tabular-nums">{formatCurrency(totalBudgeted)}</span> allocated
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <Select value={String(month)} onValueChange={(v) => setMonth(Number(v))}>
-              <SelectTrigger className="w-24 h-8 text-xs dark:bg-white/[0.03] dark:border-white/10"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-20 sm:w-24 h-8 text-xs dark:bg-white/[0.03] dark:border-white/10"><SelectValue /></SelectTrigger>
               <SelectContent>
                 {MONTHS.map((m, i) => <SelectItem key={i} value={String(i + 1)}>{m}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={String(year)} onValueChange={(v) => setYear(Number(v))}>
-              <SelectTrigger className="w-24 h-8 text-xs dark:bg-white/[0.03] dark:border-white/10"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-20 sm:w-24 h-8 text-xs dark:bg-white/[0.03] dark:border-white/10"><SelectValue /></SelectTrigger>
               <SelectContent>
                 {[year - 1, year, year + 1].map((y) => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}
               </SelectContent>
@@ -176,7 +176,7 @@ export default function BudgetsPage() {
                 <motion.div key={budget.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
                   <SpotlightCard
                     className={cn(
-                      'p-5 border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80',
+                      'p-4 sm:p-5 border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80',
                       over && 'border-rose-500/40 dark:border-rose-500/30'
                     )}
                   >

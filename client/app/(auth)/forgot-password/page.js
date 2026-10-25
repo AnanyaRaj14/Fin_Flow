@@ -52,14 +52,14 @@ export default function ForgotPasswordPage() {
       </div>
 
       <SpotlightCard className="p-0 border-border/70 dark:border-white/[0.1] dark:bg-[#121215]/85 backdrop-blur-xl shadow-2xl">
-        <div className="text-center pb-4 pt-6 px-6">
+        <div className="text-center pb-4 pt-6 px-4 sm:px-6">
           <h2 className="text-xl font-semibold tracking-tight text-foreground">Forgot password</h2>
           <p className="text-xs text-muted-foreground mt-1">
             Enter your email and we&apos;ll send a secure reset link
           </p>
         </div>
 
-        <div className="space-y-4 px-6 pb-6">
+        <div className="space-y-4 px-4 sm:px-6 pb-6">
           {sent ? (
             <div className="text-center py-4 space-y-4">
               <p className="text-xs text-muted-foreground">
