@@ -53,13 +53,23 @@ jobs:
         env:
           S3_BUCKET: ${{ secrets.AWS_S3_FRONTEND_BUCKET || 'finflow-frontend-ananya-2026' }}
         run: |
-          aws s3 sync out/ s3://$S3_BUCKET/ --delete --cache-control "public, max-age=31536000, immutable" \
-            --exclude "*.html" --exclude "manifest.json" --exclude "robots.txt"
-          
-          aws s3 sync out/ s3://$S3_BUCKET/ --delete --cache-control "public, max-age=0, must-revalidate" \
-            --include "*.html" --include "manifest.json" --include "robots.txt"
+          # 1. Upload hashed static assets (_next/static) with immutable 1-year cache
+          aws s3 sync out/_next/static/ s3://$S3_BUCKET/_next/static/ --delete \
+            --cache-control "public, max-age=31536000, immutable"
 
-          # Upload clean URL objects (e.g. /budgets, /dashboard, /login) so S3 direct requests never 403
+          # 2. Upload all other assets (HTML, txt, JSON, root) with 0 cache & must-revalidate
+          aws s3 sync out/ s3://$S3_BUCKET/ --delete \
+            --exclude "_next/static/*" \
+            --cache-control "public, max-age=0, must-revalidate"
+
+          # 3. Explicitly set content-type: text/x-component for all Next.js RSC payload files
+          aws s3 cp out/ s3://$S3_BUCKET/ --recursive \
+            --exclude "*" --include "*.txt" \
+            --content-type "text/x-component" \
+            --cache-control "public, max-age=0, must-revalidate" \
+            --metadata-directive REPLACE
+
+          # 4. Upload clean URL objects (e.g. /budgets, /dashboard, /login) so S3 direct requests never 403
           for dir in out/*/; do
             route=$(basename "$dir")
             if [ -f "out/$route/index.html" ]; then
