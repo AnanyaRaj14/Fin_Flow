@@ -37,11 +37,6 @@ export function ShimmerButton({
       )}
       {...props}
     >
-      {/* Precision horizontal light sheen sweep (Aceternity UI / Linear signature) */}
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -translate-x-full bg-[linear-gradient(110deg,transparent_20%,rgba(255,255,255,0.22)_50%,transparent_80%)] dark:bg-[linear-gradient(110deg,transparent_20%,rgba(0,0,0,0.15)_50%,transparent_80%)] group-hover:translate-x-full transition-transform duration-700 ease-in-out"
-      />
       <span className="relative z-10 inline-flex items-center justify-center gap-1.5">
         {children}
       </span>
