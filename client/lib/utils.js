@@ -62,6 +62,29 @@ export function formatCurrency(amount, currency) {
   }).format(amount ?? 0);
 }
 
+export function formatPdfCurrency(amount, currency) {
+  const curr = currency || getActiveCurrency();
+  const num = Number(amount) || 0;
+  const isNegative = num < 0;
+  const absNum = Math.abs(num);
+  const formatted = new Intl.NumberFormat(curr === 'INR' ? 'en-IN' : 'en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(absNum);
+
+  let prefix = '';
+  if (curr === 'INR') prefix = 'Rs. ';
+  else if (curr === 'USD') prefix = '$';
+  else if (curr === 'EUR') prefix = 'EUR ';
+  else if (curr === 'GBP') prefix = 'GBP ';
+  else if (curr === 'CAD') prefix = 'CAD $';
+  else if (curr === 'AUD') prefix = 'AUD $';
+  else if (curr === 'JPY') prefix = 'JPY ';
+  else prefix = `${curr} `;
+
+  return `${isNegative ? '-' : ''}${prefix}${formatted}`;
+}
+
 export function formatDate(date) {
   return new Date(date).toLocaleDateString('en-IN', {
     year: 'numeric', month: 'short', day: 'numeric',

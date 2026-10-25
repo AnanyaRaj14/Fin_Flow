@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Download, FileText, Table, Loader2 } from 'lucide-react';
+import { FileText, Table, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { SpotlightCard } from '@/components/ui/spotlight-card';
@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { dashboardApi } from '@/services/api';
-import { formatCurrency, formatDate, cn } from '@/lib/utils';
+import { formatCurrency, formatDate, cn, formatPdfCurrency } from '@/lib/utils';
 import { toast } from '@/components/ui/toast';
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -21,6 +21,7 @@ export default function ReportsPage() {
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());
   const [loading, setLoading] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [reportData, setReportData] = useState(null);
 
   const generateReport = async () => {
@@ -35,60 +36,162 @@ export default function ReportsPage() {
     } finally { setLoading(false); }
   };
 
-  const downloadCSV = () => {
-    if (!reportData) return;
-    const headers = ['Date','Title','Type','Category','Account','Amount','Payment Method','Notes'];
-    const rows = reportData.transactions.map((t) => [
-      formatDate(t.date), t.title, t.type, t.category?.name, t.account?.name,
-      t.amount, t.paymentMethod, t.notes || '',
-    ]);
-    const csv = [headers, ...rows].map((r) => r.join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `finflow-${reportType}-${year}${reportType === 'monthly' ? `-${month}` : ''}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success('CSV downloaded.');
-  };
-
   const downloadPDF = async () => {
-    if (!reportData) return;
-    const { default: jsPDF } = await import('jspdf');
-    const { default: autoTable } = await import('jspdf-autotable');
+    if (!reportData || !reportData.transactions || reportData.transactions.length === 0) {
+      toast.error('No report data available to export.');
+      return;
+    }
+    setExporting(true);
+    try {
+      const { default: jsPDF } = await import('jspdf');
+      const { default: autoTable } = await import('jspdf-autotable');
 
-    const doc = new jsPDF();
-    const title = reportType === 'monthly'
-      ? `FinFlow Report — ${MONTHS[month - 1]} ${year}`
-      : `FinFlow Report — ${year}`;
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const periodTitle = reportType === 'monthly'
+        ? `${MONTHS[month - 1].toUpperCase()} ${year} AUDIT STATEMENT`
+        : `ANNUAL ${year} AUDIT STATEMENT`;
 
-    doc.setFontSize(18);
-    doc.setTextColor(99, 102, 241);
-    doc.text('FinFlow', 14, 20);
-    doc.setFontSize(12);
-    doc.setTextColor(0, 0, 0);
-    doc.text(title, 14, 30);
+      // Brand Title
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(20);
+      doc.setTextColor(15, 23, 42);
+      doc.text('FinFlow', 14, 18);
 
-    // Summary
-    doc.setFontSize(10);
-    doc.text(`Income: ${formatCurrency(reportData.summary.income)}`, 14, 42);
-    doc.text(`Expenses: ${formatCurrency(reportData.summary.expenses)}`, 80, 42);
-    doc.text(`Savings: ${formatCurrency(reportData.summary.savings)}`, 150, 42);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.setTextColor(100, 116, 139);
+      doc.text('FINANCIAL INTELLIGENCE PLATFORM', 14, 23);
 
-    autoTable(doc, {
-      startY: 52,
-      head: [['Date', 'Title', 'Type', 'Category', 'Amount']],
-      body: reportData.transactions.map((t) => [
-        formatDate(t.date), t.title, t.type, t.category?.name, formatCurrency(t.amount),
-      ]),
-      headStyles: { fillColor: [99, 102, 241] },
-      alternateRowStyles: { fillColor: [245, 245, 245] },
-      styles: { fontSize: 9 },
-    });
+      // Statement Type & Timestamp (Right aligned)
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10.5);
+      doc.setTextColor(30, 41, 59);
+      doc.text(periodTitle, 196, 18, { align: 'right' });
 
-    doc.save(`finflow-${reportType}-${year}${reportType === 'monthly' ? `-${month}` : ''}.pdf`);
-    toast.success('PDF downloaded.');
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.setTextColor(100, 116, 139);
+      const nowStr = new Date().toLocaleDateString('en-IN', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+      doc.text(`Generated: ${nowStr} • ${reportData.transactions.length} records`, 196, 23, { align: 'right' });
+
+      // Divider line
+      doc.setDrawColor(226, 232, 240);
+      doc.setLineWidth(0.4);
+      doc.line(14, 27, 196, 27);
+
+      // Summary KPI Stat Cards
+      // Box 1: Inflow
+      const inflow = reportData.summary?.income || 0;
+      doc.setFillColor(248, 250, 252);
+      doc.roundedRect(14, 31, 57, 15, 1.5, 1.5, 'FD');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(7);
+      doc.setTextColor(100, 116, 139);
+      doc.text('TOTAL INFLOW', 18, 36);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10.5);
+      doc.setTextColor(16, 185, 129);
+      doc.text(`+${formatPdfCurrency(inflow)}`, 18, 42.5);
+
+      // Box 2: Outflow
+      const outflow = reportData.summary?.expenses || 0;
+      doc.setFillColor(248, 250, 252);
+      doc.roundedRect(75, 31, 57, 15, 1.5, 1.5, 'FD');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(7);
+      doc.setTextColor(100, 116, 139);
+      doc.text('TOTAL OUTFLOW', 79, 36);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10.5);
+      doc.setTextColor(225, 29, 72);
+      doc.text(`-${formatPdfCurrency(outflow)}`, 79, 42.5);
+
+      // Box 3: Net Retained Savings
+      const netSavings = reportData.summary?.savings || 0;
+      doc.setFillColor(248, 250, 252);
+      doc.roundedRect(136, 31, 60, 15, 1.5, 1.5, 'FD');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(7);
+      doc.setTextColor(100, 116, 139);
+      doc.text('NET RETAINED SAVINGS', 140, 36);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10.5);
+      doc.setTextColor(netSavings >= 0 ? 15 : 225, netSavings >= 0 ? 23 : 29, netSavings >= 0 ? 42 : 72);
+      doc.text(
+        netSavings >= 0 ? `+${formatPdfCurrency(netSavings)}` : `-${formatPdfCurrency(Math.abs(netSavings))}`,
+        140,
+        42.5
+      );
+
+      // Data Table
+      autoTable(doc, {
+        startY: 50,
+        head: [['Date', 'Title', 'Type', 'Category', 'Account', 'Amount']],
+        body: reportData.transactions.map((t) => [
+          formatDate(t.date),
+          t.title || 'Untitled',
+          (t.type || 'expense').toUpperCase(),
+          t.category?.name || 'General',
+          t.account?.name || 'Primary',
+          `${t.type === 'income' ? '+' : '-'}${formatPdfCurrency(t.amount)}`,
+        ]),
+        headStyles: {
+          fillColor: [15, 23, 42],
+          textColor: [255, 255, 255],
+          fontStyle: 'bold',
+          fontSize: 8,
+          cellPadding: 3,
+        },
+        bodyStyles: {
+          textColor: [30, 41, 59],
+          fontSize: 8,
+          cellPadding: 2.8,
+        },
+        alternateRowStyles: {
+          fillColor: [248, 250, 252],
+        },
+        columnStyles: {
+          0: { cellWidth: 26 },
+          1: { cellWidth: 50 },
+          2: { cellWidth: 22 },
+          3: { cellWidth: 32 },
+          4: { cellWidth: 28 },
+          5: { cellWidth: 24, halign: 'right', fontStyle: 'bold' },
+        },
+        didDrawPage: (data) => {
+          const pageSize = doc.internal.pageSize;
+          const pageHeight = pageSize.height || pageSize.getHeight();
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(7.5);
+          doc.setTextColor(148, 163, 184);
+          doc.text(
+            'FinFlow Financial Platform • Official Audit Statement • Confidential',
+            14,
+            pageHeight - 8
+          );
+          doc.text(
+            `Page ${doc.internal.getNumberOfPages()}`,
+            196,
+            pageHeight - 8,
+            { align: 'right' }
+          );
+        },
+      });
+
+      doc.save(`finflow-${reportType}-${year}${reportType === 'monthly' ? `-${month}` : ''}.pdf`);
+      toast.success('Executive PDF statement downloaded.');
+    } catch (err) {
+      console.error('PDF generation failed:', err);
+      toast.error('Failed to generate PDF statement.');
+    } finally {
+      setExporting(false);
+    }
   };
 
   return (
@@ -96,7 +199,7 @@ export default function ReportsPage() {
       <div className="space-y-6">
         <div className="pb-1">
           <h2 className="text-xl font-bold tracking-tight text-foreground">Audit & Exports</h2>
-          <p className="text-xs text-muted-foreground mt-0.5">Generate formal ledger statements and export structured CSV/PDF reports.</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Generate formal ledger statements and export structured PDF reports.</p>
         </div>
 
         <SpotlightCard radius={400} className="p-5 border-border/80 dark:border-white/[0.08] dark:bg-[#121215]/80">
@@ -168,13 +271,15 @@ export default function ReportsPage() {
 
             {/* Download buttons */}
             <div className="flex gap-2.5">
-              <Button onClick={downloadPDF} variant="outline" size="sm" className="h-8 text-xs font-medium gap-1.5 dark:bg-white/[0.02]">
-                <FileText className="w-3.5 h-3.5" />
+              <Button
+                onClick={downloadPDF}
+                disabled={exporting}
+                variant="outline"
+                size="sm"
+                className="h-8 text-xs font-medium gap-1.5 dark:bg-white/[0.02]"
+              >
+                {exporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileText className="w-3.5 h-3.5" />}
                 <span>Export PDF</span>
-              </Button>
-              <Button onClick={downloadCSV} variant="outline" size="sm" className="h-8 text-xs font-medium gap-1.5 dark:bg-white/[0.02]">
-                <Table className="w-3.5 h-3.5" />
-                <span>Export CSV</span>
               </Button>
             </div>
 
