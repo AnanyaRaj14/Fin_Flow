@@ -12,7 +12,7 @@ export default function Header({ onMenuClick, title }) {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-4 border-b border-border/60 bg-background/85 backdrop-blur-md px-4 lg:px-8 dark:border-white/[0.06] dark:bg-[#191919]/90 transition-colors select-none">
+    <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-4 border-b border-border/60 bg-background/85 backdrop-blur-md px-4 lg:px-8 dark:border-white/[0.06] dark:bg-[#121215]/80 transition-colors select-none">
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" className="lg:hidden shrink-0 w-8 h-8 rounded-lg" onClick={onMenuClick}>
           <Menu className="h-4 w-4" />

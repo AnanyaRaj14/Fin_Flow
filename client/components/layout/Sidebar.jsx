@@ -54,7 +54,7 @@ export default function Sidebar({ open, onClose }) {
   };
 
   const sidebarContent = (
-    <aside className="h-full w-60 bg-card/95 border-r border-border/60 dark:border-white/[0.06] dark:bg-[#151515] flex flex-col justify-between select-none">
+    <aside className="h-full w-60 bg-card/95 border-r border-border/60 dark:border-white/[0.06] dark:bg-[#121215] flex flex-col justify-between select-none">
       {/* Header & Navigation */}
       <div className="flex-1 overflow-y-auto">
         {/* Brand Header */}

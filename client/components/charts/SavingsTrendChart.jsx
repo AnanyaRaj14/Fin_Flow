@@ -21,25 +21,21 @@ const CustomTooltip = ({ active, payload, label }) => {
 export default function SavingsTrendChart({ data = [] }) {
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between pb-3 mb-2">
-        <div>
-          <h4 className="text-xs font-medium text-foreground tracking-tight">Savings Trajectory</h4>
-          <p className="text-[11px] text-muted-foreground mt-0.5">Cumulative monthly asset retention</p>
-        </div>
+      <div className="flex items-center justify-end pb-2 mb-2">
         <span className="text-[11px] font-mono text-muted-foreground">
           {data.length} periods
         </span>
       </div>
 
-      <ResponsiveContainer width="100%" height={240}>
+      <ResponsiveContainer width="100%" height={230}>
         <AreaChart data={data} margin={{ top: 8, right: 0, left: -20, bottom: 0 }}>
           <defs>
             <linearGradient id="savingsAreaGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#10b981" stopOpacity={0.25} />
-              <stop offset="90%" stopColor="#10b981" stopOpacity={0} />
+              <stop offset="0%" stopColor="#34d399" stopOpacity={0.18} />
+              <stop offset="95%" stopColor="#34d399" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-border/30 dark:text-white/[0.03]" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-border/20 dark:text-white/[0.03]" vertical={false} />
           <XAxis
             dataKey="month"
             tick={{ fontSize: 11, fill: 'currentColor' }}
@@ -54,13 +50,13 @@ export default function SavingsTrendChart({ data = [] }) {
             tickLine={false}
             tickFormatter={(v) => `₹${v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}`}
           />
-          <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'currentColor', strokeWidth: 1, strokeDasharray: '3 3', opacity: 0.3 }} />
+          <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'currentColor', strokeWidth: 1, strokeDasharray: '3 3', opacity: 0.2 }} />
           <Area
             type="monotone"
             dataKey="savings"
             name="Savings"
-            stroke="#10b981"
-            strokeWidth={2}
+            stroke="#34d399"
+            strokeWidth={1.5}
             fill="url(#savingsAreaGradient)"
           />
         </AreaChart>

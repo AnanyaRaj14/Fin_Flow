@@ -6,7 +6,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { Loader2, ServerCrash } from 'lucide-react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
-import { Spotlight } from '@/components/ui/spotlight';
 
 export default function ProtectedLayout({ children }) {
   const { user, loading, serverError } = useAuth();
@@ -73,10 +72,6 @@ export default function ProtectedLayout({ children }) {
 
       {/* Dynamic Right Content Area */}
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden relative">
-        <Spotlight
-          className="-top-40 right-0 md:right-32 md:-top-20"
-          fill="rgba(255, 255, 255, 0.12)"
-        />
         <Header onMenuClick={() => setSidebarOpen(true)} title={getPageTitle()} />
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 relative">
           <div className="max-w-6xl mx-auto space-y-8 relative z-10">
