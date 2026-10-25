@@ -72,37 +72,24 @@ export default function DashboardPage() {
             {/* Top Net Worth Card with Aceternity Radiant Halo */}
             <SpotlightCard
               radius={450}
-              spotlightColor="rgba(99, 102, 241, 0.15)"
+              spotlightColor="rgba(99, 102, 241, 0.12)"
               className="p-6 sm:p-7"
             >
               <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
-                    <span className="relative flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                    </span>
-                    <span className="font-semibold tracking-wider uppercase text-[10px] text-foreground/80">
-                      Portfolio Overview
-                    </span>
-                    <span>·</span>
-                    <span className="font-mono text-[11px]">
-                      {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-                    </span>
-                  </div>
-
-                  <p className="text-xs font-medium text-muted-foreground">
+                  <p className="text-xs font-medium text-muted-foreground mb-1">
                     {greeting()}, {displayName}
                   </p>
                   
-                  <div className="mt-1 flex items-baseline gap-3">
+                  <div className="flex items-baseline gap-3">
                     <span className="text-3xl sm:text-4xl font-bold tracking-tight font-mono tabular-nums text-foreground">
                       {formatCurrency(stats?.totalBalance ?? 0)}
                     </span>
-                    <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-accent dark:bg-white/[0.06] text-muted-foreground border border-border/40 dark:border-white/[0.06]">
-                      net worth
-                    </span>
                   </div>
+
+                  <p className="text-[11px] text-muted-foreground mt-1">
+                    Total Portfolio Net Worth · {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                  </p>
                 </div>
 
                 {/* Quick Actions with Aceternity Shimmer Button */}
@@ -132,61 +119,51 @@ export default function DashboardPage() {
               {/* Monthly Inflow */}
               <SpotlightCard
                 radius={280}
-                spotlightColor="rgba(16, 185, 129, 0.16)"
+                spotlightColor="rgba(16, 185, 129, 0.12)"
                 className="p-5"
               >
                 <div className="flex items-center justify-between text-muted-foreground">
-                  <span className="text-[11px] font-semibold tracking-wider uppercase">
-                    Monthly Inflow
-                  </span>
-                  <div className="w-7 h-7 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-500/20">
-                    <ArrowDownLeft className="w-3.5 h-3.5" />
-                  </div>
+                  <span className="text-xs font-medium">Monthly Inflow</span>
+                  <ArrowDownLeft className="w-4 h-4 text-emerald-500" />
                 </div>
-                <div className="text-2xl font-bold font-mono tabular-nums text-emerald-600 dark:text-emerald-400 mt-2.5 tracking-tight">
+                <div className="text-2xl font-bold font-mono tabular-nums text-emerald-600 dark:text-emerald-400 mt-2 tracking-tight">
                   +{formatCurrency(income)}
                 </div>
-                <p className="text-[11px] text-muted-foreground mt-1">Cash received this cycle</p>
+                <p className="text-[11px] text-muted-foreground mt-1">Cash received this month</p>
               </SpotlightCard>
 
               {/* Monthly Outflow */}
               <SpotlightCard
                 radius={280}
-                spotlightColor="rgba(244, 63, 94, 0.16)"
+                spotlightColor="rgba(244, 63, 94, 0.12)"
                 className="p-5"
               >
                 <div className="flex items-center justify-between text-muted-foreground">
-                  <span className="text-[11px] font-semibold tracking-wider uppercase">
-                    Monthly Outflow
-                  </span>
-                  <div className="w-7 h-7 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center border border-rose-500/20">
-                    <ArrowUpRight className="w-3.5 h-3.5" />
-                  </div>
+                  <span className="text-xs font-medium">Monthly Outflow</span>
+                  <ArrowUpRight className="w-4 h-4 text-rose-500" />
                 </div>
-                <div className="text-2xl font-bold font-mono tabular-nums text-foreground mt-2.5 tracking-tight">
+                <div className="text-2xl font-bold font-mono tabular-nums text-foreground mt-2 tracking-tight">
                   -{formatCurrency(expenses)}
                 </div>
-                <p className="text-[11px] text-muted-foreground mt-1">Expenses recorded this cycle</p>
+                <p className="text-[11px] text-muted-foreground mt-1">Total expenses recorded</p>
               </SpotlightCard>
 
               {/* Net Savings */}
               <SpotlightCard
                 radius={280}
-                spotlightColor="rgba(99, 102, 241, 0.18)"
+                spotlightColor="rgba(99, 102, 241, 0.14)"
                 className="p-5"
               >
                 <div className="flex items-center justify-between text-muted-foreground">
-                  <span className="text-[11px] font-semibold tracking-wider uppercase">
-                    Net Savings
-                  </span>
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                    {savingsRate}% retention
+                  <span className="text-xs font-medium">Net Savings</span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium">
+                    {savingsRate}% saved
                   </span>
                 </div>
-                <div className="text-2xl font-bold font-mono tabular-nums text-foreground mt-2.5 tracking-tight">
+                <div className="text-2xl font-bold font-mono tabular-nums text-foreground mt-2 tracking-tight">
                   {formatCurrency(savings)}
                 </div>
-                <p className="text-[11px] text-muted-foreground mt-1">Asset accumulation rate</p>
+                <p className="text-[11px] text-muted-foreground mt-1">Net surplus retained</p>
               </SpotlightCard>
             </div>
           </div>
