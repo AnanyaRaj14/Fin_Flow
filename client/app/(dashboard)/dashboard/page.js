@@ -207,7 +207,6 @@ export default function DashboardPage() {
                 <div className="pb-3 border-b border-border/40 dark:border-white/[0.05] flex flex-row items-center justify-between mb-4">
                   <div>
                     <h3 className="text-sm font-semibold tracking-tight text-foreground">Financial Flow</h3>
-                    <p className="text-xs text-muted-foreground mt-0.5">Interactive cash movement & trajectory</p>
                   </div>
 
                   {/* Aceternity Sliding Pill Tab Switcher */}
