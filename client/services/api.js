@@ -21,12 +21,14 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Intercept 401 responses — but only redirect if we're NOT already on an auth page
+// Intercept 401 responses for protected data requests (ignoring /auth/me or auth pages)
 api.interceptors.response.use(
   (res) => res,
   (err) => {
+    // Never trigger hard reload if it's the auth verification check or already on an auth page
     if (
       err.response?.status === 401 &&
+      !err.config?.url?.includes('/auth/') &&
       typeof window !== 'undefined' &&
       !window.location.pathname.startsWith('/login') &&
       !window.location.pathname.startsWith('/register') &&
