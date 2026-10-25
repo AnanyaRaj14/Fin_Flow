@@ -10,7 +10,7 @@ export default function AuthLayout({ children }) {
       {/* Aceternity Ambient Spotlight */}
       <Spotlight
         className="-top-40 left-1/2 -translate-x-1/2 md:-top-20"
-        fill="rgba(255, 255, 255, 0.18)"
+        fill="rgba(99, 102, 241, 0.16)"
       />
 
       {/* Aceternity Grid Pattern with Radial Vignette */}

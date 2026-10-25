@@ -233,13 +233,13 @@ export default function CategoriesPage() {
             </div>
 
             <div className="flex gap-2 pt-1">
-              <Button type="button" variant="outline" className="flex-1" onClick={() => setOpen(false)}>
+              <Button type="button" variant="outline" className="flex-1 rounded-xl" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit" className="flex-1" disabled={saving}>
+              <ShimmerButton type="submit" className="flex-1 h-9 rounded-xl font-medium" disabled={saving}>
                 {saving && <Loader2 className="w-4 h-4 animate-spin" />}
-                {editing ? 'Update' : 'Create'}
-              </Button>
+                <span>{editing ? 'Update Category' : 'Create Category'}</span>
+              </ShimmerButton>
             </div>
           </form>
         </DialogContent>

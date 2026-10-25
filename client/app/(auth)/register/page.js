@@ -10,6 +10,7 @@ import { authApi } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/components/ui/toast';
 import { Button } from '@/components/ui/button';
+import { ShimmerButton } from '@/components/ui/shimmer-button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { SpotlightCard } from '@/components/ui/spotlight-card';
@@ -71,7 +72,11 @@ export default function RegisterPage() {
         <p className="text-xs text-muted-foreground font-medium">Simple, quiet financial clarity</p>
       </div>
 
-      <SpotlightCard className="p-0 border-border/70 dark:border-white/[0.1] dark:bg-[#121215]/85 backdrop-blur-xl shadow-2xl">
+      <SpotlightCard
+        radius={420}
+        spotlightColor="rgba(99, 102, 241, 0.16)"
+        className="p-0 border-border/70 dark:border-white/[0.1] dark:bg-[#121215]/85 backdrop-blur-xl shadow-2xl"
+      >
         <div className="text-center pb-4 pt-6 px-6">
           <h2 className="text-xl font-semibold tracking-tight text-foreground">Create your account</h2>
           <p className="text-xs text-muted-foreground mt-1">
@@ -134,7 +139,7 @@ export default function RegisterPage() {
               {errors.password && <p className="text-xs text-destructive font-medium">{errors.password.message}</p>}
             </div>
 
-            <Button type="submit" className="w-full h-10 rounded-xl font-medium text-xs gap-2 shadow-xs" disabled={submitting}>
+            <ShimmerButton type="submit" className="w-full h-10 rounded-xl font-medium text-xs gap-2" disabled={submitting}>
               {submitting ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
@@ -143,7 +148,7 @@ export default function RegisterPage() {
                   <ArrowRight className="w-3.5 h-3.5" />
                 </>
               )}
-            </Button>
+            </ShimmerButton>
           </form>
 
           <p className="text-center text-xs text-muted-foreground pt-2">

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Loader2, Upload, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ShimmerButton } from '@/components/ui/shimmer-button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -149,10 +150,10 @@ export default function TransactionForm({ onSubmit, defaultValues, saving }) {
       </div>
 
       <div className="flex gap-2 pt-2">
-        <Button type="submit" className="flex-1" disabled={saving || !selectedCategory}>
+        <ShimmerButton type="submit" className="w-full h-9 rounded-xl font-medium" disabled={saving || !selectedCategory}>
           {saving && <Loader2 className="w-4 h-4 animate-spin" />}
-          Save Transaction
-        </Button>
+          <span>{defaultValues ? 'Update Transaction' : 'Save Transaction'}</span>
+        </ShimmerButton>
       </div>
     </form>
   );

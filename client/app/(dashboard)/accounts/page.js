@@ -142,7 +142,7 @@ export default function AccountsPage() {
                 >
                   <SpotlightCard
                     radius={320}
-                    spotlightColor="rgba(255, 255, 255, 0.06)"
+                    spotlightColor={`${account.color || '#6366f1'}22`}
                     className="group p-5 border-border/60 dark:border-white/[0.07] dark:bg-[#121215]/80 hover:border-border dark:hover:border-white/[0.14] transition-all duration-300 relative rounded-2xl shadow-xs hover:shadow-lg"
                   >
                     {/* Top Row: Icon Pill & Subtle Hover Actions */}
@@ -246,11 +246,11 @@ export default function AccountsPage() {
               </div>
             </div>
             <div className="flex gap-2 pt-2">
-              <Button type="button" variant="outline" className="flex-1" onClick={() => setOpen(false)}>Cancel</Button>
-              <Button type="submit" className="flex-1" disabled={saving}>
+              <Button type="button" variant="outline" className="flex-1 rounded-xl" onClick={() => setOpen(false)}>Cancel</Button>
+              <ShimmerButton type="submit" className="flex-1 h-9 rounded-xl font-medium" disabled={saving}>
                 {saving && <Loader2 className="w-4 h-4 animate-spin" />}
-                {editing ? 'Update' : 'Create'}
-              </Button>
+                <span>{editing ? 'Update Account' : 'Create Account'}</span>
+              </ShimmerButton>
             </div>
           </form>
         </DialogContent>

@@ -24,7 +24,7 @@ export default function MonthlySpendingChart({ data = [] }) {
     <SpotlightCard
       radius={380}
       spotlightColor="rgba(244, 63, 94, 0.12)"
-      className="border border-border/80 dark:border-white/[0.08] dark:bg-[#121215]/80 backdrop-blur-md overflow-hidden"
+      className="p-0 border border-border/80 dark:border-white/[0.08] dark:bg-[#121215]/80 backdrop-blur-md overflow-hidden"
     >
       <div className="p-4 pb-3 border-b border-border/40 dark:border-white/[0.04]">
         <div className="flex items-center justify-between">

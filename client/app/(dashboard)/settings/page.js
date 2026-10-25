@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { Loader2, Upload, Check, Moon, Sun } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import DashboardLayout from '@/components/layout/DashboardLayout';
+import { SpotlightCard } from '@/components/ui/spotlight-card';
+import { ShimmerButton } from '@/components/ui/shimmer-button';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -107,7 +109,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Profile Card */}
-        <div className="rounded-2xl border border-border/60 dark:border-white/[0.06] bg-card dark:bg-[#121215]/80 p-6 backdrop-blur-xs space-y-6">
+        <SpotlightCard radius={400} spotlightColor="rgba(99, 102, 241, 0.12)" className="border-border/60 dark:border-white/[0.06] p-6 space-y-6">
           <div>
             <h3 className="text-sm font-semibold tracking-tight text-foreground">Profile</h3>
             <p className="text-xs text-muted-foreground mt-0.5">Your personal information and avatar</p>
@@ -160,16 +162,16 @@ export default function SettingsPage() {
             </div>
 
             <div className="pt-2 flex justify-end">
-              <Button type="submit" size="sm" disabled={savingProfile} className="h-8 px-4 text-xs font-medium rounded-lg shadow-none">
-                {savingProfile && <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />}
-                Save Profile
-              </Button>
+              <ShimmerButton type="submit" disabled={savingProfile} className="h-8 px-4 text-xs font-medium rounded-xl">
+                {savingProfile && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                <span>Save Profile</span>
+              </ShimmerButton>
             </div>
           </form>
-        </div>
+        </SpotlightCard>
 
         {/* Preferences Card */}
-        <div className="rounded-2xl border border-border/60 dark:border-white/[0.06] bg-card dark:bg-[#121215]/80 p-6 backdrop-blur-xs space-y-6">
+        <SpotlightCard radius={400} spotlightColor="rgba(99, 102, 241, 0.12)" className="border-border/60 dark:border-white/[0.06] p-6 space-y-6">
           <div>
             <h3 className="text-sm font-semibold tracking-tight text-foreground">Preferences</h3>
             <p className="text-xs text-muted-foreground mt-0.5">Application theme and localization</p>
@@ -242,10 +244,10 @@ export default function SettingsPage() {
               </Select>
             </div>
           </div>
-        </div>
+        </SpotlightCard>
 
         {/* Security Card */}
-        <div className="rounded-2xl border border-border/60 dark:border-white/[0.06] bg-card dark:bg-[#121215]/80 p-6 backdrop-blur-xs space-y-6">
+        <SpotlightCard radius={400} spotlightColor="rgba(99, 102, 241, 0.12)" className="border-border/60 dark:border-white/[0.06] p-6 space-y-6">
           <div>
             <h3 className="text-sm font-semibold tracking-tight text-foreground">Security</h3>
             <p className="text-xs text-muted-foreground mt-0.5">Update your password</p>
@@ -303,10 +305,10 @@ export default function SettingsPage() {
               </Button>
             </div>
           </form>
-        </div>
+        </SpotlightCard>
 
         {/* Account Details Footer */}
-        <div className="rounded-2xl border border-border/60 dark:border-white/[0.06] bg-card dark:bg-[#121215]/80 p-5 backdrop-blur-xs">
+        <SpotlightCard radius={350} spotlightColor="rgba(99, 102, 241, 0.1)" className="border-border/60 dark:border-white/[0.06] p-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
             <div>
               <span className="text-muted-foreground">Account Status: </span>
@@ -319,7 +321,7 @@ export default function SettingsPage() {
               </span>
             </div>
           </div>
-        </div>
+        </SpotlightCard>
 
       </div>
     </DashboardLayout>

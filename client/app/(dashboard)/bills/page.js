@@ -179,11 +179,11 @@ export default function BillsPage() {
               </div>
             </div>
             <div className="flex gap-2">
-              <Button type="button" variant="outline" className="flex-1" onClick={() => setOpen(false)}>Cancel</Button>
-              <Button type="submit" className="flex-1" disabled={saving}>
+              <Button type="button" variant="outline" className="flex-1 rounded-xl" onClick={() => setOpen(false)}>Cancel</Button>
+              <ShimmerButton type="submit" className="flex-1 h-9 rounded-xl font-medium" disabled={saving}>
                 {saving && <Loader2 className="w-4 h-4 animate-spin" />}
-                {editing ? 'Update' : 'Create'}
-              </Button>
+                <span>{editing ? 'Update Bill' : 'Create Bill'}</span>
+              </ShimmerButton>
             </div>
           </form>
         </DialogContent>
@@ -223,7 +223,7 @@ function BillCard({ bill, index, onToggle, onEdit, onDelete }) {
               : <Circle className="w-4 h-4 text-muted-foreground hover:text-foreground transition-colors" />
             }
           </button>
-          <div className="w-1 h-8 rounded-full shrink-0" style={{ background: bill.color }} />
+          <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: bill.color || '#6366f1' }} />
           <div className="flex-1 min-w-0">
             <p className={cn('font-semibold text-xs text-foreground truncate', bill.isPaid && 'line-through text-muted-foreground')}>{bill.name}</p>
             <p className="text-[11px] text-muted-foreground">

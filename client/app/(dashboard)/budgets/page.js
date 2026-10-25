@@ -176,7 +176,7 @@ export default function BudgetsPage() {
                 <motion.div key={budget.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
                   <SpotlightCard
                     radius={300}
-                    spotlightColor={over ? 'rgba(244, 63, 94, 0.15)' : 'rgba(255, 255, 255, 0.08)'}
+                    spotlightColor={over ? 'rgba(244, 63, 94, 0.2)' : `${budget.category?.color || '#6366f1'}22`}
                     className={cn(
                       'p-5 border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80',
                       over && 'border-rose-500/40 dark:border-rose-500/30'
@@ -248,11 +248,11 @@ export default function BudgetsPage() {
               {errors.amount && <p className="text-xs text-destructive">{errors.amount.message}</p>}
             </div>
             <div className="flex gap-2">
-              <Button type="button" variant="outline" className="flex-1" onClick={() => setOpen(false)}>Cancel</Button>
-              <Button type="submit" className="flex-1" disabled={saving}>
+              <Button type="button" variant="outline" className="flex-1 rounded-xl" onClick={() => setOpen(false)}>Cancel</Button>
+              <ShimmerButton type="submit" className="flex-1 h-9 rounded-xl font-medium" disabled={saving}>
                 {saving && <Loader2 className="w-4 h-4 animate-spin" />}
-                {editing ? 'Update' : 'Create'}
-              </Button>
+                <span>{editing ? 'Update Budget' : 'Create Budget'}</span>
+              </ShimmerButton>
             </div>
           </form>
         </DialogContent>
