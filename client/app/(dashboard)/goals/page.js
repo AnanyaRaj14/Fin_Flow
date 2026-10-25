@@ -119,28 +119,28 @@ export default function GoalsPage() {
                 <motion.div key={goal.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
                   <SpotlightCard
                     radius={300}
-                    spotlightColor={`${goal.color || '#6366f1'}20`}
+                    spotlightColor="rgba(255, 255, 255, 0.05)"
                     className={cn(
-                      'p-5 border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80 relative overflow-hidden',
+                      'group p-5 border-border/60 dark:border-white/[0.07] dark:bg-[#121215]/80 hover:border-border dark:hover:border-white/[0.14] transition-all duration-300 relative rounded-2xl shadow-xs hover:shadow-lg',
                       goal.isCompleted && 'border-emerald-500/40 dark:border-emerald-500/30'
                     )}
                   >
-                    <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: goal.color }} />
                     <div className="flex items-start justify-between mb-4">
                       <div>
                         <div className="flex items-center gap-2">
-                          <p className="font-semibold text-xs text-foreground truncate">{goal.name}</p>
+                          <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: goal.color || '#6366f1' }} />
+                          <p className="font-semibold text-sm text-foreground tracking-tight truncate">{goal.name}</p>
                           {goal.isCompleted && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />}
                         </div>
                         {goal.deadline && (
                           <p className="text-[11px] text-muted-foreground mt-0.5">Target: {formatDate(goal.deadline)}</p>
                         )}
                       </div>
-                      <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg" onClick={() => openEdit(goal)}>
+                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent/60" onClick={() => openEdit(goal)}>
                           <Pencil className="w-3.5 h-3.5" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg text-destructive hover:bg-destructive/10" onClick={() => setConfirmDelete(goal)}>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10" onClick={() => setConfirmDelete(goal)}>
                           <Trash2 className="w-3.5 h-3.5" />
                         </Button>
                       </div>

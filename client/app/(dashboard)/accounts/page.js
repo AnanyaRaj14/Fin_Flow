@@ -100,16 +100,20 @@ export default function AccountsPage() {
   return (
     <DashboardLayout title="Accounts">
       <div className="space-y-6">
-        <div className="flex items-center justify-between pb-1">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-border/40 dark:border-white/[0.04]">
           <div>
-            <h2 className="text-xl font-bold tracking-tight text-foreground">Accounts</h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Aggregate portfolio: <span className="font-mono font-semibold text-foreground tabular-nums">{formatCurrency(totalBalance)}</span>
-            </p>
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">Accounts</h2>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-xs text-muted-foreground">Total Liquid Portfolio</span>
+              <span className="text-xs text-muted-foreground/60">·</span>
+              <span className="text-xs font-semibold font-mono tracking-tight text-foreground">
+                {formatCurrency(totalBalance)}
+              </span>
+            </div>
           </div>
           <ShimmerButton
             onClick={openCreate}
-            className="h-8 px-3.5 text-xs font-medium gap-1.5"
+            className="h-8 px-3.5 text-xs font-medium gap-1.5 self-start sm:self-auto"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Account</span>
@@ -130,33 +134,67 @@ export default function AccountsPage() {
               const typeInfo = ACCOUNT_TYPES.find((t) => t.value === account.type);
               const Icon = typeInfo?.icon || Wallet;
               return (
-                <motion.div key={account.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+                <motion.div
+                  key={account.id}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.04 }}
+                >
                   <SpotlightCard
-                    radius={300}
-                    spotlightColor={`${account.color || '#6366f1'}20`}
-                    className="p-5 border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80 relative overflow-hidden"
+                    radius={320}
+                    spotlightColor="rgba(255, 255, 255, 0.06)"
+                    className="group p-5 border-border/60 dark:border-white/[0.07] dark:bg-[#121215]/80 hover:border-border dark:hover:border-white/[0.14] transition-all duration-300 relative rounded-2xl shadow-xs hover:shadow-lg"
                   >
-                    <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: account.color }} />
+                    {/* Top Row: Icon Pill & Subtle Hover Actions */}
                     <div className="flex items-start justify-between mb-4">
-                      <div className="w-9 h-9 rounded-xl flex items-center justify-center border" style={{ background: (account.color || '#6366f1') + '15', borderColor: (account.color || '#6366f1') + '30' }}>
-                        <Icon className="w-4 h-4" style={{ color: account.color || '#6366f1' }} />
+                      <div className="w-9 h-9 rounded-xl bg-accent/40 dark:bg-white/[0.03] border border-border/50 dark:border-white/[0.06] flex items-center justify-center text-foreground transition-colors group-hover:border-foreground/20">
+                        <Icon className="w-4 h-4 text-foreground/80 group-hover:text-foreground transition-colors" />
                       </div>
-                      <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg" onClick={() => openEdit(account)}>
+
+                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent/60"
+                          onClick={() => openEdit(account)}
+                          title="Edit account"
+                        >
                           <Pencil className="w-3.5 h-3.5" />
                         </Button>
                         <Button
-                          variant="ghost" size="icon"
-                          className="h-7 w-7 rounded-lg text-destructive hover:bg-destructive/10"
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                           onClick={() => setConfirmDelete(account)}
+                          title="Delete account"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </Button>
                       </div>
                     </div>
-                    <p className="font-semibold text-sm text-foreground truncate">{account.name}</p>
-                    <p className="text-[11px] text-muted-foreground mb-3">{typeInfo?.label}</p>
-                    <p className="text-xl font-bold font-mono tabular-nums text-foreground">{formatCurrency(account.balance)}</p>
+
+                    {/* Account Info */}
+                    <div>
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <span
+                          className="w-1.5 h-1.5 rounded-full shrink-0"
+                          style={{ backgroundColor: account.color || '#6366f1' }}
+                        />
+                        <p className="text-[11px] font-medium text-muted-foreground capitalize">
+                          {typeInfo?.label || 'Account'}
+                        </p>
+                      </div>
+                      <p className="font-semibold text-sm text-foreground tracking-tight truncate">
+                        {account.name}
+                      </p>
+                    </div>
+
+                    {/* Balance */}
+                    <div className="mt-4 pt-3 border-t border-border/30 dark:border-white/[0.04]">
+                      <p className="text-xl sm:text-2xl font-semibold font-mono tabular-nums tracking-tight text-foreground">
+                        {formatCurrency(account.balance)}
+                      </p>
+                    </div>
                   </SpotlightCard>
                 </motion.div>
               );
