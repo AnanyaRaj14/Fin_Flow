@@ -61,12 +61,12 @@ export default function RegisterPage() {
         <Link href="/dashboard" className="mb-3 inline-block">
           <Logo size="lg" />
         </Link>
-        <p className="text-xs text-muted-foreground font-medium">Join thousands tracking wealth effortlessly</p>
+        <p className="text-xs text-muted-foreground font-medium">Simple, quiet financial clarity</p>
       </div>
 
-      <Card className="shadow-2xl border border-border/80 dark:border-white/[0.08] dark:bg-card/90 backdrop-blur-xl">
+      <Card className="border border-border/70 dark:border-white/[0.08] dark:bg-card/80 backdrop-blur-md shadow-xs">
         <CardHeader className="text-center pb-4 pt-6">
-          <CardTitle className="text-xl font-bold tracking-tight">Create your account</CardTitle>
+          <CardTitle className="text-xl font-semibold tracking-tight">Create your account</CardTitle>
           <CardDescription className="text-xs text-muted-foreground mt-1">
             Start managing your wealth, cash flow, and budgets
           </CardDescription>
@@ -74,7 +74,7 @@ export default function RegisterPage() {
         <CardContent className="space-y-4 px-6 pb-6">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-1.5">
-              <Label className="text-xs font-semibold text-foreground">Full Name</Label>
+              <Label className="text-xs font-medium text-foreground">Full Name</Label>
               <div className="relative">
                 <Input
                   placeholder="Alex Mercer"
@@ -90,11 +90,11 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-xs font-semibold text-foreground">Email Address</Label>
+              <Label className="text-xs font-medium text-foreground">Email Address</Label>
               <div className="relative">
                 <Input
                   type="email"
-                  placeholder="name@company.com"
+                  placeholder="name@example.com"
                   className="h-10 rounded-xl pl-9 text-xs dark:bg-white/[0.03] dark:border-white/10"
                   {...register('email', { required: 'Email is required' })}
                 />
@@ -104,7 +104,7 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-xs font-semibold text-foreground">Password</Label>
+              <Label className="text-xs font-medium text-foreground">Password</Label>
               <div className="relative">
                 <Input
                   type={showPassword ? 'text' : 'password'}
@@ -127,13 +127,13 @@ export default function RegisterPage() {
               {errors.password && <p className="text-xs text-destructive font-medium">{errors.password.message}</p>}
             </div>
 
-            <Button type="submit" className="w-full h-10 rounded-xl font-semibold gap-2 shadow-md hover:shadow-indigo-500/25" disabled={submitting}>
+            <Button type="submit" className="w-full h-10 rounded-xl font-medium text-xs gap-2 shadow-xs" disabled={submitting}>
               {submitting ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <>
-                  <span>Create Free Account</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <span>Create Account</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </>
               )}
             </Button>
@@ -141,7 +141,7 @@ export default function RegisterPage() {
 
           <p className="text-center text-xs text-muted-foreground pt-2">
             Already have an account?{' '}
-            <Link href="/login" className="text-primary font-semibold hover:underline">
+            <Link href="/login" className="text-foreground font-medium hover:underline">
               Sign in
             </Link>
           </p>

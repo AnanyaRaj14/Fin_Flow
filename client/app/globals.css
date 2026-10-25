@@ -29,51 +29,51 @@
   --radius-sm: calc(var(--radius) - 4px);
 }
 
-/* Notion / Linear Clean Light Mode */
+/* Linear / Apple Sleek Light Mode */
 :root {
-  --background: 0 0% 99%;              /* Crisp clean light #FCFCFC */
-  --foreground: 0 0% 12%;               /* Soft dark charcoal */
-  --card: 0 0% 100%;
+  --background: 0 0% 98.5%;          /* #FAFAFA */
+  --foreground: 0 0% 12%;            /* #1E1E1E */
+  --card: 0 0% 100%;                 /* #FFFFFF */
   --card-foreground: 0 0% 12%;
   --popover: 0 0% 100%;
   --popover-foreground: 0 0% 12%;
-  --primary: 0 0% 12%;                 /* Monochromatic pure dark CTA */
-  --primary-foreground: 0 0% 100%;
-  --secondary: 0 0% 95%;
+  --primary: 0 0% 9%;                /* #171717 */
+  --primary-foreground: 0 0% 98%;
+  --secondary: 0 0% 94%;
   --secondary-foreground: 0 0% 15%;
-  --muted: 0 0% 95%;
-  --muted-foreground: 0 0% 45%;
-  --accent: 0 0% 95%;
+  --muted: 0 0% 94%;
+  --muted-foreground: 0 0% 46%;
+  --accent: 0 0% 94%;
   --accent-foreground: 0 0% 15%;
-  --destructive: 350 75% 55%;
+  --destructive: 350 72% 52%;
   --destructive-foreground: 0 0% 100%;
-  --border: 0 0% 90%;
-  --input: 0 0% 90%;
-  --ring: 0 0% 20%;
-  --radius: 0.85rem;
+  --border: 0 0% 89%;                /* 1px subtle divider */
+  --input: 0 0% 89%;
+  --ring: 0 0% 15%;
+  --radius: 0.875rem;                /* 14px refined radius */
 }
 
-/* Notion / Linear Sleek Dark Graphite Mode */
+/* Linear / Apple Sleek Dark Obsidian Mode */
 .dark {
-  --background: 0 0% 10%;              /* Notion deep graphite #191919 */
-  --foreground: 0 0% 93%;               /* Crisp off-white */
-  --card: 0 0% 13%;                    /* Notion card elevation #212121 */
-  --card-foreground: 0 0% 93%;
-  --popover: 0 0% 12%;
-  --popover-foreground: 0 0% 93%;
-  --primary: 0 0% 96%;                 /* Crisp white pill */
-  --primary-foreground: 0 0% 10%;
-  --secondary: 0 0% 17%;
-  --secondary-foreground: 0 0% 93%;
-  --muted: 0 0% 17%;
-  --muted-foreground: 0 0% 58%;
-  --accent: 0 0% 17%;
-  --accent-foreground: 0 0% 93%;
-  --destructive: 352 75% 58%;
+  --background: 240 5% 7.5%;         /* Pure deep obsidian #121215 */
+  --foreground: 0 0% 94%;            /* #F0F0F0 */
+  --card: 240 4% 10%;                /* Clean elevation #18181C */
+  --card-foreground: 0 0% 94%;
+  --popover: 240 4% 9.5%;
+  --popover-foreground: 0 0% 94%;
+  --primary: 0 0% 98%;               /* Crisp pure white contrast button */
+  --primary-foreground: 240 5% 8%;
+  --secondary: 240 4% 15%;
+  --secondary-foreground: 0 0% 94%;
+  --muted: 240 4% 14%;
+  --muted-foreground: 240 3% 58%;    /* Subtle muted slate text */
+  --accent: 240 4% 14%;
+  --accent-foreground: 0 0% 94%;
+  --destructive: 350 75% 58%;
   --destructive-foreground: 0 0% 100%;
-  --border: 0 0% 18%;                  /* Ultra-subtle clean borders */
-  --input: 0 0% 18%;
-  --ring: 0 0% 80%;
+  --border: 240 4% 16%;              /* Hairline 1px border */
+  --input: 240 4% 16%;
+  --ring: 0 0% 85%;
 }
 
 * {
@@ -84,13 +84,14 @@
 body {
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
-  font-family: -apple-system, BlinkMacSystemFont, 'Inter', -system-ui, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", -system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  letter-spacing: -0.015em;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.012em;
 }
 
-/* Minimalist Notion Scrollbars */
-::-webkit-scrollbar { width: 5px; height: 5px; }
+/* Subtle, unobtrusive scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 9999px; }
-::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.5); }
+::-webkit-scrollbar-thumb { background: hsl(var(--border) / 0.8); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.4); }

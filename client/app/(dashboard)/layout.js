@@ -33,7 +33,7 @@ export default function ProtectedLayout({ children }) {
         <ServerCrash className="w-12 h-12 text-muted-foreground opacity-40" />
         <h2 className="text-lg font-semibold">Cannot connect to server</h2>
         <p className="text-muted-foreground text-xs max-w-sm">
-          Please make sure the backend is running on port 5001.
+          Please check your internet connection or verify the server is running.
         </p>
         <button
           onClick={() => window.location.reload()}
