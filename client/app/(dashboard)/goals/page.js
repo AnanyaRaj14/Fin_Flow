@@ -89,11 +89,7 @@ export default function GoalsPage() {
           </div>
           <ShimmerButton
             onClick={openCreate}
-            shimmerColor="#ffffff"
-            shimmerSize="0.08em"
-            shimmerDuration="3.5s"
-            borderRadius="10px"
-            className="h-8 px-4 text-xs font-medium gap-1.5 dark:bg-zinc-900"
+            className="h-8 px-3.5 text-xs font-medium gap-1.5"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Goal</span>
@@ -109,11 +105,7 @@ export default function GoalsPage() {
             <p className="text-xs text-muted-foreground mt-0.5 mb-4">Create a savings milestone to track asset accumulation progress.</p>
             <ShimmerButton
               onClick={openCreate}
-              shimmerColor="#ffffff"
-              shimmerSize="0.08em"
-              shimmerDuration="3.5s"
-              borderRadius="10px"
-              className="h-8 px-4 text-xs font-medium gap-1.5 dark:bg-zinc-900 mx-auto"
+              className="h-8 px-4 text-xs font-medium gap-1.5 mx-auto"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Create Goal</span>

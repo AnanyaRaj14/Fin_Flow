@@ -99,11 +99,7 @@ export default function CategoriesPage() {
           </div>
           <ShimmerButton
             onClick={openCreate}
-            shimmerColor="#ffffff"
-            shimmerSize="0.08em"
-            shimmerDuration="3.5s"
-            borderRadius="10px"
-            className="h-8 px-4 text-xs font-medium gap-1.5 dark:bg-zinc-900"
+            className="h-8 px-3.5 text-xs font-medium gap-1.5"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Category</span>

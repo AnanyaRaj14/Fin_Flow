@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { Button } from '@/components/ui/button';
+import { ShimmerButton } from '@/components/ui/shimmer-button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { transactionsApi, categoriesApi, accountsApi } from '@/services/api';
@@ -82,10 +83,10 @@ export default function QuickAddPopover({
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
         {trigger || (
-          <Button size="sm" className="h-8.5 rounded-xl font-semibold gap-1.5 shadow-xs">
+          <ShimmerButton className="h-8 px-3 text-xs font-semibold gap-1.5">
             <Plus className="w-3.5 h-3.5" />
             <span>Quick Entry</span>
-          </Button>
+          </ShimmerButton>
         )}
       </Dialog.Trigger>
 
@@ -224,15 +225,14 @@ export default function QuickAddPopover({
               >
                 Cancel
               </Button>
-              <Button
+              <ShimmerButton
                 type="submit"
-                size="sm"
-                className="h-9 px-5 rounded-xl font-semibold gap-1.5 shadow-xs"
                 disabled={submitting}
+                className="h-9 px-5 text-xs font-semibold gap-1.5"
               >
                 {submitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
                 <span>Save Entry</span>
-              </Button>
+              </ShimmerButton>
             </div>
           </form>
         </Dialog.Content>

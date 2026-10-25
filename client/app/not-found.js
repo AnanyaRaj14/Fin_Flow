@@ -25,13 +25,7 @@ export default function NotFound() {
         </p>
         <div className="flex justify-center">
           <Link href="/dashboard">
-            <ShimmerButton
-              shimmerColor="#ffffff"
-              shimmerSize="0.08em"
-              shimmerDuration="3.5s"
-              borderRadius="12px"
-              className="h-10 px-5 text-xs font-semibold gap-2 dark:bg-zinc-900"
-            >
+            <ShimmerButton className="h-9 px-5 text-xs font-semibold gap-2">
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Return to Dashboard</span>
             </ShimmerButton>

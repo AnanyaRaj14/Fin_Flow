@@ -19,14 +19,18 @@ export const metadata = {
 // Inline script to prevent flash of wrong theme on first load
 const themeScript = `
   try {
-    const t = localStorage.getItem('theme') || 'light';
-    if (t === 'dark') document.documentElement.classList.add('dark');
+    const t = localStorage.getItem('theme') || 'dark';
+    if (t === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   } catch {}
 `;
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="dark" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>

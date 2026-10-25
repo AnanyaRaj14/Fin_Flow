@@ -211,11 +211,7 @@ export default function SettingsPage() {
                     <ShimmerButton
                       type="submit"
                       disabled={savingProfile}
-                      shimmerColor="#ffffff"
-                      shimmerSize="0.08em"
-                      shimmerDuration="3.5s"
-                      borderRadius="12px"
-                      className="h-9 px-5 text-xs font-semibold gap-2 dark:bg-zinc-900"
+                      className="h-9 px-5 text-xs font-semibold gap-2"
                     >
                       {savingProfile ? (
                         <Loader2 className="w-3.5 h-3.5 animate-spin" />

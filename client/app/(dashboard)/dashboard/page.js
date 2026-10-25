@@ -91,13 +91,7 @@ export default function DashboardPage() {
             {/* Quick Actions with Aceternity Shimmer Button */}
             <div className="flex items-center gap-2.5">
               <Link href="/transactions">
-                <ShimmerButton
-                  shimmerColor="#ffffff"
-                  shimmerSize="0.08em"
-                  shimmerDuration="3.5s"
-                  borderRadius="10px"
-                  className="h-8 px-4 text-xs font-medium gap-1.5 dark:bg-zinc-900"
-                >
+                <ShimmerButton className="h-8 px-3.5 text-xs font-medium gap-1.5">
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Transaction</span>
                 </ShimmerButton>
