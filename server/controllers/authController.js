@@ -22,8 +22,14 @@ const setCookie = (res, token) => {
 // POST /api/auth/register
 const register = async (req, res) => {
   const { name, email, password } = req.body;
+  const cleanEmail = email ? String(email).trim().toLowerCase() : '';
+  const cleanName = name ? String(name).trim() : '';
 
-  const existing = await prisma.user.findUnique({ where: { email } });
+  if (!cleanEmail || !password) {
+    return res.status(400).json({ message: 'Email and password are required.' });
+  }
+
+  const existing = await prisma.user.findUnique({ where: { email: cleanEmail } });
   if (existing) return res.status(400).json({ message: 'Email already in use.' });
 
   const hashed = await bcrypt.hash(password, 12);
@@ -31,8 +37,8 @@ const register = async (req, res) => {
 
   const user = await prisma.user.create({
     data: {
-      name,
-      email,
+      name: cleanName || cleanEmail.split('@')[0],
+      email: cleanEmail,
       password: hashed,
       verifyToken,
       verifyTokenExpiry: new Date(Date.now() + 24 * 60 * 60 * 1000),
@@ -60,7 +66,7 @@ const register = async (req, res) => {
   // Send verification email
   try {
     const url = `${process.env.CLIENT_URL}/verify-email?token=${verifyToken}`;
-    await sendEmail({ to: email, subject: 'Verify your FinFlow account', html: verifyEmailTemplate(name, url) });
+    await sendEmail({ to: cleanEmail, subject: 'Verify your FinFlow account', html: verifyEmailTemplate(cleanName, url) });
   } catch (emailErr) {
     console.error('Email dispatch failed, auto-verifying user:', emailErr.message);
     await prisma.user.update({
@@ -78,9 +84,14 @@ const register = async (req, res) => {
 // POST /api/auth/login
 const login = async (req, res) => {
   const { email, password } = req.body;
+  const cleanEmail = email ? String(email).trim().toLowerCase() : '';
+
+  if (!cleanEmail || !password) {
+    return res.status(400).json({ message: 'Email and password are required.' });
+  }
 
   const user = await prisma.user.findUnique({
-    where: { email },
+    where: { email: cleanEmail },
     include: {
       settings: {
         select: { theme: true, currency: true },
@@ -178,8 +189,9 @@ const verifyEmail = async (req, res) => {
 // POST /api/auth/forgot-password
 const forgotPassword = async (req, res) => {
   const { email } = req.body;
+  const cleanEmail = email ? String(email).trim().toLowerCase() : '';
 
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await prisma.user.findUnique({ where: { email: cleanEmail } });
   // Always return success to prevent email enumeration
   if (!user) return res.json({ message: 'If that email exists, a reset link has been sent.' });
 
@@ -190,7 +202,7 @@ const forgotPassword = async (req, res) => {
   });
 
   const url = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
-  await sendEmail({ to: email, subject: 'Reset your FinFlow password', html: resetPasswordTemplate(user.name, url) });
+  await sendEmail({ to: cleanEmail, subject: 'Reset your FinFlow password', html: resetPasswordTemplate(user.name, url) });
 
   res.json({ message: 'If that email exists, a reset link has been sent.' });
 };
@@ -255,7 +267,8 @@ module.exports = { register, login, logout, getMe, verifyEmail, forgotPassword, 
 // POST /api/auth/resend-verification
 async function resendVerification(req, res) {
   const { email } = req.body;
-  const user = await prisma.user.findUnique({ where: { email } });
+  const cleanEmail = email ? String(email).trim().toLowerCase() : '';
+  const user = await prisma.user.findUnique({ where: { email: cleanEmail } });
 
   if (!user) return res.json({ message: 'If that email exists, a verification link has been sent.' });
   if (user.isVerified) return res.status(400).json({ message: 'This email is already verified.' });
@@ -271,7 +284,7 @@ async function resendVerification(req, res) {
 
   const url = `${process.env.CLIENT_URL}/verify-email?token=${verifyToken}`;
   await sendEmail({
-    to: email,
+    to: cleanEmail,
     subject: 'Verify your FinFlow account',
     html: verifyEmailTemplate(user.name, url),
   });

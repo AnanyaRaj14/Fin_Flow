@@ -34,13 +34,17 @@ export default function LoginPage() {
     setSubmitting(true);
     setUnverifiedEmail('');
     try {
-      await login(data);
+      const cleanData = {
+        ...data,
+        email: data.email ? data.email.trim().toLowerCase() : '',
+      };
+      await login(cleanData);
       router.push('/dashboard/');
     } catch (err) {
       if (!err.response) {
         toast.error('Cannot reach the server. Make sure it is running on port 5000.');
       } else if (err.response?.status === 403) {
-        setUnverifiedEmail(data.email);
+        setUnverifiedEmail(data.email ? data.email.trim().toLowerCase() : '');
         toast.error('Please verify your email before logging in.');
       } else {
         toast.error(err.response?.data?.message || 'Login failed. Please verify credentials.');

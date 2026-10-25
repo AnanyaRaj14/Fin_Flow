@@ -31,7 +31,12 @@ export default function RegisterPage() {
   const onSubmit = async (data) => {
     setSubmitting(true);
     try {
-      await authApi.register(data);
+      const cleanData = {
+        ...data,
+        email: data.email ? data.email.trim().toLowerCase() : '',
+        name: data.name ? data.name.trim() : '',
+      };
+      await authApi.register(cleanData);
       toast.success('Account created! Please check your email to verify.');
       router.push('/login/');
     } catch (err) {
