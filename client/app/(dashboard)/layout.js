@@ -16,7 +16,7 @@ export default function ProtectedLayout({ children }) {
 
   useEffect(() => {
     if (!loading && !serverError && !user) {
-      router.replace('/login');
+      router.replace('/login/');
     }
   }, [user, loading, serverError, router]);
 

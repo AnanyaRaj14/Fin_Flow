@@ -25,7 +25,7 @@ export default function RegisterPage() {
   const { register, handleSubmit, formState: { errors } } = useForm();
 
   useEffect(() => {
-    if (!loading && user) router.replace('/dashboard');
+    if (!loading && user) router.replace('/dashboard/');
   }, [user, loading, router]);
 
   const onSubmit = async (data) => {
@@ -33,7 +33,7 @@ export default function RegisterPage() {
     try {
       await authApi.register(data);
       toast.success('Account created! Please check your email to verify.');
-      router.push('/login');
+      router.push('/login/');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Registration failed. Try again.');
     } finally {

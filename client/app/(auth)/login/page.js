@@ -27,7 +27,7 @@ export default function LoginPage() {
   const { register, handleSubmit, formState: { errors } } = useForm();
 
   useEffect(() => {
-    if (!loading && user) router.replace('/dashboard');
+    if (!loading && user) router.replace('/dashboard/');
   }, [user, loading, router]);
 
   const onSubmit = async (data) => {
@@ -35,7 +35,7 @@ export default function LoginPage() {
     setUnverifiedEmail('');
     try {
       await login(data);
-      router.push('/dashboard');
+      router.push('/dashboard/');
     } catch (err) {
       if (!err.response) {
         toast.error('Cannot reach the server. Make sure it is running on port 5000.');

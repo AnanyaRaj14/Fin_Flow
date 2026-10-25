@@ -29,7 +29,7 @@ function ResetPasswordForm() {
     try {
       await authApi.resetPassword({ token, password });
       toast.success('Password reset! You can now log in.');
-      router.push('/login');
+      router.push('/login/');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Reset failed. Link may have expired.');
     } finally {
