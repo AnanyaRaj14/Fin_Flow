@@ -6,39 +6,45 @@ import { cn } from '@/lib/utils';
 export function ShimmerButton({
   children,
   className,
-  shimmerColor = '#ffffff',
-  shimmerSize = '0.05em',
-  shimmerDuration = '3s',
-  borderRadius = '12px',
-  background = 'rgba(0, 0, 0, 1)',
   onClick,
+  disabled = false,
+  type = 'button',
+  borderRadius,
+  shimmerColor,
+  shimmerSize,
+  shimmerDuration,
+  background,
   ...props
 }) {
   return (
     <button
+      type={type}
       onClick={onClick}
-      style={{
-        '--spread': '90deg',
-        '--shimmer-color': shimmerColor,
-        '--radius': borderRadius,
-        '--speed': shimmerDuration,
-        '--cut': shimmerSize,
-        '--bg': background,
-      }}
+      disabled={disabled}
       className={cn(
-        'group relative z-0 flex cursor-pointer items-center justify-center overflow-hidden whitespace-nowrap px-4 py-2 text-xs font-medium text-white transition-all duration-300 [background:var(--bg)] [border-radius:var(--radius)] hover:scale-[1.01] active:scale-[0.98]',
-        'shadow-[inset_0_1px_0_0_rgba(255,255,255,0.2)] border border-white/10 dark:border-white/15',
+        // Base geometry & layout
+        'group relative inline-flex items-center justify-center overflow-hidden whitespace-nowrap px-4 py-2 text-xs font-semibold select-none cursor-pointer',
+        'transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none disabled:active:scale-100',
+        'rounded-xl tracking-tight shadow-xs',
+        // High-contrast, sleek Vercel/Linear/Stripe styling
+        // Light mode: deep crisp charcoal/black with top rim light
+        'bg-[#121215] text-white hover:bg-[#1f1f24]',
+        'border border-zinc-800 shadow-[0_1px_2px_rgba(0,0,0,0.08),inset_0_1px_0_0_rgba(255,255,255,0.15)]',
+        // Dark mode: pure crisp contrast white button with subtle shadow
+        'dark:bg-zinc-100 dark:text-zinc-950 dark:hover:bg-zinc-200 dark:border-white/20',
+        'dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.6)]',
         className
       )}
       {...props}
     >
-      {/* Spark container */}
-      <div className="-z-30 blur-[2px] absolute inset-0 overflow-visible [container-type:size]">
-        <div className="absolute inset-0 h-[100cqh] animate-shimmer-slide [aspect-ratio:1] [border-radius:0] [mask:none]">
-          <div className="animate-spin-around absolute -inset-full w-auto rotate-0 [background:conic-gradient(from_calc(270deg-(var(--spread)*0.5)),transparent_0,var(--shimmer-color)_var(--spread),transparent_var(--spread))] [translate:0_0]" />
-        </div>
-      </div>
-      {children}
+      {/* Precision horizontal light sheen sweep (Aceternity UI / Linear signature) */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -translate-x-full bg-[linear-gradient(110deg,transparent_20%,rgba(255,255,255,0.22)_50%,transparent_80%)] dark:bg-[linear-gradient(110deg,transparent_20%,rgba(0,0,0,0.15)_50%,transparent_80%)] group-hover:translate-x-full transition-transform duration-700 ease-in-out"
+      />
+      <span className="relative z-10 inline-flex items-center justify-center gap-1.5">
+        {children}
+      </span>
     </button>
   );
 }

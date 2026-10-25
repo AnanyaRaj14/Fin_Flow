@@ -14,7 +14,7 @@ import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
 import { goalsApi } from '@/services/api';
-import { formatCurrency, formatDate, formatDateInput } from '@/lib/utils';
+import { formatCurrency, formatDate, formatDateInput, cn } from '@/lib/utils';
 import { toast } from '@/components/ui/toast';
 
 const COLORS = ['#6366f1','#10b981','#f59e0b','#ef4444','#3b82f6','#8b5cf6','#ec4899','#14b8a6'];

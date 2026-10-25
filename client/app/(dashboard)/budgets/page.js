@@ -15,7 +15,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
 import { budgetsApi, categoriesApi } from '@/services/api';
-import { formatCurrency } from '@/lib/utils';
+import { formatCurrency, cn } from '@/lib/utils';
 import { toast } from '@/components/ui/toast';
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -39,7 +39,7 @@ export default function BudgetsPage() {
     setLoading(true);
     try {
       const { data } = await budgetsApi.getAll({ month, year });
-      setBudgets(data.budgets);
+      setBudgets(data?.budgets || []);
     } catch { toast.error('Failed to load budgets.'); }
     finally { setLoading(false); }
   };
@@ -48,8 +48,8 @@ export default function BudgetsPage() {
 
   useEffect(() => {
     categoriesApi.getAll().then(({ data }) => {
-      setCategories(data.categories.filter((c) => c.type === 'expense' || c.type === 'both'));
-    });
+      setCategories((data?.categories || []).filter((c) => c.type === 'expense' || c.type === 'both'));
+    }).catch(() => {});
   }, []);
 
   const openCreate = () => {
@@ -89,14 +89,15 @@ export default function BudgetsPage() {
     if (!confirmDelete) return;
     try {
       await budgetsApi.delete(confirmDelete.id);
-      setBudgets((p) => p.filter((b) => b.id !== confirmDelete.id));
+      setBudgets((p) => p.filter((c) => c.id !== confirmDelete.id));
       toast.success('Budget deleted.');
     } catch { toast.error('Failed to delete.'); }
     finally { setConfirmDelete(null); }
   };
 
-  const totalBudgeted = budgets.reduce((s, b) => s + b.amount, 0);
-  const totalSpent = budgets.reduce((s, b) => s + b.spent, 0);
+  const safeBudgets = Array.isArray(budgets) ? budgets : [];
+  const totalBudgeted = safeBudgets.reduce((s, b) => s + (Number(b.amount) || 0), 0);
+  const totalSpent = safeBudgets.reduce((s, b) => s + (Number(b.spent) || 0), 0);
 
   return (
     <DashboardLayout title="Budgets">

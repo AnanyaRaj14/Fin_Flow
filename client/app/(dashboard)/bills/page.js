@@ -15,7 +15,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
 import { billsApi } from '@/services/api';
-import { formatCurrency, getDaysUntilDue } from '@/lib/utils';
+import { formatCurrency, getDaysUntilDue, cn } from '@/lib/utils';
 import { toast } from '@/components/ui/toast';
 
 const COLORS = ['#6366f1','#10b981','#f59e0b','#ef4444','#3b82f6','#8b5cf6'];

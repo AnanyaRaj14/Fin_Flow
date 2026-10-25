@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { dashboardApi } from '@/services/api';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import { formatCurrency, formatDate, cn } from '@/lib/utils';
 import { toast } from '@/components/ui/toast';
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -99,56 +99,53 @@ export default function ReportsPage() {
           <p className="text-xs text-muted-foreground mt-0.5">Generate formal ledger statements and export structured CSV/PDF reports.</p>
         </div>
 
-        <SpotlightCard radius={400} className="p-5 border-border/70 dark:border-white/[0.08] dark:bg-[#121215]/80 space-y-4">
-          <div className="pb-3 border-b border-border/40 dark:border-white/[0.05]">
+        <SpotlightCard radius={400} className="p-5 border-border/80 dark:border-white/[0.08] dark:bg-[#121215]/80">
+          <div className="pb-3.5 border-b border-border/40 dark:border-white/[0.05] mb-4">
             <h3 className="text-sm font-semibold tracking-tight text-foreground">Statement Parameters</h3>
             <p className="text-xs text-muted-foreground mt-0.5">Specify accounting cycle and reporting interval</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-foreground">Report Type</Label>
+          <div className="flex flex-col sm:flex-row sm:items-end gap-3">
+            <div className="flex-1 space-y-1.5">
+              <Label className="text-xs font-semibold text-foreground">Report Type</Label>
               <Select value={reportType} onValueChange={setReportType}>
-                <SelectTrigger className="h-8 text-xs dark:bg-white/[0.03] dark:border-white/10"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="monthly">Monthly</SelectItem>
-                  <SelectItem value="yearly">Yearly</SelectItem>
+                <SelectTrigger className="h-9 text-xs rounded-xl bg-background border-border/80 dark:bg-white/[0.03] dark:border-white/10"><SelectValue /></SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="monthly">Monthly Cycle</SelectItem>
+                  <SelectItem value="yearly">Annual Statement</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             {reportType === 'monthly' && (
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium text-foreground">Month</Label>
+              <div className="flex-1 space-y-1.5">
+                <Label className="text-xs font-semibold text-foreground">Month</Label>
                 <Select value={String(month)} onValueChange={(v) => setMonth(Number(v))}>
-                  <SelectTrigger className="h-8 text-xs dark:bg-white/[0.03] dark:border-white/10"><SelectValue /></SelectTrigger>
-                  <SelectContent>
+                  <SelectTrigger className="h-9 text-xs rounded-xl bg-background border-border/80 dark:bg-white/[0.03] dark:border-white/10"><SelectValue /></SelectTrigger>
+                  <SelectContent className="rounded-xl">
                     {MONTHS.map((m, i) => <SelectItem key={i} value={String(i + 1)}>{m}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
             )}
-            <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-foreground">Year</Label>
+            <div className="flex-1 space-y-1.5">
+              <Label className="text-xs font-semibold text-foreground">Year</Label>
               <Select value={String(year)} onValueChange={(v) => setYear(Number(v))}>
-                <SelectTrigger className="h-8 text-xs dark:bg-white/[0.03] dark:border-white/10"><SelectValue /></SelectTrigger>
-                <SelectContent>
+                <SelectTrigger className="h-9 text-xs rounded-xl bg-background border-border/80 dark:bg-white/[0.03] dark:border-white/10"><SelectValue /></SelectTrigger>
+                <SelectContent className="rounded-xl">
                   {[2024, 2025, 2026, 2027].map((y) => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
+            <div className="sm:shrink-0 pt-1 sm:pt-0">
+              <ShimmerButton
+                onClick={generateReport}
+                disabled={loading}
+                className="w-full sm:w-auto h-9 px-5"
+              >
+                {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Table className="w-3.5 h-3.5" />}
+                <span>Compile Statement</span>
+              </ShimmerButton>
+            </div>
           </div>
-
-          <ShimmerButton
-            onClick={generateReport}
-            disabled={loading}
-            shimmerColor="#ffffff"
-            shimmerSize="0.08em"
-            shimmerDuration="3.5s"
-            borderRadius="10px"
-            className="h-8 px-4 text-xs font-medium gap-1.5 dark:bg-zinc-900"
-          >
-            {loading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-            <span>Compile Statement</span>
-          </ShimmerButton>
         </SpotlightCard>
 
         {reportData && (
